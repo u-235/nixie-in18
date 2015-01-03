@@ -1,5 +1,5 @@
-#ifndef _DISPLAY_H_
-#define _DISPLAY_H_
+#ifndef DISPLAY_H_
+#define DISPLAY_H_
 
 /// Левый верхний разделитель.
 #define DISPLAY_DOT_LEFT_TOP            0x01
@@ -37,4 +37,6 @@ void display_hours(unsigned char h);
 void display_minutes(unsigned char m);
 void display_seconds(unsigned char s);
 
-#endif // _DISPLAY_H_
+#include "hal/pwmi-hl.h"
+
+#endif // DISPLAY_H_

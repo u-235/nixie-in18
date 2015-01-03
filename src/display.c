@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include "hal/spi.h"
+#include "hal/pwmi.h"
 #include "display.h"
 
 static unsigned char data[SPI_ARRAY_SIZE];
@@ -10,6 +11,7 @@ static unsigned char data[SPI_ARRAY_SIZE];
 void dislpay_init()
 {
         spi_init();
+        pwmi_init();
 }
 
 /**
@@ -30,7 +32,7 @@ void display_clean()
  */
 void display_flush()
 {
-        spi_send_array(data);
+        pwmi_load(data);
 }
 
 /**
@@ -49,7 +51,6 @@ void display_flush()
  */
 void display_day(unsigned char d)
 {
-
         if (d & DISPLAY_MARK_SUNDAY) {
                 data[7] |= 1 << 2;
         } else {
