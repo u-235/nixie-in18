@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <util/delay.h>
 #include "spi.h"
 
 /**
@@ -29,6 +28,28 @@ void spi_send_array(unsigned char data[])
         }
 
         PORTB |= 1 << DDB2;
-        _delay_us(20);
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
+        PORTB &= ~(1 << DDB2);
+}
+
+/**
+ * Очистка дисплея.
+ */
+void  spi_clean(){
+        for (char i = 0; i < SPI_ARRAY_SIZE; i++) {
+                SPDR = 0;
+                while (!(SPSR & 1 << SPIF)) {
+                        // nop
+                }
+        }
+
+        PORTB |= 1 << DDB2;
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
+        __asm__ volatile("nop");
         PORTB &= ~(1 << DDB2);
 }
