@@ -38,5 +38,7 @@ void display_minutes(unsigned char m);
 void display_seconds(unsigned char s);
 
 #include "hal/pwmi-hl.h"
+void display_bright(unsigned char lvl);
+void display_rate(unsigned char lvl);
 
 #endif // DISPLAY_H_
