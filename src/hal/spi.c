@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include "spi.h"
+#include "asm.h"
 
 /**
  * Инициализация порта B и модуля SPI.
@@ -28,10 +29,10 @@ void spi_send_array(unsigned char data[])
         }
 
         PORTB |= 1 << DDB2;
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
+        _nop;
+        _nop;
+        _nop;
+        _nop;
         PORTB &= ~(1 << DDB2);
 }
 
@@ -47,9 +48,9 @@ void  spi_clean(){
         }
 
         PORTB |= 1 << DDB2;
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
-        __asm__ volatile("nop");
+        _nop;
+        _nop;
+        _nop;
+        _nop;
         PORTB &= ~(1 << DDB2);
 }
