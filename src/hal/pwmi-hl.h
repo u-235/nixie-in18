@@ -1,6 +1,9 @@
 #ifndef HAL_PWMI_HL_H_
 #define HAL_PWMI_HL_H_
 
-
+#define DISPLAY_BRIGHT_MAX 15
+#define DISPLAY_BRIGHT_MIN 0
+#define DISPLAY_RATE_MAX 15
+#define DISPLAY_RATE_MIN 0
 
 #endif // HAL_PWMI_HL_H_
