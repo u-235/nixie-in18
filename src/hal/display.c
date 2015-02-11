@@ -1,7 +1,7 @@
 #include <avr/io.h>
-#include "hal/spi.h"
-#include "hal/pwmi.h"
-#include "display.h"
+#include "../display.h"
+#include "spi.h"
+#include "pwmi.h"
 
 static unsigned char data[SPI_ARRAY_SIZE];
 
@@ -12,6 +12,8 @@ void dislpay_init()
 {
         spi_init();
         pwmi_init();
+        display_bright(DISPLAY_BRIGHT_MAX);
+        display_rate(DISPLAY_RATE_MAX);
 }
 
 /**
@@ -33,26 +35,6 @@ void display_clean()
 void display_flush()
 {
         pwmi_load(data);
-}
-
-/**
- * Установка яркости индикации.
- * \param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
- *      включительно.
- */
-void display_bright(unsigned char lvl)
-{
-        pwmi_bright(lvl);
-}
-
-/**
- * Установка скорости смены показаний индикатора со старых на новые.
- * \param lvl Скорость в диаппазоне от #DISPLAY_RATE_MIN до #DISPLAY_RATE_MAX
- *      включительно.
- */
-void display_rate(unsigned char lvl)
-{
-        pwmi_rate(lvl);
 }
 
 /**

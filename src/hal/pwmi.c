@@ -22,6 +22,7 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <string.h>
+#include "../display.h"
 #include "pwmi.h"
 #include "spi.h"
 #include "asm.h"
@@ -87,8 +88,6 @@ void pwmi_init()
         TCCR2 = 1 << WGM21 | 1 << CS22 | 1 << CS21;
         OCR2 = 64;
         TIMSK |= 1 << OCIE2;
-        pwmi_bright(DISPLAY_BRIGHT_MAX);
-        pwmi_rate(DISPLAY_RATE_MAX);
 }
 
 /**
@@ -96,7 +95,7 @@ void pwmi_init()
  * \param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
  *      включительно.
  */
-void pwmi_bright(unsigned char lvl)
+void display_bright(unsigned char lvl)
 {
         if (lvl > DISPLAY_BRIGHT_MAX) {
                 lvl = DISPLAY_BRIGHT_MAX;
@@ -111,7 +110,7 @@ void pwmi_bright(unsigned char lvl)
  * \param lvl Скорость в диаппазоне от #DISPLAY_RATE_MIN до #DISPLAY_RATE_MAX
  *      включительно.
  */
-void pwmi_rate(unsigned char lvl)
+void display_rate(unsigned char lvl)
 {
         static prog_int16_t steps[] = {
                         _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),

@@ -37,7 +37,11 @@ void display_hours(unsigned char h);
 void display_minutes(unsigned char m);
 void display_seconds(unsigned char s);
 
-#include "hal/pwmi-hl.h"
+#define DISPLAY_BRIGHT_MAX 15
+#define DISPLAY_BRIGHT_MIN 2 // 7 для логарифмического преобразования.
+#define DISPLAY_RATE_MAX 7
+#define DISPLAY_RATE_MIN 0
+
 void display_bright(unsigned char lvl);
 void display_rate(unsigned char lvl);
 
