@@ -43,6 +43,8 @@
 #error PWM_CYCLE_DURATION - LAST_STEP_DURATION most be <= 255
 #endif
 
+#define BALANCE_MAX (F_PWM * 32)
+
 /**
  * Вычисление количества тактов таймера для части цикла ШИМ.
  * \param d Длительность части цикла в диаппазоне от 0.0 до 1.0
@@ -50,24 +52,30 @@
  */
 #define _ticks(d) ((PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d)
 
+#define _steps(r) ((BALANCE_MAX/F_PWM)/r)
+
+/* Таблица логарифмических уровней яркости.
+ static prog_uchar levels[] = {
+ _ticks(0.000), _ticks(0.009), _ticks(0.013), _ticks(0.018),
+ _ticks(0.025), _ticks(0.035), _ticks(0.048), _ticks(0.068),
+ _ticks(0.095), _ticks(0.133), _ticks(0.186), _ticks(0.260),
+ _ticks(0.364), _ticks(0.510), _ticks(0.714), _ticks(1.000),
+ };
+ */
+
+/* Таблица линейных уровней яркости. */
 static prog_uchar levels[] = {
-                _ticks(0.000), _ticks(0.078), _ticks(0.093), _ticks(0.112),
-                _ticks(0.135), _ticks(0.162), _ticks(0.194), _ticks(0.233),
-                _ticks(0.279), _ticks(0.335), _ticks(0.402), _ticks(0.482),
-                _ticks(0.579), _ticks(0.694), _ticks(0.833), _ticks(1.000)
+                _ticks(0.000), _ticks(0.010), _ticks(0.081), _ticks(0.151),
+                _ticks(0.222), _ticks(0.293), _ticks(0.364), _ticks(0.434),
+                _ticks(0.505), _ticks(0.576), _ticks(0.646), _ticks(0.717),
+                _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
 };
 
 static unsigned char bright; /// Яркость индикации.
-static unsigned char rate; /// Скорость смены старых показаний на новые.
+static unsigned int rate; /// Скорость смены старых показаний на новые.
 static unsigned char step = 0; /// Текущий шаг цикла ШИМа.
 static unsigned char loaded = 0; /// Флаг загрузки значений.
-/**
- * Баланс яркости нового и старого значения.
- */
-static unsigned char balance;
-static unsigned char old_duration, new_duration, hide_duration;
 static unsigned char tmp_array[SPI_ARRAY_SIZE];
-static unsigned char old_value[SPI_ARRAY_SIZE], new_value[SPI_ARRAY_SIZE];
 
 /**
  * Инициализация ШИМа.
@@ -105,12 +113,18 @@ void pwmi_bright(unsigned char lvl)
  */
 void pwmi_rate(unsigned char lvl)
 {
+        static prog_int16_t steps[] = {
+                        _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
+                        _steps(0.48), _steps(0.40), _steps(0.34), _steps(0.01)
+
+        };
+
         if (lvl > DISPLAY_RATE_MAX) {
                 lvl = DISPLAY_RATE_MAX;
         } else if (lvl < DISPLAY_RATE_MIN) {
                 lvl = DISPLAY_RATE_MIN;
         }
-        rate = F_PWM / DISPLAY_RATE_MAX * lvl + 1;
+        rate = pgm_read_word(&steps[lvl]);
 }
 
 /**
@@ -130,6 +144,13 @@ void pwmi_load(unsigned char data[])
  */
 ISR(TIMER2_COMP_vect)
 {
+        /**
+         * Баланс яркости нового и старого значения.
+         */
+        static unsigned int balance;
+        static unsigned char old_duration, new_duration, hide_duration;
+        static unsigned char old_value[SPI_ARRAY_SIZE],
+                        new_value[SPI_ARRAY_SIZE];
         unsigned char lvl, bal;
 
         switch (step) {
@@ -168,22 +189,22 @@ ISR(TIMER2_COMP_vect)
                         balance = 0;
                 }
 
-                if (balance < F_PWM) {
+                if (balance < BALANCE_MAX) {
                         balance += rate;
-                        if (balance > F_PWM) {
-                                balance = F_PWM;
+                        if (balance > BALANCE_MAX) {
+                                balance = BALANCE_MAX;
                         }
                 }
-                bal = balance * DISPLAY_BRIGHT_MAX / F_PWM;
+                bal = balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
                 lvl = pgm_read_byte(&levels[bright]);
                 new_duration = pgm_read_byte(&levels[bal]) * lvl
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
-                new_duration&=0xfe;
+                new_duration &= 0xfe;
                 bal = DISPLAY_BRIGHT_MAX - bal;
                 old_duration = pgm_read_byte(&levels[bal]) * lvl
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
-                old_duration&=0xfe;
+                old_duration &= 0xfe;
                 hide_duration = PWM_CYCLE_DURATION - LAST_STEP_DURATION
                                 - new_duration - old_duration;
                 step = 0;
