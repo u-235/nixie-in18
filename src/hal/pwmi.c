@@ -72,10 +72,10 @@ static prog_uchar levels[] = {
                 _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
 };
 
-static unsigned char bright; /// Яркость индикации.
-static unsigned int rate; /// Скорость смены старых показаний на новые.
-static unsigned char step = 0; /// Текущий шаг цикла ШИМа.
-static unsigned char loaded = 0; /// Флаг загрузки значений.
+static unsigned char bright; //! Яркость индикации.
+static unsigned int rate; //! Скорость смены старых показаний на новые.
+static unsigned char step = 0; //! Текущий шаг цикла ШИМа.
+static unsigned char loaded = 0; //! Флаг загрузки значений.
 static unsigned char tmp_array[SPI_ARRAY_SIZE];
 
 /**

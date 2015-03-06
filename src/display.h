@@ -1,30 +1,30 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
-/// Левый верхний разделитель.
+//! Левый верхний разделитель.
 #define DISPLAY_DOT_LEFT_TOP            0x01
-/// Левый нижний разделитель.
+//! Левый нижний разделитель.
 #define DISPLAY_DOT_LEFT_BOTTOM         0x02
-/// Правый верхний разделитель.
+//! Правый верхний разделитель.
 #define DISPLAY_DOT_RIGHT_TOP           0x04
-/// Правый нижний разделитель.
+//! Правый нижний разделитель.
 #define DISPLAY_DOT_RIGHT_BOTTOM        0x08
 
-/// Значок понедельника.
+//! Значок понедельника.
 #define DISPLAY_MARK_MONDAY     0x01
-/// Значок вторника.
+//! Значок вторника.
 #define DISPLAY_MARK_TEUSDAY    0x02
-/// Значок среды.
+//! Значок среды.
 #define DISPLAY_MARK_WEDNESDAY  0x04
-/// Значок четверга.
+//! Значок четверга.
 #define DISPLAY_MARK_THURSDAY   0x08
-/// Значок пятницы.
+//! Значок пятницы.
 #define DISPLAY_MARK_FRIDAY     0x10
-/// Значок субботы.
+//! Значок субботы.
 #define DISPLAY_MARK_SATURDAY   0x20
-/// Значок воскресенья.
+//! Значок воскресенья.
 #define DISPLAY_MARK_SUNDAY     0x40
-/// Значок будильника.
+//! Значок будильника.
 #define DISPLAY_MARK_ALARM      0x80
 
 void dislpay_init();

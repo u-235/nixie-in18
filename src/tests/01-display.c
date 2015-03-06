@@ -115,6 +115,6 @@ void flush()
                         }
                 }
         }
-        display_bright(DISPLAY_BRIGHT_MAX);
+        display_bright(DISPLAY_BRIGHT_MIN);
         display_flush();
 }
