@@ -2,7 +2,7 @@
 #include <util/delay.h>
 #include "../display.h"
 
-#define STAP_DELAY 1000
+#define STEP_DELAY 1000
 
 static void flush();
 
@@ -21,7 +21,7 @@ int main(void)
                         display_day(c);
                         flush();
                         c <<= 1;
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
                 // Гасим дни.
                 display_day(0);
@@ -29,19 +29,19 @@ int main(void)
                 // Показ разделителей.
                 display_dots(DISPLAY_DOT_LEFT_BOTTOM);
                 flush();
-                _delay_ms(STAP_DELAY);
+                _delay_ms(STEP_DELAY);
 
                 display_dots(DISPLAY_DOT_LEFT_TOP);
                 flush();
-                _delay_ms(STAP_DELAY);
+                _delay_ms(STEP_DELAY);
 
                 display_dots(DISPLAY_DOT_RIGHT_TOP);
                 flush();
-                _delay_ms(STAP_DELAY);
+                _delay_ms(STEP_DELAY);
 
                 display_dots(DISPLAY_DOT_RIGHT_BOTTOM);
                 flush();
-                _delay_ms(STAP_DELAY);
+                _delay_ms(STEP_DELAY);
                 // Гасим разделители.
                 display_dots(0);
 
@@ -49,14 +49,14 @@ int main(void)
                 for (char i = 0; i <= 9; i++) {
                         display_seconds(i + 0xa0);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков секунд
                 for (char i = 0; i <= 0x90; i += 0x10) {
                         display_seconds(i + 0x0a);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
                 display_seconds(0xff);
 
@@ -64,14 +64,14 @@ int main(void)
                 for (char i = 0; i <= 9; i++) {
                         display_minutes(i + 0xa0);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков минут
                 for (char i = 0; i <= 0x90; i += 0x10) {
                         display_minutes(i + 0x0a);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
                 display_minutes(0xff);
 
@@ -79,14 +79,14 @@ int main(void)
                 for (char i = 0; i <= 9; i++) {
                         display_hours(i + 0xa0);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков часов
                 for (char i = 0; i <= 0x90; i += 0x10) {
                         display_hours(i + 0x0a);
                         flush();
-                        _delay_ms(STAP_DELAY);
+                        _delay_ms(STEP_DELAY);
                 }
                 display_hours(0xff);
         }
@@ -115,6 +115,6 @@ void flush()
                         }
                 }
         }
-        display_bright(DISPLAY_BRIGHT_MIN);
+        display_bright(lvl); //DISPLAY_BRIGHT_MIN
         display_flush();
 }

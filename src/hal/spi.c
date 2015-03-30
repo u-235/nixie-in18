@@ -19,9 +19,9 @@ void spi_init()
  * Отправка массива данных.
  * \param data Массив данных, состоящий из #SPI_ARRAY_SIZE элементов.
  */
-void spi_send_array(unsigned char data[])
+void spi_send_array(uint8_t data[])
 {
-        for (char i = 0; i < SPI_ARRAY_SIZE; i++) {
+        for (uint8_t i = 0; i < SPI_ARRAY_SIZE; i++) {
                 SPDR = *data++;
                 while (!(SPSR & 1 << SPIF)) {
                         // nop
@@ -40,7 +40,7 @@ void spi_send_array(unsigned char data[])
  * Очистка дисплея.
  */
 void  spi_clean(){
-        for (char i = 0; i < SPI_ARRAY_SIZE; i++) {
+        for (uint8_t i = 0; i < SPI_ARRAY_SIZE; i++) {
                 SPDR = 0;
                 while (!(SPSR & 1 << SPIF)) {
                         // nop

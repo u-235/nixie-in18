@@ -3,7 +3,7 @@
 #include "spi.h"
 #include "pwmi.h"
 
-static unsigned char data[SPI_ARRAY_SIZE];
+static uint8_t data[SPI_ARRAY_SIZE];
 
 /**
  * Инициализация индикации.
@@ -51,7 +51,7 @@ void display_flush()
  *      - #DISPLAY_MARK_SUNDAY
  *      - #DISPLAY_MARK_ALARM
  */
-void display_day(unsigned char d)
+void display_day(uint8_t d)
 {
         if (d & DISPLAY_MARK_SUNDAY) {
                 data[7] |= 1 << 2;
@@ -108,7 +108,7 @@ void display_day(unsigned char d)
  * \param h Новое значение часов в формате BCD. Старший нибл - десятки,
  *      младший - единицы. Для гашения разряда нибл должен быть больше 9.
  */
-void display_hours(unsigned char h)
+void display_hours(uint8_t h)
 {
         // Стирание минут в массиве.
         data[2] &= 1 << 0 | 1 << 1; // Бит вторника и разделителя не трогаем
@@ -190,7 +190,7 @@ void display_hours(unsigned char h)
  * \param m Новое значение минут в формате BCD. Старший нибл - десятки,
  *      младший - единицы. Для гашения разряда нибл должен быть больше 9.
  */
-void display_minutes(unsigned char m)
+void display_minutes(uint8_t m)
 {
         // Стирание минут в массиве.
         data[5] &= 1 << 0; // Бит пятницы не трогаем
@@ -272,7 +272,7 @@ void display_minutes(unsigned char m)
  * \param s Новое значение секунд в формате BCD. Старший нибл - десятки,
  *      младший - единицы. Для гашения разряда нибл должен быть больше 9.
  */
-void display_seconds(unsigned char s)
+void display_seconds(uint8_t s)
 {
         // Стирание секунд в массиве.
         data[8] = 0;
@@ -357,9 +357,8 @@ void display_seconds(unsigned char s)
  *      - #DISPLAY_DOT_RIGHT_TOP
  *      - #DISPLAY_DOT_RIGHT_BOTTOM
  */
-void display_dots(unsigned char d)
+void display_dots(uint8_t d)
 {
-
         if (d & DISPLAY_DOT_RIGHT_BOTTOM) {
                 data[6] |= 1 << 6;
         } else {

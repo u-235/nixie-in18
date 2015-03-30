@@ -51,32 +51,42 @@
  * \param d Длительность части цикла в диаппазоне от 0.0 до 1.0
  *      Поскольку это макрос, проверки допустимости нет.
  */
-#define _ticks(d) ((PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d)
+#define _ticks(d) ((uint8_t)((uint16_t)(PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d))
 
 #define _steps(r) ((BALANCE_MAX/F_PWM)/r)
 
 /* Таблица логарифмических уровней яркости.
- static prog_uchar levels[] = {
+ */
+static prog_int8_t levels[] = {
+                _ticks(0.000), _ticks(0.097), _ticks(0.273), _ticks(0.398),
+                _ticks(0.495), _ticks(0.574), _ticks(0.641), _ticks(0.699),
+                _ticks(0.750), _ticks(0.796), _ticks(0.837), _ticks(0.875),
+                _ticks(0.910), _ticks(0.942), _ticks(0.972), _ticks(1.000)
+};
+
+/* Таблица степенных уровней яркости.
+ static prog_int8_t levels[] = {
  _ticks(0.000), _ticks(0.009), _ticks(0.013), _ticks(0.018),
  _ticks(0.025), _ticks(0.035), _ticks(0.048), _ticks(0.068),
  _ticks(0.095), _ticks(0.133), _ticks(0.186), _ticks(0.260),
- _ticks(0.364), _ticks(0.510), _ticks(0.714), _ticks(1.000),
+ _ticks(0.364), _ticks(0.510), _ticks(0.714), _ticks(1.000)
  };
  */
 
-/* Таблица линейных уровней яркости. */
-static prog_uchar levels[] = {
-                _ticks(0.000), _ticks(0.010), _ticks(0.081), _ticks(0.151),
-                _ticks(0.222), _ticks(0.293), _ticks(0.364), _ticks(0.434),
-                _ticks(0.505), _ticks(0.576), _ticks(0.646), _ticks(0.717),
-                _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
-};
+/* Таблица линейных уровней яркости.
+ static prog_int8_t levels[] = {
+ _ticks(0.000), _ticks(0.010), _ticks(0.081), _ticks(0.151),
+ _ticks(0.222), _ticks(0.293), _ticks(0.364), _ticks(0.434),
+ _ticks(0.505), _ticks(0.576), _ticks(0.646), _ticks(0.717),
+ _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
+ };
+ */
 
-static unsigned char bright; //! Яркость индикации.
-static unsigned int rate; //! Скорость смены старых показаний на новые.
-static unsigned char step = 0; //! Текущий шаг цикла ШИМа.
-static unsigned char loaded = 0; //! Флаг загрузки значений.
-static unsigned char tmp_array[SPI_ARRAY_SIZE];
+static uint8_t bright; //! Яркость индикации.
+static uint16_t rate; //! Скорость смены старых показаний на новые.
+static uint8_t step = 0; //! Текущий шаг цикла ШИМа.
+static uint8_t loaded = 0; //! Флаг загрузки значений.
+static uint8_t tmp_array[SPI_ARRAY_SIZE];
 
 /**
  * Инициализация ШИМа.
@@ -95,7 +105,7 @@ void pwmi_init()
  * \param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
  *      включительно.
  */
-void display_bright(unsigned char lvl)
+void display_bright(uint8_t lvl)
 {
         if (lvl > DISPLAY_BRIGHT_MAX) {
                 lvl = DISPLAY_BRIGHT_MAX;
@@ -110,7 +120,7 @@ void display_bright(unsigned char lvl)
  * \param lvl Скорость в диаппазоне от #DISPLAY_RATE_MIN до #DISPLAY_RATE_MAX
  *      включительно.
  */
-void display_rate(unsigned char lvl)
+void display_rate(uint8_t lvl)
 {
         static prog_int16_t steps[] = {
                         _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
@@ -130,7 +140,7 @@ void display_rate(unsigned char lvl)
  * Загрузка данных для индикации.
  * @param data Массив данных, состоящий из #SPI_ARRAY_SIZE элементов.
  */
-void pwmi_load(unsigned char data[])
+void pwmi_load(uint8_t data[])
 {
         _cli;
         memcpy(tmp_array, data, SPI_ARRAY_SIZE);
@@ -146,11 +156,10 @@ ISR(TIMER2_COMP_vect)
         /**
          * Баланс яркости нового и старого значения.
          */
-        static unsigned int balance;
-        static unsigned char old_duration, new_duration, hide_duration;
-        static unsigned char old_value[SPI_ARRAY_SIZE],
-                        new_value[SPI_ARRAY_SIZE];
-        unsigned char lvl, bal;
+        static uint16_t balance;
+        static uint8_t old_duration, new_duration, hide_duration;
+        static uint8_t old_value[SPI_ARRAY_SIZE], new_value[SPI_ARRAY_SIZE];
+        uint8_t lvl, bal;
 
         switch (step) {
         case 0:
@@ -194,14 +203,15 @@ ISR(TIMER2_COMP_vect)
                                 balance = BALANCE_MAX;
                         }
                 }
-                bal = balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
+                bal = (uint16_t) balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
                 lvl = pgm_read_byte(&levels[bright]);
-                new_duration = pgm_read_byte(&levels[bal]) * lvl
+                new_duration = (uint16_t) pgm_read_byte(&levels[bal]) * lvl
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
+                // Округление, длительность меньше двух нежелательна.
                 new_duration &= 0xfe;
                 bal = DISPLAY_BRIGHT_MAX - bal;
-                old_duration = pgm_read_byte(&levels[bal]) * lvl
+                old_duration = (uint16_t) pgm_read_byte(&levels[bal]) * lvl
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
                 old_duration &= 0xfe;
                 hide_duration = PWM_CYCLE_DURATION - LAST_STEP_DURATION

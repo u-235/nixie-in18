@@ -1,6 +1,8 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+#include <stdint.h>
+
 //! Левый верхний разделитель.
 #define DISPLAY_DOT_LEFT_TOP            0x01
 //! Левый нижний разделитель.
@@ -31,18 +33,18 @@ void dislpay_init();
 void display_clean();
 void display_flush();
 
-void display_dots(unsigned char d);
-void display_day(unsigned char d);
-void display_hours(unsigned char h);
-void display_minutes(unsigned char m);
-void display_seconds(unsigned char s);
+void display_dots(uint8_t d);
+void display_day(uint8_t d);
+void display_hours(uint8_t h);
+void display_minutes(uint8_t m);
+void display_seconds(uint8_t s);
 
 #define DISPLAY_BRIGHT_MAX 15
 #define DISPLAY_BRIGHT_MIN 2 // 7 для логарифмического преобразования.
 #define DISPLAY_RATE_MAX 7
 #define DISPLAY_RATE_MIN 0
 
-void display_bright(unsigned char lvl);
-void display_rate(unsigned char lvl);
+void display_bright(uint8_t lvl);
+void display_rate(uint8_t lvl);
 
 #endif // DISPLAY_H_
