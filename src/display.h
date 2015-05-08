@@ -40,7 +40,14 @@ void display_minutes(uint8_t m);
 void display_seconds(uint8_t s);
 
 #define DISPLAY_BRIGHT_MAX 15
-#define DISPLAY_BRIGHT_MIN 2 // 7 для логарифмического преобразования.
+/* Минимальный уровень яркости для степенной зависимости равен 7,
+ *  для линейной зависимости 2.*/
+#ifdef BRIGHT_SCHEME_POW
+#       define DISPLAY_BRIGHT_MIN 7
+#else
+#       define DISPLAY_BRIGHT_MIN 2
+#endif
+
 #define DISPLAY_RATE_MAX 7
 #define DISPLAY_RATE_MIN 0
 

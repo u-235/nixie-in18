@@ -1,3 +1,12 @@
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
+#include <string.h>
+#include "../display.h"
+#include "pwmi.h"
+#include "spi.h"
+#include "asm.h"
+
 /**
  * \file pwmi.c
  * \brief Модуль ШИМ индикации.
@@ -17,15 +26,6 @@
  *  Важно знать, что длительность цикла неизменна и что цикл содержит любую
  *  комбинацию из первых трёх фаз и всегда содержит последнюю фазу.
  */
-
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <string.h>
-#include "../display.h"
-#include "pwmi.h"
-#include "spi.h"
-#include "asm.h"
 
 /**
  * Длительность цикла ШИМ в тактах таймера.
@@ -55,32 +55,23 @@
 
 #define _steps(r) ((BALANCE_MAX/F_PWM)/r)
 
-/* Таблица логарифмических уровней яркости.
- */
+#ifdef BRIGHT_SCHEME_POW
+// Таблица степенных уровней яркости.
 static prog_int8_t levels[] = {
-                _ticks(0.000), _ticks(0.097), _ticks(0.273), _ticks(0.398),
-                _ticks(0.495), _ticks(0.574), _ticks(0.641), _ticks(0.699),
-                _ticks(0.750), _ticks(0.796), _ticks(0.837), _ticks(0.875),
-                _ticks(0.910), _ticks(0.942), _ticks(0.972), _ticks(1.000)
+                _ticks(0.000), _ticks(0.009), _ticks(0.013), _ticks(0.018),
+                _ticks(0.025), _ticks(0.035), _ticks(0.048), _ticks(0.068),
+                _ticks(0.095), _ticks(0.133), _ticks(0.186), _ticks(0.260),
+                _ticks(0.364), _ticks(0.510), _ticks(0.714), _ticks(1.000)
 };
-
-/* Таблица степенных уровней яркости.
- static prog_int8_t levels[] = {
- _ticks(0.000), _ticks(0.009), _ticks(0.013), _ticks(0.018),
- _ticks(0.025), _ticks(0.035), _ticks(0.048), _ticks(0.068),
- _ticks(0.095), _ticks(0.133), _ticks(0.186), _ticks(0.260),
- _ticks(0.364), _ticks(0.510), _ticks(0.714), _ticks(1.000)
- };
- */
-
-/* Таблица линейных уровней яркости.
- static prog_int8_t levels[] = {
- _ticks(0.000), _ticks(0.010), _ticks(0.081), _ticks(0.151),
- _ticks(0.222), _ticks(0.293), _ticks(0.364), _ticks(0.434),
- _ticks(0.505), _ticks(0.576), _ticks(0.646), _ticks(0.717),
- _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
- };
- */
+#else
+// Таблица линейных уровней яркости.
+static prog_int8_t levels[] = {
+                _ticks(0.000), _ticks(0.010), _ticks(0.081), _ticks(0.151),
+                _ticks(0.222), _ticks(0.293), _ticks(0.364), _ticks(0.434),
+                _ticks(0.505), _ticks(0.576), _ticks(0.646), _ticks(0.717),
+                _ticks(0.788), _ticks(0.859), _ticks(0.929), _ticks(1.000)
+};
+#endif
 
 static uint8_t bright; //! Яркость индикации.
 static uint16_t rate; //! Скорость смены старых показаний на новые.
@@ -112,7 +103,7 @@ void display_bright(uint8_t lvl)
         } else if (lvl < DISPLAY_BRIGHT_MIN) {
                 lvl = DISPLAY_BRIGHT_MIN;
         }
-        bright = lvl;
+        bright = pgm_read_byte(&levels[lvl]);
 }
 
 /**
@@ -159,7 +150,7 @@ ISR(TIMER2_COMP_vect)
         static uint16_t balance;
         static uint8_t old_duration, new_duration, hide_duration;
         static uint8_t old_value[SPI_ARRAY_SIZE], new_value[SPI_ARRAY_SIZE];
-        uint8_t lvl, bal;
+        uint8_t bal;
 
         switch (step) {
         case 0:
@@ -205,13 +196,12 @@ ISR(TIMER2_COMP_vect)
                 }
                 bal = (uint16_t) balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
-                lvl = pgm_read_byte(&levels[bright]);
-                new_duration = (uint16_t) pgm_read_byte(&levels[bal]) * lvl
+                new_duration = (uint16_t) pgm_read_byte(&levels[bal]) * bright
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
                 // Округление, длительность меньше двух нежелательна.
                 new_duration &= 0xfe;
                 bal = DISPLAY_BRIGHT_MAX - bal;
-                old_duration = (uint16_t) pgm_read_byte(&levels[bal]) * lvl
+                old_duration = (uint16_t) pgm_read_byte(&levels[bal]) * bright
                                 / (PWM_CYCLE_DURATION - LAST_STEP_DURATION);
                 old_duration &= 0xfe;
                 hide_duration = PWM_CYCLE_DURATION - LAST_STEP_DURATION
