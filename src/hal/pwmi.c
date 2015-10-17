@@ -51,20 +51,20 @@
  * \param d Длительность части цикла в диаппазоне от 0.0 до 1.0
  *      Поскольку это макрос, проверки допустимости нет.
  */
-#define _ticks(d) ((uint8_t)((uint16_t)(PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d))
+#define _ticks(d) ((PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d)
 
 #define _steps(r) ((BALANCE_MAX/F_PWM)/r)
 
 // Таблица уровней яркости.
-static prog_int8_t levels[] = {
-                0, _ticks(0.003), _ticks(0.003), _ticks(0.004), _ticks(0.005),
-                _ticks(0.006), _ticks(0.007), _ticks(0.009), _ticks(0.010),
-                _ticks(0.012), _ticks(0.015), _ticks(0.018), _ticks(0.022),
-                _ticks(0.027), _ticks(0.032), _ticks(0.039), _ticks(0.047),
-                _ticks(0.057), _ticks(0.069), _ticks(0.084), _ticks(0.102),
-                _ticks(0.123), _ticks(0.149), _ticks(0.180), _ticks(0.218),
-                _ticks(0.263), _ticks(0.319), _ticks(0.386), _ticks(0.467),
-                _ticks(0.564), _ticks(0.683), _ticks(0.826), _ticks(1.000)
+static prog_uint8_t levels[] = {
+                0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
+                _ticks(0.018), _ticks(0.021), _ticks(0.024), _ticks(0.028),
+                _ticks(0.033), _ticks(0.038), _ticks(0.044), _ticks(0.051),
+                _ticks(0.060), _ticks(0.069), _ticks(0.080), _ticks(0.093),
+                _ticks(0.108), _ticks(0.125), _ticks(0.145), _ticks(0.168),
+                _ticks(0.195), _ticks(0.227), _ticks(0.263), _ticks(0.305),
+                _ticks(0.354), _ticks(0.410), _ticks(0.476), _ticks(0.552),
+                _ticks(0.641), _ticks(0.743), _ticks(0.862), _ticks(1.000)
 };
 
 static uint8_t bright; //! Яркость индикации.
@@ -191,13 +191,13 @@ ISR(TIMER2_COMP_vect)
                 bal = (uint16_t) balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
                 uint8_t i = (uint16_t) bal * bright / 8;
-                new_duration = (uint16_t) pgm_read_byte(&levels[i]);
+                new_duration = pgm_read_byte(&levels[i]);
                 // Округление, длительность меньше двух нежелательна.
-                new_duration &= 0xfe;
+                //new_duration &= 0xfe;
                 bal = DISPLAY_BRIGHT_MAX - bal;
                 i = (uint16_t) bal * bright / 8;
-                old_duration = (uint16_t) pgm_read_byte(&levels[i]);
-                old_duration &= 0xfe;
+                old_duration = pgm_read_byte(&levels[i]);
+                //old_duration &= 0xfe;
                 hide_duration = PWM_CYCLE_DURATION - LAST_STEP_DURATION
                                 - new_duration - old_duration;
                 step = 0;
