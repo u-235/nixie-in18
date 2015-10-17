@@ -29,8 +29,6 @@ void spi_init()
         // Двойная скорость SPI.
         SPSR = 1 << SPI2X;
 
-        // Отправка байта необходима для установки флага SPIF.
-        SPDR = 0;
         spi_clean();
 }
 
@@ -40,13 +38,20 @@ void spi_init()
  */
 void spi_send_array(uint8_t data[])
 {
-        _strobe_up();
-        for (uint8_t i = 0; i < SPI_ARRAY_SIZE; i++) {
+        // Отправляем первый байт без опроса флага SPIF,
+        // потому что он сбрасывается при формировании
+        // строба фиксации данных в регистрах сдвига.
+        SPDR = *data++;
+        for (uint8_t i = 0; i < SPI_ARRAY_SIZE - 1; i++) {
                 uint8_t byte = *data++;
                 _spi_wait();
                 SPDR = byte;
         }
+
+        // Фиксация данных в регистрах сдвига.
         _strobe_down();
+        _spi_wait();
+        _strobe_up();
 }
 
 /**
@@ -54,10 +59,13 @@ void spi_send_array(uint8_t data[])
  */
 void spi_clean()
 {
-        _strobe_up();
-        for (uint8_t i = 0; i < SPI_ARRAY_SIZE; i++) {
+        SPDR = 0;
+        for (uint8_t i = 0; i < SPI_ARRAY_SIZE - 1; i++) {
                 _spi_wait();
                 SPDR = 0;
         }
+
         _strobe_down();
+        _spi_wait();
+        _strobe_up();
 }
