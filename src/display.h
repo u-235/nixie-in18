@@ -13,21 +13,21 @@
 #define DISPLAY_DOT_RIGHT_BOTTOM        0x08
 
 //! Значок понедельника.
-#define DISPLAY_MARK_MONDAY     0x01
+#define DISPLAY_MARK_MONDAY     0x02
 //! Значок вторника.
-#define DISPLAY_MARK_TEUSDAY    0x02
+#define DISPLAY_MARK_TEUSDAY    0x04
 //! Значок среды.
-#define DISPLAY_MARK_WEDNESDAY  0x04
+#define DISPLAY_MARK_WEDNESDAY  0x08
 //! Значок четверга.
-#define DISPLAY_MARK_THURSDAY   0x08
+#define DISPLAY_MARK_THURSDAY   0x10
 //! Значок пятницы.
-#define DISPLAY_MARK_FRIDAY     0x10
+#define DISPLAY_MARK_FRIDAY     0x20
 //! Значок субботы.
-#define DISPLAY_MARK_SATURDAY   0x20
+#define DISPLAY_MARK_SATURDAY   0x40
 //! Значок воскресенья.
-#define DISPLAY_MARK_SUNDAY     0x40
+#define DISPLAY_MARK_SUNDAY     0x80
 //! Значок будильника.
-#define DISPLAY_MARK_ALARM      0x80
+#define DISPLAY_MARK_ALARM      0x01
 
 void dislpay_init();
 void display_clean();

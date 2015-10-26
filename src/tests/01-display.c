@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "../display.h"
+#include "../hal/asm.h"
 
 #define STEP_DELAY 1000
 
@@ -10,6 +11,7 @@ int main(void)
 {
         dislpay_init();
         display_rate(2);
+        _sei;
 
         while (1) {
                 display_clean();

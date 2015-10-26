@@ -5,7 +5,6 @@
 #include "../display.h"
 #include "pwmi.h"
 #include "spi.h"
-#include "asm.h"
 
 /**
  * \file pwmi.c
@@ -17,14 +16,18 @@
  *  Программный ШИМ для синхронизации использует прерывания при
  *  совпадении таймера 2. В общем случае цикл ШИМ может состоять из следующих
  *  фаз:
- *  - Показ старых данных. Длительность фазы непостоянна.
- *  - Показ новых данных. Длительность фазы непостоянна.
- *  - Индикатор погашен. Длительность фазы непостоянна.
- *  - Подготовка данных для следующего цикла, индикатор погашен. Имеет
- *    фиксированную длительность.
+ *  - #STEP_OLD - показ старых данных. Длительность фазы непостоянна.
+ *  - #STEP_NEW - показ новых данных. Длительность фазы непостоянна.
+ *  - #STEP_AND - показ данных, которые есть и в старых и в новых. Длительность
+ *    фазы непостоянна. Это нужно для устранения притухания неизменной части
+ *    показаний из-за нелинейной характеристики регулировки яркости.
+ *  - #STEP_HIDE - индикатор погашен. Длительность фазы непостоянна. Этот шаг
+ *    нужен для сохранения постоянства периода ШИМ при неполной яркости.
+ *  - #STEP_CALK - подготовка данных для следующего цикла, индикатор погашен.
+ *    Имеет фиксированную длительность.
  *
  *  Важно знать, что длительность цикла неизменна и что цикл содержит любую
- *  комбинацию из первых трёх фаз и всегда содержит последнюю фазу.
+ *  комбинацию из первых четырёх фаз и всегда содержит последнюю фазу.
  */
 
 /**
@@ -47,6 +50,28 @@
 #define BALANCE_MAX (F_PWM * 32)
 
 /**
+ * \def STEP_OLD
+ *  Фаза показа старых значений.
+ *
+ * \def STEP_NEW
+ * Фаза показа новых значений.
+ *
+ * \def STEP_AND
+ * Фаза "дожигания" неизменных значений.
+ *
+ * \def STEP_HIDE
+ * Фаза без индикации.
+ *
+ * \def STEP_CALK
+ * Фаза вычислений.
+ */
+#define STEP_OLD  0
+#define STEP_NEW  1
+#define STEP_AND  2
+#define STEP_HIDE 3
+#define STEP_CALK 4
+
+/**
  * Вычисление количества тактов таймера для части цикла ШИМ.
  * \param d Длительность части цикла в диаппазоне от 0.0 до 1.0
  *      Поскольку это макрос, проверки допустимости нет.
@@ -67,26 +92,52 @@ static prog_uint8_t levels[] = {
                 _ticks(0.641), _ticks(0.743), _ticks(0.862), _ticks(1.000)
 };
 
-static uint8_t bright; //! Яркость индикации.
-static uint16_t rate; //! Скорость смены старых показаний на новые.
-static uint8_t step = 0; //! Текущий шаг цикла ШИМа.
-static uint8_t loaded = 0; //! Флаг загрузки значений.
-static uint8_t tmp_array[SPI_ARRAY_SIZE];
+static uint8_t bright;  //! Яркость индикации.
+static uint16_t rate;   //! Скорость смены старых показаний на новые.
+static uint8_t step;    //! Текущий шаг цикла ШИМа.
+static uint8_t loaded;  //! Флаг загрузки значений.
+/**
+ * \var pNewValue
+ * Указатель на буфер с новыми данными для индикации.
+ * \var pOldValue
+ * Указатель на буфер со старыми данными для индикации.
+ * \var pAndValue
+ * Указатель на буфер данными, общими для новых и старых значений.
+ * \var pTmpValue
+ * Указатель на буфер для временного хранения данных, загруженных функцией
+ * pwmi_load().
+ */
+static uint8_t *pNewValue, *pOldValue, *pAndValue, *pTmpValue;
 
 /**
- * Инициализация ШИМа.
+ * \brief Инициализация ШИМа.
+ * \details Эта функция должна быть вызвана до вызова любой другой
+ * функции.
  */
 void pwmi_init()
 {
+        /*
+         * Этот трюк с буферами нужен что бы скрыть их от прямого доступа, а
+         * так же что бы не морочиться с названиями.)) Однако это может быть
+         * проблемой при вызове функции pwmi_load до вызова pwmi_init.
+         */
+        static uint8_t buff0[SPI_ARRAY_SIZE], buff1[SPI_ARRAY_SIZE],
+                        buff2[SPI_ARRAY_SIZE], buff3[SPI_ARRAY_SIZE];
+        pNewValue = buff0;
+        pOldValue = buff1;
+        pAndValue = buff2;
+        pTmpValue = buff3;
+
+        step = STEP_CALK;
+        OCR2 = 64;
         // При тактовой частоте в 8 МГц, делителе = 256 и
         // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
         TCCR2 = 1 << WGM21 | 1 << CS22 | 1 << CS21;
-        OCR2 = 64;
         TIMSK |= 1 << OCIE2;
 }
 
 /**
- * Установка яркости индикации.
+ * \brief Установка яркости индикации.
  * \param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
  *      включительно.
  */
@@ -122,15 +173,19 @@ void display_rate(uint8_t lvl)
 }
 
 /**
- * Загрузка данных для индикации.
+ * \brief Загрузка данных для индикации.
+ * \details Вызов этой функции возможен \b только \b после \b инициализации
+ *  модуля функцией pwmi_init().
  * @param data Массив данных, состоящий из #SPI_ARRAY_SIZE элементов.
  */
 void pwmi_load(uint8_t data[])
 {
-        _cli;
-        memcpy(tmp_array, data, SPI_ARRAY_SIZE);
+        /*
+         * По хорошему нужно проверять pTmpValue на ноль из-за особенностей
+         * инициализации указателей.
+         */
+        memcpy(pTmpValue, data, SPI_ARRAY_SIZE);
         loaded = 1;
-        _sei;
 }
 
 /**
@@ -138,46 +193,65 @@ void pwmi_load(uint8_t data[])
  */
 ISR(TIMER2_COMP_vect)
 {
-        /**
-         * Баланс яркости нового и старого значения.
-         */
-        static uint16_t balance;
-        static uint8_t old_duration, new_duration, hide_duration;
-        static uint8_t old_value[SPI_ARRAY_SIZE], new_value[SPI_ARRAY_SIZE];
+        static uint16_t balance; // Баланс яркости нового и старого значения.
+        static uint8_t duration[4];
         uint8_t bal;
 
         switch (step) {
-        case 0:
+        case STEP_OLD:
                 step++;
-                if (old_duration != 0) {
-                        OCR2 = old_duration;
-                        spi_send_array(old_value);
+                if (duration[STEP_OLD] != 0) {
+                        OCR2 = duration[STEP_OLD];
+                        spi_send_array(pOldValue);
                         break;
                 }
                 /* no break */
-        case 1:
+        case STEP_NEW:
                 step++;
-                if (new_duration != 0) {
-                        OCR2 = new_duration;
-                        spi_send_array(new_value);
+                if (duration[STEP_NEW] != 0) {
+                        OCR2 = duration[STEP_NEW];
+                        spi_send_array(pNewValue);
                         break;
                 }
                 /* no break */
-        case 2:
+        case STEP_AND:
                 step++;
-                if (hide_duration != 0) {
-                        OCR2 = hide_duration;
+                if (duration[STEP_AND] != 0) {
+                        OCR2 = duration[STEP_AND];
+                        spi_send_array(pAndValue);
+                        break;
+                }
+                /* no break */
+        case STEP_HIDE:
+                step++;
+                if (duration[STEP_HIDE] != 0) {
+                        OCR2 = duration[STEP_HIDE];
                         spi_clean();
                         break;
                 }
                 /* no break */
-        case 3:
+        case STEP_CALK:
                 step++;
                 OCR2 = LAST_STEP_DURATION;
                 spi_clean();
+
                 if (loaded != 0) {
-                        memcpy(old_value, new_value, SPI_ARRAY_SIZE);
-                        memcpy(new_value, tmp_array, SPI_ARRAY_SIZE);
+                        /*
+                         * Что бы избежать копирования массивов при
+                         * поступлении новых данных используется ротация
+                         * указателей. Кроме того, обновляются данные в
+                         * массиве для шага #STEP_AND.
+                         */
+                        uint8_t *pOld = pNewValue;
+                        uint8_t *pNew = pTmpValue;
+                        uint8_t *pAnd = pAndValue;
+                        pTmpValue = pOldValue;
+                        pOldValue = pOld;
+                        pNewValue = pNew;
+
+                        for (uint8_t i = SPI_ARRAY_SIZE; i > 0; i--) {
+                                *pAnd++ = *pNew++ & *pOld++;
+                        }
                         loaded = 0;
                         balance = 0;
                 }
@@ -191,15 +265,21 @@ ISR(TIMER2_COMP_vect)
                 bal = (uint16_t) balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
                 uint8_t i = (uint16_t) bal * bright / 8;
-                new_duration = pgm_read_byte(&levels[i]);
-                // Округление, длительность меньше двух нежелательна.
-                //new_duration &= 0xfe;
+                duration[STEP_NEW] = pgm_read_byte(&levels[i]);
+
                 bal = DISPLAY_BRIGHT_MAX - bal;
                 i = (uint16_t) bal * bright / 8;
-                old_duration = pgm_read_byte(&levels[i]);
-                //old_duration &= 0xfe;
-                hide_duration = PWM_CYCLE_DURATION - LAST_STEP_DURATION
-                                - new_duration - old_duration;
+                duration[STEP_OLD] = pgm_read_byte(&levels[i]);
+
+                i = (uint16_t) bright * DISPLAY_BRIGHT_MAX / 8;
+                duration[STEP_AND] = pgm_read_byte(&levels[i]);
+                duration[STEP_HIDE] = PWM_CYCLE_DURATION - LAST_STEP_DURATION
+                                - duration[STEP_AND];
+                duration[STEP_AND] -= duration[STEP_NEW] + duration[STEP_OLD];
+                if (duration[STEP_AND] == 1) {
+                        duration[STEP_AND] = 0;
+                        duration[STEP_HIDE]++;
+                }
                 step = 0;
         }
 }
