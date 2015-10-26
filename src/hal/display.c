@@ -1,7 +1,7 @@
 #include <avr/io.h>
-#include "../display.h"
-#include "spi.h"
-#include "pwmi.h"
+#include "display.h"
+#include "avr/spi.h"
+#include "avr/pwmi.h"
 
 static uint8_t data[SPI_ARRAY_SIZE];
 

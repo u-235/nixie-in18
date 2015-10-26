@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include "../display.h"
+#include "../hal/display.h"
 #include "../bcd/bcd.h"
-#include "../hal/asm.h"
+#include "../hal/avr/asm.h"
 
 /* Разрешаем АЦП и устанавливаем минимальную частоту преобразования */
 #define ADC_MODE        ((1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))

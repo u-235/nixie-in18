@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "../display.h"
-#include "../hal/asm.h"
+#include "../hal/display.h"
+#include "../hal/avr/asm.h"
 
 #define STEP_DELAY 1000
 
