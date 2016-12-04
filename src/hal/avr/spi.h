@@ -1,5 +1,5 @@
-#ifndef HAL_SPI_H_
-#define HAL_SPI_H_
+#ifndef HAL_AVR_SPI_H_
+#define HA_AVRL_SPI_H_
 
 #include <stdint.h>
 
@@ -10,4 +10,4 @@ void spi_init();
 void  spi_clean();
 void spi_send_array(uint8_t data[]);
 
-#endif // HAL_SPI_H_
+#endif // HAL_AVR_SPI_H_

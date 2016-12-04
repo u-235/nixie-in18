@@ -4,9 +4,9 @@
  *  Created on: 26 окт. 2015 г.
  */
 
-#ifndef RTC_H_
-#define RTC_H_
+#ifndef HAL_RTC_RTC_H_
+#define HAL_RTC_RTC_H_
 
 
 
-#endif /* RTC_H_ */
+#endif /* HAL_RTC_RTC_H_ */
