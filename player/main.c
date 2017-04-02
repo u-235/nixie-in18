@@ -95,7 +95,7 @@ BYTE chk_input (void)	/* 0:Not changed, 1:Changed */
 
 
 	wdt_reset();
-	k = ~((PINA & 0x70) | ((PINA >> 4) & 0x04) | ((PINA << 4) & 0x80) | ((PINB >> 4) & 0x07));
+	k = ~((PINA & 0x70) | ((PINA >> 4) & 0x08) | ((PINA << 4) & 0x80) | ((PINB >> 4) & 0x07));
 	GIFR = _BV(PCIF);
 	n = nk; nk = k;
 	if (n != k || pk == k) return 0;
@@ -353,8 +353,8 @@ int main (void)
 	/* Initialize ports */
 	PORTA = 0b11111011;		/* PORTA [pppppLHp]*/
 	DDRA  = 0b00000110;
-	PORTB = 0b01110001;		/* PORTB [-LppLLLH] */
-	DDRB  = 0b10001101;
+	PORTB = 0b01110001;		/* PORTB [-LppLpLH] */
+	DDRB  = 0b10001011;
 
 	sei();
 
