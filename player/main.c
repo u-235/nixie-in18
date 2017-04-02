@@ -16,8 +16,13 @@
 /****************************************
  *                                      *
  *              Customize               *
- *      Change led pin PB2 to PB7       *
- *      Exchange places PA3 to PA7      *
+ *      PB4 - sw 2                      *
+ *      PB5 - sw 1                      *
+ *      PB6 - LED                       *
+ *      PA4 - sw 4                      *
+ *      PA5 - sw 8                      *
+ *      PA6 - sw 16                     *
+ *      PA7 - sw 32                     *
  *                                      *
  ****************************************/
 
@@ -40,8 +45,8 @@ and use these values to program the fuse bits. */
 
 #define FCC(c1,c2,c3,c4)	(((DWORD)c4<<24)+((DWORD)c3<<16)+((WORD)c2<<8)+(BYTE)c1)	/* FourCC */
 
-#define LED_ON()	PORTB |= _BV(7)
-#define LED_OFF()	PORTB &= ~_BV(7)
+#define LED_ON()	PORTB |= _BV(6)
+#define LED_OFF()	PORTB &= ~_BV(6)
 
 void delay_ms (WORD);	/* Defined in asmfunc.S */
 void delay_us (WORD);	/* Defined in asmfunc.S */
@@ -95,7 +100,7 @@ BYTE chk_input (void)	/* 0:Not changed, 1:Changed */
 
 
 	wdt_reset();
-	k = ~((PINA & 0x70) | ((PINA >> 4) & 0x08) | ((PINA << 4) & 0x80) | ((PINB >> 4) & 0x07));
+	k = ~(((PINA >> 2) & 0x3c) | ((PINB >> 3) & 0x02) | ((PINB >> 5) & 0x01) | 0xc0);
 	GIFR = _BV(PCIF);
 	n = nk; nk = k;
 	if (n != k || pk == k) return 0;
@@ -353,8 +358,8 @@ int main (void)
 	/* Initialize ports */
 	PORTA = 0b11111011;		/* PORTA [pppppLHp]*/
 	DDRA  = 0b00000110;
-	PORTB = 0b01110001;		/* PORTB [-LppLpLH] */
-	DDRB  = 0b10001011;
+	PORTB = 0b00110001;		/* PORTB [-LppLLLH] */
+	DDRB  = 0b01001111;
 
 	sei();
 
