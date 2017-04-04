@@ -81,7 +81,7 @@
 #define _steps(r) ((BALANCE_MAX/F_PWM)/r)
 
 // Таблица уровней яркости.
-static prog_uint8_t levels[] = {
+static const __flash uint8_t levels[] = {
                 0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
                 _ticks(0.018), _ticks(0.021), _ticks(0.024), _ticks(0.028),
                 _ticks(0.033), _ticks(0.038), _ticks(0.044), _ticks(0.051),
@@ -158,7 +158,7 @@ void display_bright(uint8_t lvl)
  */
 void display_rate(uint8_t lvl)
 {
-        static prog_int16_t steps[] = {
+        static const __flash uint16_t steps[] = {
                         _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
                         _steps(0.48), _steps(0.40), _steps(0.34), _steps(0.01)
 
