@@ -56,7 +56,7 @@ int main(void)
 
                 // Показ десятков секунд
                 for (unsigned char i = 0; i <= 0x90; i += 0x10) {
-                        display_minutes(i + 0x0a);
+                        display_seconds(i + 0x0a);
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
