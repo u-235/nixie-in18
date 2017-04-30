@@ -19,7 +19,7 @@ int main(void)
 
                 unsigned char c = 1;
                 // Показ дней недели и будильника начиная с понедельника.
-                for (char i = 0; i < 8; i++) {
+                for (unsigned char i = 0; i < 8; i++) {
                         display_day(c);
                         flush();
                         c <<= 1;
@@ -48,29 +48,29 @@ int main(void)
                 display_dots(0);
 
                 // Показ единиц секунд
-                for (char i = 0; i <= 9; i++) {
+                for (unsigned char i = 0; i <= 9; i++) {
                         display_seconds(i + 0xa0);
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков секунд
-                for (char i = 0; i <= 0x90; i += 0x10) {
-                        display_seconds(i + 0x0a);
+                for (unsigned char i = 0; i <= 0x90; i += 0x10) {
+                        display_minutes(i + 0x0a);
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
                 display_seconds(0xff);
 
                 // Показ единиц минут
-                for (char i = 0; i <= 9; i++) {
+                for (unsigned char i = 0; i <= 9; i++) {
                         display_minutes(i + 0xa0);
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков минут
-                for (char i = 0; i <= 0x90; i += 0x10) {
+                for (unsigned char i = 0; i <= 0x90; i += 0x10) {
                         display_minutes(i + 0x0a);
                         flush();
                         _delay_ms(STEP_DELAY);
@@ -78,14 +78,14 @@ int main(void)
                 display_minutes(0xff);
 
                 // Показ единиц часов
-                for (char i = 0; i <= 9; i++) {
+                for (unsigned char i = 0; i <= 9; i++) {
                         display_hours(i + 0xa0);
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков часов
-                for (char i = 0; i <= 0x90; i += 0x10) {
+                for (unsigned char i = 0; i <= 0x90; i += 0x10) {
                         display_hours(i + 0x0a);
                         flush();
                         _delay_ms(STEP_DELAY);

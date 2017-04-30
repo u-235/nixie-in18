@@ -30,6 +30,31 @@
  *  комбинацию из первых четырёх фаз и всегда содержит последнюю фазу.
  */
 
+// Несколько макросов в целях совместимости с Atmega8
+#ifdef __AVR_ATmega8__
+        // При тактовой частоте в 8 МГц, делителе = 256 и
+        // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
+#define _init_timer()\
+        TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21);\
+        TIMSK |= 1 << OCIE2;
+// Вектор прерывания при совпадении в таймере 2
+#define TIMER_COMPARE TIMER2_COMP_vect
+#define TIMER_COUNTER OCR2
+// Дальше вариант для Atmega168
+#elif defined __AVR_ATmega168__
+#define _init_timer()\
+        TCCR2A = (1 << WGM21);\
+        TCCR2B = (1 << CS22) | (1 << CS21);\
+        TIMSK2 |= 1 << OCIE2A;
+
+#define TIMER_COMPARE TIMER2_COMPA_vect
+#define TIMER_COUNTER OCR2A
+
+#else
+#error invalid MCU
+#endif
+
+
 /**
  * Длительность цикла ШИМ в тактах таймера.
  */
@@ -81,7 +106,7 @@
 #define _steps(r) ((BALANCE_MAX/F_PWM)/r)
 
 // Таблица уровней яркости.
-static const __flash uint8_t levels[] = {
+static const PROGMEM uint8_t levels[] = {
                 0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
                 _ticks(0.018), _ticks(0.021), _ticks(0.024), _ticks(0.028),
                 _ticks(0.033), _ticks(0.038), _ticks(0.044), _ticks(0.051),
@@ -129,11 +154,8 @@ void pwmi_init()
         pTmpValue = buff3;
 
         step = STEP_CALK;
-        OCR2 = 64;
-        // При тактовой частоте в 8 МГц, делителе = 256 и
-        // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
-        TCCR2 = 1 << WGM21 | 1 << CS22 | 1 << CS21;
-        TIMSK |= 1 << OCIE2;
+        TIMER_COUNTER = 64;
+        _init_timer();
 }
 
 /**
@@ -158,7 +180,7 @@ void display_bright(uint8_t lvl)
  */
 void display_rate(uint8_t lvl)
 {
-        static const __flash uint16_t steps[] = {
+        static const PROGMEM uint16_t steps[] = {
                         _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
                         _steps(0.48), _steps(0.40), _steps(0.34), _steps(0.01)
 
@@ -191,7 +213,7 @@ void pwmi_load(uint8_t data[])
 /**
  * Обработчик прерывания при совпадении в таймере 2.
  */
-ISR(TIMER2_COMP_vect)
+ISR(TIMER_COMPARE)
 {
         static uint16_t balance; // Баланс яркости нового и старого значения.
         static uint8_t duration[4];
@@ -201,7 +223,7 @@ ISR(TIMER2_COMP_vect)
         case STEP_OLD:
                 step++;
                 if (duration[STEP_OLD] != 0) {
-                        OCR2 = duration[STEP_OLD];
+                        TIMER_COUNTER = duration[STEP_OLD];
                         spi_send_array(pOldValue);
                         break;
                 }
@@ -209,7 +231,7 @@ ISR(TIMER2_COMP_vect)
         case STEP_NEW:
                 step++;
                 if (duration[STEP_NEW] != 0) {
-                        OCR2 = duration[STEP_NEW];
+                        TIMER_COUNTER = duration[STEP_NEW];
                         spi_send_array(pNewValue);
                         break;
                 }
@@ -217,7 +239,7 @@ ISR(TIMER2_COMP_vect)
         case STEP_AND:
                 step++;
                 if (duration[STEP_AND] != 0) {
-                        OCR2 = duration[STEP_AND];
+                        TIMER_COUNTER = duration[STEP_AND];
                         spi_send_array(pAndValue);
                         break;
                 }
@@ -225,14 +247,14 @@ ISR(TIMER2_COMP_vect)
         case STEP_HIDE:
                 step++;
                 if (duration[STEP_HIDE] != 0) {
-                        OCR2 = duration[STEP_HIDE];
+                        TIMER_COUNTER = duration[STEP_HIDE];
                         spi_clean();
                         break;
                 }
                 /* no break */
         case STEP_CALK:
                 step++;
-                OCR2 = LAST_STEP_DURATION;
+                TIMER_COUNTER = LAST_STEP_DURATION;
                 spi_clean();
 
                 if (loaded != 0) {

@@ -12,8 +12,8 @@
 
 /* Выравнивание результата преобразования влево для отбрасывания
  *  младших двух бит. Результат брать в ADCH. */
-#define ADC_CANNEL_BRIGHT       ((1 << ADLAR) | 0)
-#define ADC_CANNEL_RATE         ((1 << ADLAR) | 1)
+#define ADC_CANNEL_BRIGHT       ((1 << ADLAR) | (1 << MUX0))
+#define ADC_CANNEL_RATE         ((1 << ADLAR) | (1 << MUX2) | (1 << MUX1) | (1 << MUX0))
 
 static void adc_init(void);
 static uint8_t get_rate();

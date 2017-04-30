@@ -13,8 +13,8 @@
  * SPIF, то здесь байт отсылается только после ожидания флага.
  */
 
-#define _strobe_up(d) PORTB |= 1 << DDB2
-#define _strobe_down(d) PORTB &= ~(1 << DDB2)
+#define _strobe_up(d) PORTC |= 1 << DDC0
+#define _strobe_down(d) PORTC &= ~(1 << DDC0)
 #define _spi_wait(d)  while (!(SPSR & 1 << SPIF)) {}
 
 /**
@@ -22,8 +22,10 @@
  */
 void spi_init()
 {
-        // Пин 2 используется как строб параллельной загрузки регистров.
-        DDRB |= 1 << DDB5 | 1 << DDB3 | 1 << DDB2;
+        // Порт C: вывод 3 для данных и вывод 5 для тактирования.
+        DDRB |= 1 << DDB5 | 1 << DDB3;
+        // Вывод 0 порта C используется как строб параллельной загрузки регистров.
+        DDRC |= 1 << DDC0;
         // Разрешает работу в качестве мастера.
         SPCR = 1 << SPE | 1 << MSTR;
         // Двойная скорость SPI.
