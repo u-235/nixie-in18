@@ -8,6 +8,7 @@
 #include "hal/display.h"
 #include "bcd/bcd.h"
 
-int main(void){
+int main(void)
+{
         return 0;
 }

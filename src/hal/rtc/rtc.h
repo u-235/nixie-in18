@@ -7,6 +7,12 @@
 #ifndef HAL_RTC_RTC_H_
 #define HAL_RTC_RTC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_RTC_RTC_H_ */

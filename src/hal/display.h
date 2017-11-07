@@ -29,15 +29,19 @@
 //! Значок будильника.
 #define DISPLAY_MARK_ALARM      0x01
 
-void dislpay_init();
-void display_clean();
-void display_flush();
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void display_dots(uint8_t d);
-void display_day(uint8_t d);
-void display_hours(uint8_t h);
-void display_minutes(uint8_t m);
-void display_seconds(uint8_t s);
+        void dislpay_init();
+        void display_clean();
+        void display_flush();
+
+        void display_dots(uint8_t d);
+        void display_day(uint8_t d);
+        void display_hours(uint8_t h);
+        void display_minutes(uint8_t m);
+        void display_seconds(uint8_t s);
 
 #define DISPLAY_BRIGHT_MAX 16
 #define DISPLAY_BRIGHT_MIN 7
@@ -45,7 +49,11 @@ void display_seconds(uint8_t s);
 #define DISPLAY_RATE_MAX 7
 #define DISPLAY_RATE_MIN 0
 
-void display_bright(uint8_t lvl);
-void display_rate(uint8_t lvl);
+        void display_bright(uint8_t lvl);
+        void display_rate(uint8_t lvl);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // DISPLAY_H_

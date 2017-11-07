@@ -189,7 +189,8 @@ unsigned char tms_start_timer_once(unsigned char idTimer, tms_prm_t wParam)
 {
         if ((idTimer <= TIMER_NUMBER)
                         && (lTimer[idTimer - 1].flags & TF_NO_EMPTY)) {
-                lTimer[idTimer - 1].flags = TF_NO_EMPTY | TF_ACTIVE | TF_AT_ONCE;
+                lTimer[idTimer - 1].flags =
+                                TF_NO_EMPTY | TF_ACTIVE | TF_AT_ONCE;
                 lTimer[idTimer].count = 0;
                 return idTimer;
         }

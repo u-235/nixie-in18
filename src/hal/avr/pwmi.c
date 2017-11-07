@@ -32,8 +32,8 @@
 
 // Несколько макросов в целях совместимости с Atmega8
 #ifdef __AVR_ATmega8__
-        // При тактовой частоте в 8 МГц, делителе = 256 и
-        // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
+// При тактовой частоте в 8 МГц, делителе = 256 и
+// PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
 #define _init_timer()\
         TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21);\
         TIMSK |= 1 << OCIE2;
@@ -53,7 +53,6 @@
 #else
 #error invalid MCU
 #endif
-
 
 /**
  * Длительность цикла ШИМ в тактах таймера.
@@ -155,7 +154,8 @@ void pwmi_init()
 
         step = STEP_CALK;
         TIMER_COUNTER = 64;
-        _init_timer();
+        _init_timer()
+        ;
 }
 
 /**
