@@ -2,6 +2,7 @@
 #define DISPLAY_H_
 
 #include <stdint.h>
+#include "../bcd/bcd.h"
 
 //! Левый верхний разделитель.
 #define DISPLAY_DOT_LEFT_TOP            0x01
@@ -39,9 +40,9 @@ extern "C" {
 
         void display_dots(uint8_t d);
         void display_day(uint8_t d);
-        void display_hours(uint8_t h);
-        void display_minutes(uint8_t m);
-        void display_seconds(uint8_t s);
+        void display_hours(bcd2_t h);
+        void display_minutes(bcd2_t m);
+        void display_seconds(bcd2_t s);
 
 #define DISPLAY_BRIGHT_MAX 16
 #define DISPLAY_BRIGHT_MIN 7
