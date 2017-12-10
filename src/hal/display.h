@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-        void dislpay_init();
+        void display_init();
         void display_clean();
         void display_flush();
 

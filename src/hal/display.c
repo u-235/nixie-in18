@@ -8,7 +8,7 @@ static uint8_t data[SPI_ARRAY_SIZE];
 /**
  * Инициализация индикации.
  */
-void dislpay_init()
+void display_init()
 {
         spi_init();
         pwmi_init();
