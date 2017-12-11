@@ -1,6 +1,6 @@
 /*
  * tms.c
- * Timers & Messages Serves
+ * Timers & Messages Service
  *
  *  Created on: 16.04.2016
  *      Author: Николай
