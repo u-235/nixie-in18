@@ -1,10 +1,13 @@
-/*
- * tms.h
- * Зависимости и настройки для
- * Timers & Messages Service
+/**
+ * \file tms.h
+ * \brief Служба таймеров.
+ * \details Служба предоставляет простой способ для организации множества
+ * таймеров.
  *
- *  Created on: 16.04.2016
- *      Author: Nick
+ * \p
+ *
+ * \date created 16.04.2016
+ * \author Nick Egorrov
  */
 
 #ifndef TMS_H_
@@ -14,70 +17,88 @@
 extern "C" {
 #endif
 
-#ifdef _TMS_INSIDE_
-        extern void mcu_interrupt_lock();
-        extern void mcu_interrupt_unlock();
-#endif
+        /**
+         * Тип идентификатора таймера.
+         */
+        typedef unsigned char timer_id_t;
+        /**
+         * Тип счётчика таймера.
+         */
+        typedef unsigned int timer_counter_t;
+        /**
+         * Тип параметра, передаваемого функции обратного вызова таймера.
+         */
+        typedef void* timer_param_t;
+/**
+ * Значение, возвращаемое в случае ошибки.
+ */
+#define TIMER_ERROR -1
 
-        /* Идентификатор сообщения */
-        typedef unsigned char tms_msg_t;
-        /* Идентификатор задачи */
-        typedef unsigned char tms_handler_t;
-        /* Параметр сообщения */
-        typedef unsigned int tms_prm_t;
-
+        /**
+         * Инициализация сервиса.
+         */
         extern void tms_init();
 
-        extern void tms_clear();
-
-        extern unsigned char tms_dispatch();
-
+        /**
+         * Обновление внутреннего состояния сервиса. Счётчики таймеров
+         * уменьшаются и, при достижении нуля, происходит вызов функции
+         * timer_callback, указанной при создании таймера.
+         * \see tms_create_timer() tms_start_timer()
+         */
         extern void tms_tick();
 
-        extern void tms_post(tms_handler_t handler_id, tms_msg_t idMessage,
-                        tms_prm_t mParam);
-        extern void tms_post_all(tms_msg_t idMessage, tms_prm_t mParam);
+        /**
+         * Создание таймера. По окончаниии использования таймера нужно
+         * освободить его вызовом функции tms_delete_timer().
+         * \param timer_callback Функция, вызываемая при срабатывании
+         *      таймера.
+         * \param param Значение, передаваемое функции timer_callback() при
+         *      её вызове.
+         * \return Идентификатор таймера в случае успеха или #TIMER_ERROR
+         *      если израсходована вся память для организации таймеров.
+         */
+        extern timer_id_t tms_create_timer(void (*timer_callback)(timer_param_t param),
+                        timer_param_t param);
 
-        /*===================================
-         *  Предопределённые сообщения.
-         *===================================*/
+        /**
+         * Освобождение таймера.
+         * \param timer Идентификатор таймера, полученный при вызове функции
+         *      tms_create_timer().
+         * \return Идентификатор освобождённого таймера в случае успеха или
+         *      #TIMER_ERROR если был использован недопустимый идентификатор.
+         */
+        extern timer_id_t tms_delete_timer(timer_id_t timer);
 
-        /* Сообщение при запуске системы
-         * idMessage = MSG_INIT
-         * mParam = идентификатор обработчика */
-#define MSG_INIT    0
-        /* При срабатывании таймера */
-#define MSG_TIMER   1
+        /**
+         * Запуск таймера. Во внутренний счётчик записывается ticks.
+         * \param timer Идентификатор таймера, полученный при вызове функции
+         *      tms_create_timer().
+         * \param ticks Количество вызовов функции tms_tick(), необходимое для
+         *      срабатывания таймера.
+         * \return Идентификатор запущенного таймера в случае успеха или
+         *      #TIMER_ERROR если был использован недопустимый идентификатор.
+         */
+        extern timer_id_t tms_start_timer(timer_id_t timer,
+                        timer_counter_t ticks);
 
-#define MSG_TMS_LAST 1
 
-        extern unsigned char tms_create_timer(tms_handler_t task,
-                        unsigned int tics);
-
-        extern unsigned char tms_delete_timer(unsigned char idTimer);
-
-        extern unsigned char tms_start_timer(unsigned char idTimer,
-                        tms_prm_t wParam);
-
-        extern unsigned char tms_start_timer_once(unsigned char idTimer,
-                        tms_prm_t wParam);
-
-        extern unsigned char tms_stop_timer(unsigned char idTimer);
-
-        /* Прототип функции задачи, вызываемой
-         * диспечером задач. Список функций всех
-         * задач должен быть определён в файле custom.h
-         *
-         * Параметры
-         *   idMessage - идентификатор сообщения.
-         *   wParam - дополнительный параметр.
-         **************************************/
-        typedef void (*tms_msg_handler)(tms_msg_t idMessage, tms_prm_t wParam);
+        /**
+         * Останов таймера. Внутренний счётчик сбрасывается и таймер
+         * останавливается без вызова функции timer_callback().
+         * \param timer Идентификатор таймера, полученный при вызове функции
+         *      tms_create_timer().
+         * \return Идентификатор остановленного таймера в случае успеха или
+         *      #TIMER_ERROR если был использован недопустимый идентификатор.
+         */
+        extern timer_id_t tms_stop_timer(timer_id_t timer);
 
 #ifdef __cplusplus
 }
 #endif
 
-#include "custom.h"
+/**
+ * Число таймеров, которое может быть использовано одновременно.
+ */
+#define TIMER_NUMBER    3
 
 #endif /* TMS_H_ */
