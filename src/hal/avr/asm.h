@@ -2,7 +2,9 @@
 #define HAL_AVR_ASM_H_
 
 #define _nop asm volatile("nop")
-#define _sei asm volatile("sei")
-#define _cli asm volatile("cli")
+
+#define mcu_watchdog_reset() asm("wdr")
+#define mcu_interrupt_enable() asm("sei")
+#define mcu_interrupt_disable() asm("cli")
 
 #endif // HAL_AVR_ASM_H_

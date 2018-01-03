@@ -10,8 +10,6 @@ static uint8_t data[SPI_ARRAY_SIZE];
  */
 void display_init()
 {
-        spi_init();
-        pwmi_init();
         display_bright(DISPLAY_BRIGHT_MAX);
         display_rate(DISPLAY_RATE_MAX);
 }

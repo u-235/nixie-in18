@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include "spi.h"
-#include "asm.h"
 
 /**
  * \file spi.c
