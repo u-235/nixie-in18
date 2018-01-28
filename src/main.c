@@ -7,7 +7,7 @@
 
 #include "hal/mcu.h"
 #include "hal/display.h"
-#include "bcd/bcd.h"
+#include "hal/rtc.h"
 #include "tms/tms.h"
 #include "events.h"
 
@@ -16,6 +16,7 @@ int main(void)
         mcu_init();
         display_init();
         tms_init();
+        rtc_init(0, 0, 0);
         mcu_interrupt_unlock();
 
         while (1) {
@@ -23,22 +24,23 @@ int main(void)
                         // TODO опрос кнопок
                         tms_tick();
                 } else {
-                        // TODO проверка обновления RTC
+                        rtc_check();
                 }
         }
 
         return 0;
 }
 
-enum mode{
-SHOW_INTRO,
-SHOW_TIME,
-SHOW_DATE,
-SHOW_ERROR
+enum mode {
+        SHOW_INTRO,
+        SHOW_TIME,
+        SHOW_DATE,
+        SHOW_ERROR
 } current_mode;
 
-extern void event_handler(event_t ev){
-        switch(ev){
+extern void event_handler(event_t ev)
+{
+        switch (ev) {
         case EVENT_START:
                 break;
         case EVENT_INTRO_END:
@@ -50,6 +52,7 @@ extern void event_handler(event_t ev){
         }
 }
 
-extern void event_key_handler(event_key_t key){
+extern void event_key_handler(event_key_t key)
+{
 
 }
