@@ -45,7 +45,7 @@ extern void event_handler(event_t event);
 /**
  * \brief Обработчик нажатий кнопок.
  * \details
- * \paran key состоние кнопок.
+ * \param key состоние кнопок.
  */
 extern void event_key_handler(event_key_t key);
 
