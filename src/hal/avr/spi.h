@@ -10,9 +10,9 @@
 extern "C" {
 #endif
 
-        void spi_init();
-        void spi_clean();
-        void spi_send_array(uint8_t data[]);
+void spi_init();
+void spi_clean();
+void spi_send_array(uint8_t data[]);
 
 #ifdef __cplusplus
 }

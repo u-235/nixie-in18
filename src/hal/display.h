@@ -34,15 +34,15 @@
 extern "C" {
 #endif
 
-        void display_init();
-        void display_clean();
-        void display_flush();
+void display_init();
+void display_clean();
+void display_flush();
 
-        void display_dots(uint8_t d);
-        void display_day(uint8_t d);
-        void display_hours(bcd2_t h);
-        void display_minutes(bcd2_t m);
-        void display_seconds(bcd2_t s);
+void display_dots(uint8_t d);
+void display_day(uint8_t d);
+void display_hours(bcd2_t h);
+void display_minutes(bcd2_t m);
+void display_seconds(bcd2_t s);
 
 #define DISPLAY_BRIGHT_MAX 16
 #define DISPLAY_BRIGHT_MIN 7
@@ -50,8 +50,8 @@ extern "C" {
 #define DISPLAY_RATE_MAX 7
 #define DISPLAY_RATE_MIN 0
 
-        void display_bright(uint8_t lvl);
-        void display_rate(uint8_t lvl);
+void display_bright(uint8_t lvl);
+void display_rate(uint8_t lvl);
 
 #ifdef __cplusplus
 }

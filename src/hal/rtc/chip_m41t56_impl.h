@@ -27,7 +27,8 @@ static void impl_begin()
         iic_set_address(IIC_ADDRESS);
 }
 
-static void check_start(){
+static void check_start()
+{
 
 }
 

@@ -155,8 +155,7 @@ extern uint8_t iic_read();
  * \param rSz Количество считываемых байт. Если равен нулю, то записи
  *      не происходит.
  */
-void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[],
-                uint8_t rSz);
+void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz);
 
 /** @} */
 

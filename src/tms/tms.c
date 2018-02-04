@@ -40,7 +40,8 @@ extern timer_id_t tms_create_timer(void (*timer_callback)(timer_param_t param),
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_delete_timer(timer_id_t timer_id){
+extern timer_id_t tms_delete_timer(timer_id_t timer_id)
+{
         if (timer_id < TIMER_NUMBER) {
                 lTimer[timer_id].count = 0;
                 lTimer[timer_id].timer_callback = 0;

@@ -66,11 +66,13 @@ static void lock_callback(struct _aio_device *dev)
         }
 }
 
-extern void aio_set_timeuot(aio_device_t *dev, timer_counter_t timeout){
-        dev->timeout=timeout;
+extern void aio_set_timeuot(aio_device_t *dev, timer_counter_t timeout)
+{
+        dev->timeout = timeout;
 }
 
-extern timer_counter_t aio_get_timeuot(aio_device_t *dev){
+extern timer_counter_t aio_get_timeuot(aio_device_t *dev)
+{
         return dev->timeout;
 }
 
