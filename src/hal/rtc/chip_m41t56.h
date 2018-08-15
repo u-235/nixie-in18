@@ -19,6 +19,6 @@ extern "C" {
 #endif
 
 #ifdef _cplusplus
-        extern "C" {
+}
 #endif
 #endif /* HAL_RTC_CHIP_M41T56_H_ */

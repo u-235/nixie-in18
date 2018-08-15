@@ -160,7 +160,7 @@ void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz)
 /** @} */
 
 #ifdef _cplusplus
-extern "C" {
+}
 #endif
 
 #endif /* SRC_HAL_IIC_H_ */

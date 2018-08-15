@@ -50,7 +50,7 @@ extern void event_handler(event_t event);
 extern void event_key_handler(event_key_t key);
 
 #ifdef _cplusplus
-extern "C" {
+}
 #endif
 
 #endif /* EVENTS_H_ */
