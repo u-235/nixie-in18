@@ -9,15 +9,11 @@
 
 #include "../iic.h"
 
-#define INSIDE_SRC_HAL_IIC_C_
-
 static iic_error_t status;  // Статус устройства.
 static uint8_t address; // device address
 
-/*
- * Сброс ошибки на уровне аппаратной части МК.
- */
-static void clear();
+#define INSIDE_SRC_HAL_IIC_C_
+#include "avr_twi_impl.h"
 
 extern void iic_init()
 {
@@ -47,7 +43,7 @@ extern iic_error_t iic_error()
  */
 extern void iic_clear()
 {
-        clear();
+        reset();
         status = IIC_NO_ERROR;
 }
 
@@ -113,5 +109,3 @@ void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz)
         }
         iic_ll_stop();
 }
-
-#include "iic_avr_twi_impl.h"

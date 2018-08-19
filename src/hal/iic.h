@@ -31,6 +31,14 @@ extern "C" {
  ******************************************************************************/
 
 /**
+ *  Default IIC clock frequency in hertz
+ */
+#ifndef F_IIC
+#define F_IIC 10000
+#warning Use default F_IIC
+#endif
+
+/**
  * Время ожидания ответа от устройства в миллисекундах.
  */
 #define IIC_TIMEOUT 50
@@ -39,13 +47,13 @@ extern "C" {
  * \brief hdf
  */
 typedef enum {
-        IIC_NO_ERROR = 0,       //!< IIC_STATUS_OK
-        IIC_ERROR_START = 0x01, //!< IIC_ERROR_START
+        IIC_NO_ERROR = 0,  //!< IIC_STATUS_OK
+        IIC_ERROR_START = 0x01,  //!< IIC_ERROR_START
         IIC_ERROR_ADDR = 0x02,  //!< IIC_ERROR_ADDR
-        IIC_ERROR_WRITE = 0x03, //!< IIC_ERROR_WRITE
+        IIC_ERROR_WRITE = 0x03,  //!< IIC_ERROR_WRITE
         IIC_ERROR_READ = 0x04,  //!< IIC_ERROR_READ
         IIC_ERROR_STOP = 0x05,  //!< IIC_ERROR_STOP
-        IIC_ERROR_WAIT = 0x80   //!< IIC_ERROR_WAIT
+        IIC_ERROR_WAIT = 0x80  //!< IIC_ERROR_WAIT
 } iic_error_t;
 
 /**
