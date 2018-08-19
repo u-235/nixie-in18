@@ -10,9 +10,14 @@
 #ifndef HAL_RTC_CHIP_M41T56_H_
 #define HAL_RTC_CHIP_M41T56_H_
 
-#ifndef INSIDE_SRC_HAL_RTC_CHIPS_H_
-#       error "include <hal/>rtc.h> instead of this file"
-#endif
+#define rtc_init        rtc_init_m41t56
+#define rtc_error       rtc_error_m41t56
+#define rtc_clear       rtc_clear_m41t56
+#define rtc_check       rtc_check_m41t56
+#define rtc_get_time    rtc_get_time_m41t56
+#define rtc_set_time    rtc_set_time_m41t56
+#define rtc_get_date    rtc_get_date_m41t56
+#define rtc_set_date    rtc_set_date_m41t56
 
 #ifdef _cplusplus
 extern "C" {
