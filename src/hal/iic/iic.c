@@ -9,7 +9,7 @@
 
 #include "../iic.h"
 
-static iic_error_t status;  // Статус устройства.
+static iic_error_t error;  // Статус устройства.
 static uint8_t address;  // device address
 
 #define INSIDE_SRC_HAL_IIC_C_
@@ -35,7 +35,7 @@ extern uint8_t iic_get_address()
  */
 extern iic_error_t iic_error()
 {
-        return status;
+        return error;
 }
 
 /*
@@ -44,7 +44,7 @@ extern iic_error_t iic_error()
 extern void iic_clear()
 {
         reset();
-        status = IIC_NO_ERROR;
+        error = IIC_NO_ERROR;
 }
 
 /*

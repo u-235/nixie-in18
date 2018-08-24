@@ -101,7 +101,7 @@ static void twi_wait(const uint8_t mask)
         uint8_t c;
         for (c = 0; (TWCR & mask) == 0; c++) {
                 if (c > IIC_TIMEOUT) {
-                        status |= IIC_ERROR_WAIT;
+                        error |= IIC_ERROR_WAIT;
                         break;
                 }
                 _delay_us(950);
@@ -116,7 +116,7 @@ extern void iic_ll_start(uint8_t mode)
 {
         uint8_t addr;
 
-        if (status != IIC_NO_ERROR) {
+        if (error != IIC_NO_ERROR) {
                 return;
         }
 
@@ -129,7 +129,7 @@ extern void iic_ll_start(uint8_t mode)
         TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTA);
         twi_wait(1 << TWINT);
         if (_twsr_not(TWI_MT_START) && _twsr_not(TWI_MT_RESTART)) {
-                status |= IIC_ERROR_START;
+                error |= IIC_ERROR_START;
                 return;
         }
 
@@ -137,21 +137,21 @@ extern void iic_ll_start(uint8_t mode)
         TWCR = (1 << TWINT) | (1 << TWEN);
         twi_wait(1 << TWINT);
         if (_twsr_not(TWI_MT_ADR_ACK) && _twsr_not(TWI_MR_ADR_ACK)) {
-                status |= IIC_ERROR_ADDR;
+                error |= IIC_ERROR_ADDR;
         }
         return;
 }
 
 extern void iic_ll_stop()
 {
-        if (status != IIC_NO_ERROR) {
+        if (error != IIC_NO_ERROR) {
                 return;
         }
 
         TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
         twi_wait(1 << TWSTO);
         if ((TWCR & (1 << TWSTO)) == 0) {
-                status |= IIC_ERROR_STOP;
+                error |= IIC_ERROR_STOP;
         }
 }
 
@@ -162,7 +162,7 @@ extern void iic_ll_stop()
  */
 extern uint8_t iic_ll_read(uint8_t last)
 {
-        if (status != IIC_NO_ERROR) {
+        if (error != IIC_NO_ERROR) {
                 return 0;
         }
 
@@ -170,13 +170,13 @@ extern uint8_t iic_ll_read(uint8_t last)
                 TWCR = (1 << TWINT) | (1 << TWEN);
                 twi_wait(1 << TWINT);
                 if (_twsr_not(TWI_MR_DATA_NOACK)) {
-                        status |= IIC_ERROR_READ;
+                        error |= IIC_ERROR_READ;
                 }
         } else {
                 TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
                 twi_wait(1 << TWINT);
                 if (_twsr_not(TWI_MR_DATA_ACK)) {
-                        status |= IIC_ERROR_READ;
+                        error |= IIC_ERROR_READ;
                 }
         }
         return TWDR;
@@ -187,7 +187,7 @@ extern uint8_t iic_ll_read(uint8_t last)
  */
 extern void iic_ll_write(uint8_t d)
 {
-        if (status != IIC_NO_ERROR) {
+        if (error != IIC_NO_ERROR) {
                 return;
         }
 
@@ -195,7 +195,7 @@ extern void iic_ll_write(uint8_t d)
         TWCR = (1 << TWINT) | (1 << TWEN);
         twi_wait(1 << TWINT);
         if (_twsr_not(TWI_MT_DATA_ACK)) {
-                status |= IIC_ERROR_WRITE;
+                error |= IIC_ERROR_WRITE;
         }
         return;
 }
