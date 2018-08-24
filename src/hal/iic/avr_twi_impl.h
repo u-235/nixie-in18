@@ -101,7 +101,7 @@ static void twi_wait(const uint8_t mask)
         uint8_t c;
         for (c = 0; (TWCR & mask) == 0; c++) {
                 if (c > IIC_TIMEOUT) {
-                        status |= IIC_TIMEOUT;
+                        status |= IIC_ERROR_WAIT;
                         break;
                 }
                 _delay_us(950);
@@ -182,7 +182,7 @@ extern uint8_t iic_ll_read(uint8_t last)
         return TWDR;
 }
 
-/**
+/*
  * Выставляет на шину байт данных.
  */
 extern void iic_ll_write(uint8_t d)
