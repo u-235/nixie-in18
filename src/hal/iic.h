@@ -6,8 +6,7 @@
  Этот модуль обеспечивает обмен с переферийными устройствами по шине I2C в
  режиме мастера.
  Работу с шиной  можно условно разделить на три группы:
- - \ref IIC_COMMON. Манипуляции с адресом устройств, получение кода ошибки и
- сброс ошибки.
+ - \ref IIC_COMMON
  - \ref IIC_LOW
  - \ref IIC_HIGH
  ******************************************************************************/
@@ -26,7 +25,7 @@ extern "C" {
  \section IIC_COMMON Общие функции
  Эти функции используются и с низкоуровневыми и с высокоуровневыми функциями и
  позволяют установить и получить адрес устройства, получить код ошибки и при
-
+ необходимости сбросить ошибку.
  @{
  ******************************************************************************/
 
@@ -44,46 +43,57 @@ extern "C" {
 #define IIC_TIMEOUT 50
 
 /**
- * \brief hdf
+ * \brief Ошибки модуля.
  */
 typedef enum {
-        IIC_NO_ERROR = 0,  //!< IIC_STATUS_OK
-        IIC_ERROR_START = 0x01,  //!< IIC_ERROR_START
-        IIC_ERROR_ADDR = 0x02,  //!< IIC_ERROR_ADDR
-        IIC_ERROR_WRITE = 0x03,  //!< IIC_ERROR_WRITE
-        IIC_ERROR_READ = 0x04,  //!< IIC_ERROR_READ
-        IIC_ERROR_STOP = 0x05,  //!< IIC_ERROR_STOP
-        IIC_ERROR_WAIT = 0x80  //!< IIC_ERROR_WAIT
+        /** Нет ошибок. */
+        IIC_NO_ERROR,
+        /** Неизвестная ошибка. */
+        IIC_UNKNOWN_ERROR,
+        /** Ошибка при генерации состояния старт. */
+        IIC_ERROR_START,
+        /** Ошибка при передаче адреса. */
+        IIC_ERROR_ADDR,
+        /** Ошибка при записи. */
+        IIC_ERROR_WRITE,
+        /** Ошибка при чтении. */
+        IIC_ERROR_READ,
+        /** Ошибка при генерации состояния стоп. */
+        IIC_ERROR_STOP,
+        /** Устройство не отвечает */
+        IIC_ERROR_WAIT = 0x80
 } iic_error_t;
 
 /**
- * \brief Инициализация устройства.
+ * \brief Инициализация модуля.
+ * \details
  */
 extern void iic_init();
 
 /**
- * \brief
- * \details
- * \param adr
+ * \brief Устанавливает адрес устройства.
+ * \details Адрес сохраняется во внутренней переменной и затем используется
+ *      функцией iic_ll_start() для подготовки шины к обмену.
+ * \param adr адрес устройства. Младший бит игнорируется.
  */
 extern void iic_set_address(uint8_t adr);
 
 /**
- * \brief
+ * \brief Получение адреса устройства.
  * \details
- * \return
+ * \return адрес устройства.
  */
 extern uint8_t iic_get_address();
 
 /**
- * \brief
+ * \brief Получение кода ошибки модуля.
  * \details
- * \return
+ * \return код ошибки.
  */
 extern iic_error_t iic_error();
 
 /**
- * \brief
+ * \brief Сброс ошибки модуля.
  * \details
  */
 extern void iic_clear();
@@ -98,29 +108,38 @@ extern void iic_clear();
  ******************************************************************************/
 
 /**
- *
- * \param mode
+ * Выставляет на шину состояние старт/рестарт и адрес устройства. Адрес должен
+ *      быть задан функцией iic_set_address().
+ * \param mode ноль для подготовки записи.
  */
 extern void iic_ll_start(uint8_t mode);
 
 /**
- *
+ * Завершение обмена и генерация состояния стоп.
  */
 extern void iic_ll_stop();
 
 /**
- * Считывает с шины байт.
+ * \brief Чтение байта.
+ * \details Перед первым вызовом этой функции необходимо подготовить шину
+ *      вызвав iic_ll_start() с ненулевым агрументом.
  * \param last ноль если требуется считать байт и завершить обмен по шине и не
  *      нулевое значение если требуется считать серию байт.
- * \return
+ * \return Полученный байт.
  */
 extern uint8_t iic_ll_read(uint8_t last);
 
 /**
- *
- * @param d
+ * \brief Запись байта.
+ * \details Перед первым вызовом этой функции необходимо подготовить шину
+ *      вызвав iic_ll_start() с нулевым агрументом.
+ * \param d Передаваемый байт.
  */
 extern void iic_ll_write(uint8_t d);
+
+extern void iic_ll_aread(uint8_t output[], uint8_t rSz);
+
+extern void iic_ll_awrite(uint8_t input[], uint8_t wSz);
 
 /** @} */
 
@@ -150,6 +169,28 @@ extern void iic_write(uint8_t data);
 extern uint8_t iic_read();
 
 /**
+ * \brief Запись команды и чтение массива.
+ * \details Запись команды и последующее чтение массива из устройства.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param output Массив для считываемых данных. Если равен нулю, то чтения
+ *      не происходит.
+ * \param rSz Количество считываемых байт. Если равен нулю, то чтения
+ *      не происходит.
+ */
+void iic_cmd_aread(uint8_t cmd, uint8_t output[], uint8_t rSz);
+
+/**
+ * \brief Запись команды и запись массива.
+ * \details Запись команды и последующая запись массива в устройство.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param input Массив для записываемых данных. Если равен нулю, то записи
+ *      не происходит.
+ * \param wSz Количество записываемых байт. Если равен нулю, то записи
+ *      не происходит.
+ */
+void iic_cmd_awrite(uint8_t cmd, uint8_t input[], uint8_t wSz);
+
+/**
  * \brief Запись и чтение массивов.
  * \details Запись и последующее чтение массивов из/в устройство. Поскольку
  * сначала происходит запись, то, при необходимости, считывание можно
@@ -163,7 +204,7 @@ extern uint8_t iic_read();
  * \param rSz Количество считываемых байт. Если равен нулю, то записи
  *      не происходит.
  */
-void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz);
+void iic_awrite_aread(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz);
 
 /** @} */
 

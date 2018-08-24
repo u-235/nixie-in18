@@ -10,7 +10,7 @@
 #include "../iic.h"
 
 static iic_error_t status;  // Статус устройства.
-static uint8_t address; // device address
+static uint8_t address;  // device address
 
 #define INSIDE_SRC_HAL_IIC_C_
 #include "avr_twi_impl.h"
@@ -79,6 +79,60 @@ extern uint8_t iic_read()
         return res;
 }
 
+extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
+{
+        if (output != 0 && rSz != 0) {
+                iic_ll_start(1);
+                for (unsigned char i = rSz; i > 0; i--) {
+                        *output++ = iic_ll_read(i);
+                }
+        }
+}
+
+extern void iic_ll_awrite(uint8_t input[], uint8_t wSz)
+{
+        if (input != 0 && wSz != 0) {
+                iic_ll_start(1);
+                for (unsigned char i = wSz; i > 0; i--) {
+                        iic_ll_write(*input++);
+                }
+        }
+}
+
+/*
+ * \brief Запись команды и чтение массива.
+ * \details Запись команды и последующее чтение массива из устройства.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param output Массив для считываемых данных. Если равен нулю, то чтения
+ *      не происходит.
+ * \param rSz Количество считываемых байт. Если равен нулю, то чтения
+ *      не происходит.
+ */
+void iic_cmd_aread(uint8_t cmd, uint8_t output[], uint8_t rSz)
+{
+        iic_ll_start(0);
+        iic_ll_write(cmd);
+        iic_ll_aread(output, rSz);
+        iic_ll_stop();
+}
+
+/*
+ * \brief Запись команды и запись массива.
+ * \details Запись команды и последующая запись массива в устройство.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param input Массив для записываемых данных. Если равен нулю, то записи
+ *      не происходит.
+ * \param wSz Количество записываемых байт. Если равен нулю, то записи
+ *      не происходит.
+ */
+void iic_cmd_awrite(uint8_t cmd, uint8_t input[], uint8_t wSz)
+{
+        iic_ll_start(0);
+        iic_ll_write(cmd);
+        iic_ll_awrite(input, wSz);
+        iic_ll_stop();
+}
+
 /*
  * Запись и последующее чтение массивов из/в устройство. Поскольку сначала
  * происходит запись, то, при необходимости, считывание можно производить
@@ -92,20 +146,9 @@ extern uint8_t iic_read()
  * \param rSz Количество считываемых байт. Если равен нулю, то записи
  *      не происходит.
  */
-void iic_write_read(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz)
+void iic_awrite_aread(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz)
 {
-        if (input != 0 && wSz != 0) {
-                iic_ll_start(0);
-                for (unsigned char i = 0; i < wSz; i++) {
-                        iic_ll_write(*input++);
-                }
-        }
-
-        if (output != 0 && rSz != 0) {
-                iic_ll_start(1);
-                for (unsigned char i = rSz; i > 0; i--) {
-                        *output++ = iic_ll_read(i);
-                }
-        }
+        iic_ll_awrite(input, wSz);
+        iic_ll_aread(output, rSz);
         iic_ll_stop();
 }
