@@ -79,6 +79,36 @@ extern uint8_t iic_read()
         return res;
 }
 
+/*
+ * \brief Запись команды и чтение байта.
+ * \param cmd Команда, посылаемая в устройство.
+ * \return Считанный байт.
+ */
+uint8_t iic_cmd_read(uint8_t cmd)
+{
+        uint8_t retval;
+
+        iic_ll_start(0);
+        iic_ll_write(cmd);
+        iic_ll_start(1);
+        retval = iic_ll_read(0);
+        iic_ll_stop();
+        return retval;
+}
+
+/*
+ * \brief Запись команды и байта.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param d Записываемый байт.
+ */
+void iic_cmd_write(uint8_t cmd, uint8_t d)
+{
+        iic_ll_start(0);
+        iic_ll_write(cmd);
+        iic_ll_write(d);
+        iic_ll_stop();
+}
+
 extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
 {
         if (output != 0 && rSz != 0) {
@@ -146,7 +176,8 @@ void iic_cmd_awrite(uint8_t cmd, uint8_t input[], uint8_t wSz)
  * \param rSz Количество считываемых байт. Если равен нулю, то записи
  *      не происходит.
  */
-void iic_awrite_aread(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rSz)
+void iic_awrite_aread(uint8_t input[], uint8_t wSz, uint8_t output[],
+                uint8_t rSz)
 {
         iic_ll_awrite(input, wSz);
         iic_ll_aread(output, rSz);

@@ -169,6 +169,20 @@ extern void iic_write(uint8_t data);
 extern uint8_t iic_read();
 
 /**
+ * \brief Запись команды и чтение байта.
+ * \param cmd Команда, посылаемая в устройство.
+ * \return Считанный байт.
+ */
+uint8_t iic_cmd_read(uint8_t cmd);
+
+/**
+ * \brief Запись команды и байта.
+ * \param cmd Команда, посылаемая в устройство.
+ * \param d Записываемый байт.
+ */
+void iic_cmd_write(uint8_t cmd, uint8_t d);
+
+/**
  * \brief Запись команды и чтение массива.
  * \details Запись команды и последующее чтение массива из устройства.
  * \param cmd Команда, посылаемая в устройство.
