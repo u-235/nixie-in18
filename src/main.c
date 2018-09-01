@@ -16,7 +16,7 @@ int main(void)
         mcu_init();
         display_init();
         tms_init();
-        rtc_init(0, 0, 0);
+        rtc_init();
         mcu_interrupt_unlock();
 
         while (1) {

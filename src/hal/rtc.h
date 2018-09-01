@@ -38,13 +38,8 @@ extern "C" {
 /**
  * \brief Инициализация RTC.
  * \details
- * \param update Указатель на функцию реакции на обновление счётчиков RTC. Эта функция
- *      может быть вызвана в результате работы rtc_check().
- * \param alarm Указатель на функцию обработки срабатывания будильника.
- * \param error Указатель на функцию обработки ошибок.
  */
-extern void rtc_init(void (*update)(), void (*alarm)(unsigned char alarm_id),
-                void (*error)(rtc_error_t error));
+extern void rtc_init();
 
 extern rtc_error_t rtc_error();
 
@@ -53,8 +48,9 @@ extern void rtc_clear();
 /**
  * \brief Проверка обновления RTC.
  * \details Функция проверяет, было ли обновлено состояние счётчиков RTC.
+ * \return Ноль есди обновления не было.
  */
-extern void rtc_check();
+extern uint8_t rtc_check();
 
 extern rtc_error_t rtc_get_time(bcd_time_t * time);
 
