@@ -110,9 +110,9 @@ static void twi_wait(const uint8_t mask)
 
 /*
  * Выставляет на шину состояние старт/рестарт и адрес устройства.
- * \param mode zero for write or non zero for read.
+ * \param mode Режим обмена шины.
  */
-extern void iic_ll_start(uint8_t mode)
+extern void iic_ll_start(iic_mode_t mode)
 {
         uint8_t addr;
 
@@ -120,7 +120,7 @@ extern void iic_ll_start(uint8_t mode)
                 return;
         }
 
-        if (mode == 0) {
+        if (mode == IIC_WRITE) {
                 addr = address & 0xfe;
         } else {
                 addr = address | 0x01;

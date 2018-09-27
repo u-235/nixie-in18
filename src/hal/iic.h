@@ -64,6 +64,11 @@ typedef enum {
         IIC_ERROR_WAIT = 0x80
 } iic_error_t;
 
+typedef enum {
+        IIC_WRITE=0,
+        IIC_READ
+}iic_mode_t;
+
 /**
  * \brief Инициализация модуля.
  * \details
@@ -110,9 +115,9 @@ extern void iic_clear();
 /**
  * Выставляет на шину состояние старт/рестарт и адрес устройства. Адрес должен
  *      быть задан функцией iic_set_address().
- * \param mode ноль для подготовки записи.
+ * \param mode Режим обмена шины.
  */
-extern void iic_ll_start(uint8_t mode);
+extern void iic_ll_start(iic_mode_t mode);
 
 /**
  * Завершение обмена и генерация состояния стоп.

@@ -57,7 +57,7 @@ extern void iic_clear()
  */
 extern void iic_write(uint8_t data)
 {
-        iic_ll_start(0);
+        iic_ll_start(IIC_WRITE);
         iic_ll_write(data);
         iic_ll_stop();
 }
@@ -73,7 +73,7 @@ extern void iic_write(uint8_t data)
 extern uint8_t iic_read()
 {
         uint8_t res;
-        iic_ll_start(1);
+        iic_ll_start(IIC_READ);
         res = iic_ll_read(0);
         iic_ll_stop();
         return res;
@@ -88,9 +88,9 @@ uint8_t iic_cmd_read(uint8_t cmd)
 {
         uint8_t retval;
 
-        iic_ll_start(0);
+        iic_ll_start(IIC_WRITE);
         iic_ll_write(cmd);
-        iic_ll_start(1);
+        iic_ll_start(IIC_READ);
         retval = iic_ll_read(0);
         iic_ll_stop();
         return retval;
@@ -103,7 +103,7 @@ uint8_t iic_cmd_read(uint8_t cmd)
  */
 void iic_cmd_write(uint8_t cmd, uint8_t d)
 {
-        iic_ll_start(0);
+        iic_ll_start(IIC_WRITE);
         iic_ll_write(cmd);
         iic_ll_write(d);
         iic_ll_stop();
@@ -112,7 +112,7 @@ void iic_cmd_write(uint8_t cmd, uint8_t d)
 extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
 {
         if (output != 0 && rSz != 0) {
-                iic_ll_start(1);
+                iic_ll_start(IIC_READ);
                 for (unsigned char i = rSz; i > 0; i--) {
                         *output++ = iic_ll_read(i);
                 }
@@ -122,7 +122,7 @@ extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
 extern void iic_ll_awrite(uint8_t input[], uint8_t wSz)
 {
         if (input != 0 && wSz != 0) {
-                iic_ll_start(1);
+                iic_ll_start(IIC_READ);
                 for (unsigned char i = wSz; i > 0; i--) {
                         iic_ll_write(*input++);
                 }
@@ -140,7 +140,7 @@ extern void iic_ll_awrite(uint8_t input[], uint8_t wSz)
  */
 void iic_cmd_aread(uint8_t cmd, uint8_t output[], uint8_t rSz)
 {
-        iic_ll_start(0);
+        iic_ll_start(IIC_WRITE);
         iic_ll_write(cmd);
         iic_ll_aread(output, rSz);
         iic_ll_stop();
@@ -157,7 +157,7 @@ void iic_cmd_aread(uint8_t cmd, uint8_t output[], uint8_t rSz)
  */
 void iic_cmd_awrite(uint8_t cmd, uint8_t input[], uint8_t wSz)
 {
-        iic_ll_start(0);
+        iic_ll_start(IIC_WRITE);
         iic_ll_write(cmd);
         iic_ll_awrite(input, wSz);
         iic_ll_stop();
