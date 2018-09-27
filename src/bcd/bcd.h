@@ -20,7 +20,7 @@ typedef uint8_t bcd2_t;
  * Макрос для получения BCD числа из константы.
  * \param i число от 0 до 99 включительно.
  */
-#define _bcd2_make(i) (bcd2_t(i%10 + ((i/10)*16)))
+#define _bcd2_make(i) ((bcd2_t)(i%10 + ((i/10)*16)))
 
 #ifdef __cplusplus
 extern "C" {
