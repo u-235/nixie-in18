@@ -28,7 +28,7 @@ int main(void)
 
         dislpay_init();
         adc_init();
-        _sei;
+        mcu_interrupt_enable();
 
         while (1) {
                 bright = get_bright();
