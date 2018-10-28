@@ -14,11 +14,14 @@
  * Перечисление ошибок RTC.
  */
 typedef enum {
-        RTC_NO_ERROR,  ///< Нет ошибок
-        RTC_UNCNOWN_ERROR,  ///<
-        RTC_TIMEOUT,  ///< Нет ответа от микросхемы RTC.
-        RTC_INVALID_TIME,  ///<
-        RTC_INVALID_DATE  ///<
+        /* Нет ошибок. */
+        RTC_NO_ERROR,
+        /*  */
+        RTC_UNKNOWN_ERROR,
+        /* Функция не реализована. */
+        RTC_NOT_IMPLEMENTED,
+        /* Ошибка микросхемы RTC */
+        RTC_CHIP_ERROR
 } rtc_error_t;
 
 #include "../bcd/bcd_time.h"
@@ -39,26 +42,30 @@ extern "C" {
  * \brief Инициализация RTC.
  * \details
  */
-extern void rtc_init();
+extern uint8_t rtc_init();
 
 extern rtc_error_t rtc_error();
 
 extern void rtc_clear();
 
+extern void rtc_start();
+
+extern void rtc_stop();
+
 /**
  * \brief Проверка обновления RTC.
  * \details Функция проверяет, было ли обновлено состояние счётчиков RTC.
- * \return Ноль есди обновления не было.
+ * \return Ноль если обновления не было.
  */
 extern uint8_t rtc_check();
 
-extern rtc_error_t rtc_get_time(bcd_time_t * time);
+extern void rtc_get_time(bcd_time_t * time);
 
-extern rtc_error_t rtc_set_time(bcd_time_t * time);
+extern void rtc_set_time(const bcd_time_t * time);
 
-extern rtc_error_t rtc_get_date(bcd_date_t * date);
+extern void rtc_get_date(bcd_date_t * date);
 
-extern rtc_error_t rtc_set_date(bcd_date_t * date);
+extern void rtc_set_date(const bcd_date_t * date);
 
 #ifdef __cplusplus
 }
