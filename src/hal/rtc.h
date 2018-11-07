@@ -14,14 +14,16 @@
  * Перечисление ошибок RTC.
  */
 typedef enum {
-        /* Нет ошибок. */
+        /** Нет ошибок. */
         RTC_NO_ERROR,
-        /*  */
+        /**  */
         RTC_UNKNOWN_ERROR,
-        /* Функция не реализована. */
+        /** Функция не реализована. */
         RTC_NOT_IMPLEMENTED,
-        /* Ошибка микросхемы RTC */
-        RTC_CHIP_ERROR
+        /** Ошибка микросхемы RTC */
+        RTC_CHIP_ERROR,
+        /** Сбой питания микросхемы RTC */
+        RTC_POWER_ERROR
 } rtc_error_t;
 
 #include "../bcd/bcd_time.h"
@@ -42,7 +44,7 @@ extern "C" {
  * \brief Инициализация RTC.
  * \details
  */
-extern uint8_t rtc_init();
+extern void rtc_init();
 
 extern rtc_error_t rtc_error();
 

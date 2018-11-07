@@ -117,6 +117,8 @@ static struct {
  *      Private function prototype.
  *************************************************************/
 
+static void reset_chip();
+
 static uint8_t pure_seconds(const uint8_t s);
 
 static uint8_t complete_seconds(const uint8_t s);
@@ -170,38 +172,27 @@ static void apply_out_bits();
 /**
  * \brief Инициализация микросхемы RTC.
  * \details Проверяется состояние микросхемы и если был сбой резервного питания,
- *  то счётчики устанавливаются в определённое состояние, а ячейки памяти
- *  обнуляются. Функция не делает инициализации IIC.
- * \return Ненулевое значение при сбое резервного питания.
+ *  то устанавливается ошибка #RTC_POWER_ERROR.
+ *  Функция не делает инициализации IIC.
  */
-extern uint8_t rtc_init_m41t56()
+extern void rtc_init_m41t56()
 {
-        uint8_t sec, i;
+        uint8_t sec;
 
         begin_io(IIC_READ, ADDR_SECONDS);
         sec = iic_ll_read(0);
         end_io();
 
+        if (rtc_error() != RTC_NO_ERROR) {
+                return;
+        }
+
         /* Если биты OUT и TEST сброшены, то сбоев не было. */
         if ((sec & ((1 < BIT_OUT) | (1 < BIT_TEST))) == 0) {
-                return 0;
+                return;
         }
-        /* Сбой всё же был и поэтому полная инициализация счётчиков. */
-        begin_io(IIC_WRITE, ADDR_SECONDS);
-        iic_ll_write(complete_seconds(_bcd2_make(12)));
-        iic_ll_write(complete_minutes(_bcd2_make(12)));
-        iic_ll_write(complete_hours(_bcd2_make(12)));
-        iic_ll_write(complete_days(WEDNESDAY));
-        iic_ll_write(complete_date(_bcd2_make(12)));
-        iic_ll_write(complete_month(_bcd2_make(12)));
-        iic_ll_write(complete_year(_bcd2_make(18)));
-        iic_ll_write(complete_control(0));
-        /* Clean chip's RAM. */
-        for (i = ADDR_RAM_SIZE; i > 0; i--) {
-                iic_ll_write(0);
-        }
-        end_io();
-        return 1;
+
+        set_error(RTC_POWER_ERROR);
 }
 
 extern rtc_error_t rtc_error_m41t56()
@@ -211,10 +202,19 @@ extern rtc_error_t rtc_error_m41t56()
 
 extern void rtc_clear_m41t56()
 {
-        if (iic_error() != IIC_NO_ERROR) {
-                iic_clear();
-        }
+        rtc_error_t err = rtc_error();
         set_error(RTC_NO_ERROR);
+
+        switch (err) {
+        case RTC_CHIP_ERROR:
+                iic_clear();
+                break;
+        case RTC_POWER_ERROR:
+                reset_chip();
+                break;
+        default:
+                ;
+        }
 }
 
 extern void rtc_start_m41t56()
@@ -291,6 +291,26 @@ extern void rtc_set_date_m41t56(const bcd_date_t * date)
 /*************************************************************
  *      Private function.
  *************************************************************/
+
+static void reset_chip()
+{
+        char i;
+
+        begin_io(IIC_WRITE, ADDR_SECONDS);
+        iic_ll_write(complete_seconds(_bcd2_make(12)));
+        iic_ll_write(complete_minutes(_bcd2_make(12)));
+        iic_ll_write(complete_hours(_bcd2_make(12)));
+        iic_ll_write(complete_days(WEDNESDAY));
+        iic_ll_write(complete_date(_bcd2_make(12)));
+        iic_ll_write(complete_month(_bcd2_make(12)));
+        iic_ll_write(complete_year(_bcd2_make(18)));
+        iic_ll_write(complete_control(0));
+        /* Clean chip's RAM. */
+        for (i = ADDR_RAM_SIZE; i > 0; i--) {
+                iic_ll_write(0);
+        }
+        end_io();
+}
 
 static uint8_t pure_seconds(const uint8_t s)
 {
