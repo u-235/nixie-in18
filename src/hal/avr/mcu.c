@@ -11,6 +11,7 @@
 #include "../mcu.h"
 #include "spi.h"
 #include "pwmi.h"
+#include "iic.h"
 
 // Несколько макросов в целях совместимости с Atmega8
 #ifdef __AVR_ATmega8__
@@ -54,6 +55,7 @@ extern void mcu_init()
 {
         spi_init();
         pwmi_init();
+        iic_init();
 
         _init_timer()
         ;
