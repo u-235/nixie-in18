@@ -23,10 +23,10 @@ int main(void)
 {
         uint8_t bright, rate;
         bcd2_t count = 0;
-        uint8_t day=0, day_state=0;
-        uint8_t dots=0;
+        uint8_t day = 0, day_state = 0;
+        uint8_t dots = 0;
 
-        dislpay_init();
+        display_init();
         adc_init();
         mcu_interrupt_enable();
 
@@ -79,7 +79,7 @@ int main(void)
                                 day = DISPLAY_MARK_SUNDAY;
                         } else if ((day & DISPLAY_MARK_ALARM) != 0) {
                                 day = 0;
-                                day_state=0;
+                                day_state = 0;
                         } else {
                                 day = day >> 1 | DISPLAY_MARK_SUNDAY;
                         }
@@ -87,10 +87,10 @@ int main(void)
                 }
                 display_day(day);
 
-                if ((dots&DISPLAY_DOT_LEFT_BOTTOM)!=0){
-                        dots=DISPLAY_DOT_LEFT_TOP | DISPLAY_DOT_RIGHT_BOTTOM;
-                }else{
-                        dots=DISPLAY_DOT_LEFT_BOTTOM | DISPLAY_DOT_RIGHT_TOP;
+                if ((dots & DISPLAY_DOT_LEFT_BOTTOM) != 0) {
+                        dots = DISPLAY_DOT_LEFT_TOP | DISPLAY_DOT_RIGHT_BOTTOM;
+                } else {
+                        dots = DISPLAY_DOT_LEFT_BOTTOM | DISPLAY_DOT_RIGHT_TOP;
                 }
                 display_dots(dots);
 

@@ -9,9 +9,9 @@ static void flush();
 
 int main(void)
 {
-        dislpay_init();
+        display_init();
         display_rate(2);
-        _sei;
+        mcu_interrupt_enable();
 
         while (1) {
                 display_clean();
@@ -117,6 +117,6 @@ void flush()
                         }
                 }
         }
-        display_bright(lvl); //DISPLAY_BRIGHT_MIN
+        display_bright(lvl);  //DISPLAY_BRIGHT_MIN
         display_flush();
 }
