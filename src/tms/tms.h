@@ -1,5 +1,5 @@
 /**
- * \file tms.h
+ * \file
  * \brief Служба таймеров.
  * \details Служба предоставляет простой способ для организации множества
  * таймеров.
@@ -24,10 +24,6 @@ typedef unsigned char timer_id_t;
  */
 typedef unsigned int timer_counter_t;
 /**
- * Тип параметра, передаваемого функции обратного вызова таймера.
- */
-typedef void* timer_param_t;
-/**
  * Значение, возвращаемое в случае ошибки.
  */
 #define TIMER_ERROR -1
@@ -50,13 +46,10 @@ extern void tms_tick();
  * освободить его вызовом функции tms_delete_timer().
  * \param timer_callback Функция, вызываемая при срабатывании
  *      таймера.
- * \param param Значение, передаваемое функции timer_callback() при
- *      её вызове.
  * \return Идентификатор таймера в случае успеха или #TIMER_ERROR
  *      если израсходована вся память для организации таймеров.
  */
-extern timer_id_t tms_create_timer(void (*timer_callback)(timer_param_t param),
-                timer_param_t param);
+extern timer_id_t tms_create_timer(void (*timer_callback)());
 
 /**
  * Освобождение таймера.

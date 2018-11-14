@@ -10,8 +10,7 @@
 
 typedef struct {
         timer_counter_t count;
-        timer_param_t param;
-        void (*timer_callback)(timer_param_t param);
+        void (*timer_callback)();
 } timer_t;
 
 static timer_t lTimer[TIMER_NUMBER];
@@ -26,15 +25,13 @@ extern void tms_init()
         }
 }
 
-extern timer_id_t tms_create_timer(void (*timer_callback)(timer_param_t param),
-                timer_param_t param)
+extern timer_id_t tms_create_timer(void (*timer_callback)())
 {
         timer_id_t i;
 
         for (i = 0; i < TIMER_NUMBER; i++) {
                 if (lTimer[i].timer_callback != 0) continue;
                 lTimer[i].timer_callback = timer_callback;
-                lTimer[i].param = param;
                 return i;
         }
         return TIMER_ERROR;
@@ -78,7 +75,7 @@ extern void tms_tick()
                 if (lTimer[i].count != 0) {
                         lTimer[i].count--;
                         if (lTimer[i].count == 0) {
-                                lTimer[i].timer_callback(lTimer[i].param);
+                                lTimer[i].timer_callback();
                         }
                 }
         }
