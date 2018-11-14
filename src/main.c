@@ -28,6 +28,8 @@ static void init()
         display_init();
         rtc_init();
         tms_init();
+        show_init();
+        user_init();
         mcu_interrupt_unlock();
 }
 
@@ -35,7 +37,6 @@ static void loop()
 {
         while (1) {
                 if (mcu_get_timer_fire() != 0) {
-                        user_scan_key();
                         tms_tick();
                 } else {
                         show_handle_key(user_get_key());
