@@ -2,8 +2,8 @@
 BUILD = nixie-in18
 
 ### Source files and search directory
-CSRC    :=  src/bcd/bcd.c src/hal/display.c src/hal/avr/pwmi.c src/hal/avr/spi.c
-ASRC    = 
+CSRC    :=  src/bcd/bcd.c src/bcd/bcd_time.c src/hal/avr/mcu.c src/hal/display.c src/hal/iic/iic.c src/hal/avr/pwmi.c src/hal/avr/spi.c
+ASRC    =
 
 ifeq ($(MAKECMDGOALS), test_display)
 CSRC += src/tests/01-display.c
@@ -13,7 +13,7 @@ ifeq ($(MAKECMDGOALS), test_pwm)
 CSRC += src/tests/02-PWM.c
 BUILD =test_pwm
 else
-CSRC += src/main.c
+CSRC += src/main.c src/tms/tms.c src/hal/rtc/chip_m41t56.c src/show.c src/user.c
 endif
 endif
 
@@ -30,7 +30,7 @@ CSTD = gnu99
 LIBS	=
 LIBDIRS	=
 INCDIRS	=
-DEFS	= F_CPU=8000000UL MODE=2
+DEFS	= F_CPU=16000000UL MODE=2 __RTC_M41T56__
 ADEFS	= $(DEFS)
 
 ### Warning contorls
@@ -55,7 +55,7 @@ NM      = avr-nm
 
 
 # Define all object files
-COBJ      := $(CSRC:.c=.o) 
+COBJ      := $(CSRC:.c=.o)
 AOBJ      := $(ASRC:.S=.o)
 COBJ      := $(addprefix $(OBJDIR)/,$(COBJ))
 AOBJ      := $(addprefix $(OBJDIR)/,$(AOBJ))
@@ -106,15 +106,17 @@ endif
 endif
 endif
 
-mkdir: $(SRC_DIRS) 
+mkdir: $(SRC_DIRS)
 	$(shell mkdir -p $(OBJDIR)/src/bcd)
 	$(shell mkdir -p $(OBJDIR)/src/hal/avr)
+	$(shell mkdir -p $(OBJDIR)/src/hal/iic)
 	$(shell mkdir -p $(OBJDIR)/src/hal/rtc)
 	$(shell mkdir -p $(OBJDIR)/src/tests)
+	$(shell mkdir -p $(OBJDIR)/src/tms)
 	$(shell mkdir -p $(BINDIR))
 
 elf: $(BUILD).elf
-lst: $(BUILD).lst 
+lst: $(BUILD).lst
 sym: $(BUILD).sym
 
 
