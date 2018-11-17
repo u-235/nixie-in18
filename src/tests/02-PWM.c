@@ -1,9 +1,10 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include "../hal/display.h"
 #include "../bcd/bcd.h"
 #include "../hal/avr/asm.h"
+#include "../hal/display.h"
+#include "../hal/mcu.h"
 
 /* Разрешаем АЦП и устанавливаем минимальную частоту преобразования */
 #define ADC_MODE        ((1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
@@ -26,6 +27,7 @@ int main(void)
         uint8_t day = 0, day_state = 0;
         uint8_t dots = 0;
 
+        mcu_init();
         display_init();
         adc_init();
         mcu_interrupt_enable();
