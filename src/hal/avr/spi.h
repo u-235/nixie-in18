@@ -1,9 +1,18 @@
+/**
+ * \file
+ * \brief Модуль SPI
+ * \details Программный интерфейс для работы с SPI.
+ *
+ * \date создан 31.12.2014
+ * \author Nick Egorrov
+ */
+
 #ifndef HAL_AVR_SPI_H_
-#define HA_AVRL_SPI_H_
+#define HAL_AVR_SPI_H_
 
 #include <stdint.h>
 
-//! Размер массива данных, передаваемых по SPI.
+/* Размер массива данных, передаваемых по SPI. */
 #define SPI_ARRAY_SIZE 9
 
 #ifdef __cplusplus

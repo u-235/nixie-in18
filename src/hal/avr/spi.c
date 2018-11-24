@@ -1,19 +1,22 @@
-#include <avr/io.h>
-#include "spi.h"
-
 /**
- * \file spi.c
+ * \file
  * \brief Модуль SPI
  * \details Программный интерфейс для работы с SPI. Предполагается
  * использование SPI только для вывода на индикатор.
  *
- * Отличительной особенностью является алгоритм ожидания передачи
- * байта. Если в даташите сначала отсылают байт, затем ждут флаг
- * SPIF, то здесь байт отсылается только после ожидания флага.
+ * Отличительной особенностью является алгоритм ожидания передачи байта. Если
+ * в даташите сначала отсылают байт, затем ждут флаг SPIF, то здесь байт
+ * отсылается только после ожидания флага.
+ *
+ * \date создан 31.12.2014
+ * \author Nick Egorrov
  */
 
-#define _strobe_up(d) PORTC |= 1 << DDC0
-#define _strobe_down(d) PORTC &= ~(1 << DDC0)
+#include <avr/io.h>
+#include "../../bit-helper.h"
+#include "../../config.h"
+#include "spi.h"
+
 #define _spi_wait(d)  while (!(SPSR & 1 << SPIF)) {}
 
 /**
@@ -21,13 +24,13 @@
  */
 void spi_init()
 {
-        // Порт C: вывод 3 для данных и вывод 5 для тактирования.
-        DDRB |= 1 << DDB5 | 1 << DDB3;
-        // Вывод 0 порта C используется как строб параллельной загрузки регистров.
-        DDRC |= 1 << DDC0;
-        // Разрешает работу в качестве мастера.
+        _dir_out(CFG_SPI_SS);
+        _pin_off(CFG_SPI_SS);
+        _dir_out(CFG_SPI_MOSI);
+        _dir_out(CFG_SPI_SCK);
+        _dir_out(CFG_SPI_LOAD);
+        /* Разрешает работу в качестве мастера с двойной скоростью. */
         SPCR = 1 << SPE | 1 << MSTR;
-        // Двойная скорость SPI.
         SPSR = 1 << SPI2X;
 
         spi_clean();
@@ -50,9 +53,9 @@ void spi_send_array(uint8_t data[])
         }
 
         // Фиксация данных в регистрах сдвига.
-        _strobe_down();
+        _pin_off(CFG_SPI_LOAD);
         _spi_wait();
-        _strobe_up();
+        _pin_on(CFG_SPI_LOAD);
 }
 
 /**
@@ -66,7 +69,7 @@ void spi_clean()
                 SPDR = 0;
         }
 
-        _strobe_down();
+        _pin_off(CFG_SPI_LOAD);
         _spi_wait();
-        _strobe_up();
+        _pin_on(CFG_SPI_LOAD);
 }

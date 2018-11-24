@@ -10,7 +10,8 @@
 #ifndef SRC_TMS_CONFIG_H_
 #define SRC_TMS_CONFIG_H_
 
-/* Соответствие разрядов регистров индикации сегментам.
+/*
+ * Соответствие разрядов регистров индикации сегментам.
  * Левая цифра - номер регистра      правая - номер бита. Нумерация от 0.
  *                            reg, bit
  */
@@ -102,5 +103,15 @@
 #define CFG_REG_7xxxxx          1, 6
 #define CFG_REG_8xxxxx          0, 0
 #define CFG_REG_9xxxxx          0, 4
+
+/*
+ * Соответствие выводов для SPI.
+ */
+
+#define CFG_SPI_LOAD            C, 0 /* Вывод для строба записи регистров. */
+#define CFG_SPI_SS              B, 2
+#define CFG_SPI_MOSI            B, 3
+#define CFG_SPI_MISO            B, 4 /* Не используется. */
+#define CFG_SPI_SCK             B, 5
 
 #endif /* SRC_TMS_CONFIG_H_ */
