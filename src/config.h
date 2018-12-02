@@ -1,10 +1,10 @@
 /**
- * \file
- * \brief Конфигурация устройства.
- * \details
+ * @file
+ * @brief Конфигурация устройства.
+ * @details
  *
- * \date создан 18.11.2018
- * \author Nick Egorrov
+ * @date создан 18.11.2018
+ * @author Nick Egorrov
  */
 
 #ifndef SRC_TMS_CONFIG_H_
@@ -113,5 +113,11 @@
 #define CFG_SPI_MOSI            B, 3
 #define CFG_SPI_MISO            B, 4 /* Не используется. */
 #define CFG_SPI_SCK             B, 5
+
+/*
+ * Если задан CFG_DISPLAY_LOGARITHMIC_BALANCE, то баланс яркостей старого и
+ * нового значения индикатора имеет логарифмическую зависимость.
+ */
+/* #define CFG_DISPLAY_LOGARITHMIC_BALANCE */
 
 #endif /* SRC_TMS_CONFIG_H_ */

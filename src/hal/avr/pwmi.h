@@ -14,4 +14,4 @@ void pwmi_load(uint8_t data[]);
 }
 #endif
 
-#endif // HAL_AVR_PWMI_H_
+#endif /* HAL_AVR_PWMI_H_ */

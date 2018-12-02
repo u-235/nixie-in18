@@ -1,15 +1,7 @@
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <string.h>
-#include "../display.h"
-#include "pwmi.h"
-#include "spi.h"
-
 /**
- * \file pwmi.c
- * \brief Модуль ШИМ индикации.
- * \details Этот модуль реализует программный ШИМ индикации,
+ * @file
+ * @brief Модуль ШИМ индикации.
+ * @details Этот модуль реализует программный ШИМ индикации,
  *  позволяющий регулировать яркость свечения дисплея и осуществлять
  *  эффект плавной смены старых показаний на новые.
  *
@@ -20,7 +12,7 @@
  *  - #STEP_NEW - показ новых данных. Длительность фазы непостоянна.
  *  - #STEP_AND - показ данных, которые есть и в старых и в новых. Длительность
  *    фазы непостоянна. Это нужно для устранения притухания неизменной части
- *    показаний из-за нелинейной характеристики регулировки яркости.
+ *    показаний из-за нелинейной характеристики регулировки яркости и баланса.
  *  - #STEP_HIDE - индикатор погашен. Длительность фазы непостоянна. Этот шаг
  *    нужен для сохранения постоянства периода ШИМ при неполной яркости.
  *  - #STEP_CALK - подготовка данных для следующего цикла, индикатор погашен.
@@ -30,10 +22,20 @@
  *  комбинацию из первых четырёх фаз и всегда содержит последнюю фазу.
  */
 
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
+#include <string.h>
+#include "../../config.h"
+#include "../display.h"
+#include "pwmi.h"
+#include "spi.h"
+
 // Несколько макросов в целях совместимости с Atmega8
 #ifdef __AVR_ATmega8__
 // При тактовой частоте в 8 МГц, делителе = 256 и
 // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
+#define TIMER_PRESLALER 256U
 #define _init_timer()\
         TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21);\
         TIMSK |= 1 << OCIE2;
@@ -42,6 +44,7 @@
 #define TIMER_COUNTER OCR2
 // Дальше вариант для Atmega168
 #elif defined __AVR_ATmega168__
+#define TIMER_PRESLALER 256U
 #define _init_timer()\
         TCCR2A = (1 << WGM21);\
         TCCR2B = (1 << CS22) | (1 << CS21);\
@@ -65,28 +68,31 @@
 /**
  * Частота ШИМ. Вычисляется как F_CPU/TIMER_PRESLALER/PWM_CYCLE_DURATION
  */
-#define F_PWM 120
+#define F_PWM (F_CPU/TIMER_PRESLALER/PWM_CYCLE_DURATION)
 
 #if (PWM_CYCLE_DURATION - LAST_STEP_DURATION) > 255
 #error PWM_CYCLE_DURATION - LAST_STEP_DURATION most be <= 255
 #endif
-
-#define BALANCE_MAX (F_PWM * 32)
+/**
+ * Максимальное значение внутреннего представления баланса старых и новых
+ * показаний индикатора.
+ */
+#define BALANCE_MAX (F_PWM * 32U)
 
 /**
- * \def STEP_OLD
+ * @def STEP_OLD
  *  Фаза показа старых значений.
  *
- * \def STEP_NEW
+ * @def STEP_NEW
  * Фаза показа новых значений.
  *
- * \def STEP_AND
+ * @def STEP_AND
  * Фаза "дожигания" неизменных значений.
  *
- * \def STEP_HIDE
+ * @def STEP_HIDE
  * Фаза без индикации.
  *
- * \def STEP_CALK
+ * @def STEP_CALK
  * Фаза вычислений.
  */
 #define STEP_OLD  0
@@ -96,46 +102,52 @@
 #define STEP_CALK 4
 
 /**
+ * @brief Приведение баланса к диапазону от 0 до #DISPLAY_BRIGHT_MAX.
+ * @details Внутри обработчика прерывания баланс старых и новых показаний
+ *      индикатора представлен переменной с диапазоном от 0 до #BALANCE_MAX,
+ *      который избыточен для вычисления длительности этапа ШИМ.
+ * @param wide_bal внутреннее представление баланса.
+ * @return Баланс в диапазоне от 0 до #DISPLAY_BRIGHT_MAX включительно.
+ */
+static uint8_t abjust_balance(uint16_t wide_bal);
+
+/**
+ * @brief Вычисление длительности этапа ШИМ.
+ * @param bright Яркость в диапазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
+ *      включительно.
+ * @param balance Баланс в диапазоне от 0 до #DISPLAY_BRIGHT_MAX включительно.
+ */
+static uint8_t calculate_duration(uint8_t bright, uint8_t balance);
+
+/**
  * Вычисление количества тактов таймера для части цикла ШИМ.
- * \param d Длительность части цикла в диаппазоне от 0.0 до 1.0
+ * @param d Длительность части цикла в диапазоне от 0.0 до 1.0
  *      Поскольку это макрос, проверки допустимости нет.
  */
 #define _ticks(d) ((PWM_CYCLE_DURATION - LAST_STEP_DURATION)* d)
 
-#define _steps(r) ((BALANCE_MAX/F_PWM)/r)
-
-// Таблица уровней яркости.
-static const PROGMEM uint8_t levels[] = {
-                0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
-                _ticks(0.018), _ticks(0.021), _ticks(0.024), _ticks(0.028),
-                _ticks(0.033), _ticks(0.038), _ticks(0.044), _ticks(0.051),
-                _ticks(0.060), _ticks(0.069), _ticks(0.080), _ticks(0.093),
-                _ticks(0.108), _ticks(0.125), _ticks(0.145), _ticks(0.168),
-                _ticks(0.195), _ticks(0.227), _ticks(0.263), _ticks(0.305),
-                _ticks(0.354), _ticks(0.410), _ticks(0.476), _ticks(0.552),
-                _ticks(0.641), _ticks(0.743), _ticks(0.862), _ticks(1.000)
-};
+#define _steps(r) (BALANCE_MAX/(F_PWM*r))
 
 static uint8_t bright;  //! Яркость индикации.
-static uint16_t rate;   //! Скорость смены старых показаний на новые.
-static uint8_t step;    //! Текущий шаг цикла ШИМа.
+static uint16_t rate;  //! Скорость смены старых показаний на новые.
+static uint8_t step;  //! Текущий шаг цикла ШИМа.
 static uint8_t loaded;  //! Флаг загрузки значений.
 /**
- * \var pNewValue
+ * @var pNewValue
  * Указатель на буфер с новыми данными для индикации.
- * \var pOldValue
+ * @var pOldValue
  * Указатель на буфер со старыми данными для индикации.
- * \var pAndValue
+ * @var pAndValue
  * Указатель на буфер данными, общими для новых и старых значений.
- * \var pTmpValue
+ * @var pTmpValue
  * Указатель на буфер для временного хранения данных, загруженных функцией
  * pwmi_load().
  */
 static uint8_t *pNewValue, *pOldValue, *pAndValue, *pTmpValue;
 
 /**
- * \brief Инициализация ШИМа.
- * \details Эта функция должна быть вызвана до вызова любой другой
+ * @brief Инициализация ШИМа.
+ * @details Эта функция должна быть вызвана до вызова любой другой
  * функции.
  */
 void pwmi_init()
@@ -159,8 +171,8 @@ void pwmi_init()
 }
 
 /**
- * \brief Установка яркости индикации.
- * \param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
+ * @brief Установка яркости индикации.
+ * @param lvl Яркость в диаппазоне от #DISPLAY_BRIGHT_MIN до #DISPLAY_BRIGHT_MAX
  *      включительно.
  */
 void display_bright(uint8_t lvl)
@@ -175,14 +187,14 @@ void display_bright(uint8_t lvl)
 
 /**
  * Установка скорости смены показаний индикатора со старых на новые.
- * \param lvl Скорость в диаппазоне от #DISPLAY_RATE_MIN до #DISPLAY_RATE_MAX
+ * @param lvl Скорость в диаппазоне от #DISPLAY_RATE_MIN до #DISPLAY_RATE_MAX
  *      включительно.
  */
 void display_rate(uint8_t lvl)
 {
         static const PROGMEM uint16_t steps[] = {
-                        _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
-                        _steps(0.48), _steps(0.40), _steps(0.34), _steps(0.01)
+                _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58), _steps(
+                                0.48), _steps(0.40), _steps(0.34), BALANCE_MAX
 
         };
 
@@ -195,8 +207,8 @@ void display_rate(uint8_t lvl)
 }
 
 /**
- * \brief Загрузка данных для индикации.
- * \details Вызов этой функции возможен \b только \b после \b инициализации
+ * @brief Загрузка данных для индикации.
+ * @details Вызов этой функции возможен @b только @b после @b инициализации
  *  модуля функцией pwmi_init().
  * @param data Массив данных, состоящий из #SPI_ARRAY_SIZE элементов.
  */
@@ -215,7 +227,7 @@ void pwmi_load(uint8_t data[])
  */
 ISR(TIMER_COMPARE)
 {
-        static uint16_t balance; // Баланс яркости нового и старого значения.
+        static uint16_t balance;  // Баланс яркости нового и старого значения.
         static uint8_t duration[4];
         uint8_t bal;
 
@@ -280,21 +292,14 @@ ISR(TIMER_COMPARE)
 
                 if (balance < BALANCE_MAX) {
                         balance += rate;
-                        if (balance > BALANCE_MAX) {
-                                balance = BALANCE_MAX;
-                        }
                 }
-                bal = (uint16_t) balance * DISPLAY_BRIGHT_MAX / BALANCE_MAX;
 
-                uint8_t i = (uint16_t) bal * bright / 8;
-                duration[STEP_NEW] = pgm_read_byte(&levels[i]);
-
-                bal = DISPLAY_BRIGHT_MAX - bal;
-                i = (uint16_t) bal * bright / 8;
-                duration[STEP_OLD] = pgm_read_byte(&levels[i]);
-
-                i = (uint16_t) bright * DISPLAY_BRIGHT_MAX / 8;
-                duration[STEP_AND] = pgm_read_byte(&levels[i]);
+                bal = abjust_balance(balance);
+                duration[STEP_NEW] = calculate_duration(bright, bal);
+                duration[STEP_OLD] = calculate_duration(bright,
+                DISPLAY_BRIGHT_MAX - bal);
+                duration[STEP_AND] = calculate_duration(bright,
+                DISPLAY_BRIGHT_MAX);
                 duration[STEP_HIDE] = PWM_CYCLE_DURATION - LAST_STEP_DURATION
                                 - duration[STEP_AND];
                 duration[STEP_AND] -= duration[STEP_NEW] + duration[STEP_OLD];
@@ -305,3 +310,44 @@ ISR(TIMER_COMPARE)
                 step = 0;
         }
 }
+
+static uint8_t abjust_balance(uint16_t wide_bal)
+{
+        uint16_t steps = 0;
+        uint8_t i;
+        for (i = 0; i < DISPLAY_BRIGHT_MAX; i++) {
+                if (steps >= wide_bal) {
+                        break;
+                }
+                steps += BALANCE_MAX / DISPLAY_BRIGHT_MAX;
+        }
+        return i;
+}
+
+#ifdef CFG_DISPLAY_LOGARITHMIC_BALANCE
+static uint8_t calculate_duration(uint8_t bright, uint8_t balance)
+{
+        static const PROGMEM uint8_t levels[] = {
+                0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
+                _ticks(0.018), _ticks(0.021), _ticks(0.024), _ticks(0.028),
+                _ticks(0.033), _ticks(0.038), _ticks(0.044), _ticks(0.051),
+                _ticks(0.060), _ticks(0.069), _ticks(0.080), _ticks(0.093),
+                _ticks(0.108), _ticks(0.125), _ticks(0.145), _ticks(0.168),
+                _ticks(0.195), _ticks(0.227), _ticks(0.263), _ticks(0.305),
+                _ticks(0.354), _ticks(0.410), _ticks(0.476), _ticks(0.552),
+                _ticks(0.641), _ticks(0.743), _ticks(0.862), _ticks(1.000)
+        };
+        return pgm_read_byte(&levels[bright * balance / 8]);
+}
+#else
+static uint8_t calculate_duration(uint8_t bright, uint8_t balance)
+{
+        static const PROGMEM uint8_t levels[] = {
+                0, _ticks(0.012), _ticks(0.016), _ticks(0.021), _ticks(0.028),
+                _ticks(0.038), _ticks(0.051), _ticks(0.069), _ticks(0.093),
+                _ticks(0.125), _ticks(0.168), _ticks(0.227), _ticks(0.305),
+                _ticks(0.410), _ticks(0.552), _ticks(0.743), _ticks(1.000)
+        };
+        return pgm_read_byte(&levels[bright]) * balance / DISPLAY_BRIGHT_MAX;
+}
+#endif
