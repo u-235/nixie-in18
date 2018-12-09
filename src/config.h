@@ -106,8 +106,8 @@
 
 /*
  * Соответствие выводов для SPI.
+ *          Последняя буква порта, номер бита
  */
-
 #define CFG_SPI_LOAD            C, 0 /* Вывод для строба записи регистров. */
 #define CFG_SPI_SS              B, 2
 #define CFG_SPI_MOSI            B, 3
@@ -119,5 +119,26 @@
  * нового значения индикатора имеет логарифмическую зависимость.
  */
 /* #define CFG_DISPLAY_LOGARITHMIC_BALANCE */
+
+/*
+ * Соответствие выводов кнопкам.
+ *  Последняя буква порта, номер бита
+ */
+#define CFG_KEY_MENU    B, 4
+#define CFG_KEY_SELECT  B, 1
+#define CFG_KEY_CHANGE  B, 0
+
+/*
+ * Выводы для управления плеером. Вход CFG_PLAYER_IN зарезервирован на
+ * всякий случай.
+ *          Последняя буква порта, номер бита
+ */
+#define CFG_PLAYER_IN           D, 7
+#define CFG_PLAYER_ADR1         D, 6
+#define CFG_PLAYER_ADR2         D, 5
+#define CFG_PLAYER_ADR4         D, 4
+#define CFG_PLAYER_ADR8         D, 3
+#define CFG_PLAYER_ADR16        D, 2
+#define CFG_PLAYER_ADR32        D, 1
 
 #endif /* SRC_TMS_CONFIG_H_ */
