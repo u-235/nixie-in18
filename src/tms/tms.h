@@ -61,15 +61,28 @@ extern timer_id_t tms_create_timer(void (*timer_callback)());
 extern timer_id_t tms_delete_timer(timer_id_t timer);
 
 /**
- * Запуск таймера. Во внутренний счётчик записывается ticks.
- * \param timer Идентификатор таймера, полученный при вызове функции
+ * Повторяющийся запуск таймера.
+ * \param timer_id Идентификатор таймера, полученный при вызове функции
  *      tms_create_timer().
  * \param ticks Количество вызовов функции tms_tick(), необходимое для
- *      срабатывания таймера.
+ *      срабатывания таймера. Используйте макрос #_ticks_from_ms для
+ *      преобразования из миллисекунд.
  * \return Идентификатор запущенного таймера в случае успеха или
  *      #TIMER_ERROR если был использован недопустимый идентификатор.
  */
-extern timer_id_t tms_start_timer(timer_id_t timer, timer_counter_t ticks);
+extern timer_id_t tms_start_timer(timer_id_t timer_id, timer_counter_t ticks);
+
+/**
+ * Однократный запуск таймера.
+ * \param timer_id Идентификатор таймера, полученный при вызове функции
+ *      tms_create_timer().
+ * \param ticks Количество вызовов функции tms_tick(), необходимое для
+ *      срабатывания таймера. Используйте макрос #_ticks_from_ms для
+ *      преобразования из миллисекунд.
+ * \return Идентификатор запущенного таймера в случае успеха или
+ *      #TIMER_ERROR если был использован недопустимый идентификатор.
+ */
+extern timer_id_t tms_run_timer(timer_id_t timer_id, timer_counter_t ticks);
 
 /**
  * Останов таймера. Внутренний счётчик сбрасывается и таймер
@@ -86,8 +99,22 @@ extern timer_id_t tms_stop_timer(timer_id_t timer);
 #endif
 
 /**
+ * Получение количества вызовов функции tms_tick() из времени в миллисекундах.
+ */
+#define _ticks_from_ms(p) (p*TIMER_FREQUENCY/1000)
+
+/*************************************************************
+ *      Настройки службы таймеров.
+ *************************************************************/
+
+/**
  * Число таймеров, которое может быть использовано одновременно.
  */
-#define TIMER_NUMBER    3
+#define TIMER_NUMBER    7
+
+/**
+ * Частота, с которой происходит вызов функции tms_tick().
+ */
+#define TIMER_FREQUENCY 100u
 
 #endif /* TMS_H_ */
