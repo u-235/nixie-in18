@@ -18,7 +18,7 @@ extern "C" {
          * Перечисление дней недели.
          */
         typedef enum {
-                MONDAY,    ///< понедельник
+                MONDAY = 1,///< понедельник
                 TUESDAY,   ///< вторник
                 WEDNESDAY, ///< среда
                 THURSDAY,  ///< четверг
