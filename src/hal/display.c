@@ -56,7 +56,7 @@ void display_flush()
  *      - #DISPLAY_MARK_SUNDAY
  *      - #DISPLAY_MARK_ALARM
  */
-void display_day(uint8_t d)
+void display_day_marks(uint8_t d)
 {
         if (d & DISPLAY_MARK_SUNDAY) {
                 _segment_on(CFG_REG_SUNDAY);
@@ -104,6 +104,51 @@ void display_day(uint8_t d)
                 _segment_on(CFG_REG_ALARM);
         } else {
                 _segment_off(CFG_REG_ALARM);
+        }
+}
+
+/**
+ * Подготавливает изменения показа дня недели. Изменения отправляются в дисплей
+ *  функцией display_flush().
+ * @param d Номер дня, от 1 до 7
+ * @param a Если не равен нулю, то включается символ будильника.
+ */
+void display_day(bcd_day_t d, uint8_t a){
+        _segment_off(CFG_REG_SUNDAY);
+        _segment_off(CFG_REG_SATURDAY);
+        _segment_off(CFG_REG_FRIDAY);
+        _segment_off(CFG_REG_THURSDAY);
+        _segment_off(CFG_REG_WEDNESDAY);
+        _segment_off(CFG_REG_TEUSDAY);
+        _segment_off(CFG_REG_MONDAY);
+        _segment_off(CFG_REG_ALARM);
+
+        if(a != 0){
+                _segment_on(CFG_REG_ALARM);
+        }
+
+        switch (d) {
+        case MONDAY:
+                _segment_on(CFG_REG_MONDAY);
+                break;
+        case TUESDAY:
+                _segment_on(CFG_REG_TEUSDAY);
+                break;
+        case WEDNESDAY:
+                _segment_on(CFG_REG_WEDNESDAY);
+                break;
+        case THURSDAY:
+                _segment_on(CFG_REG_THURSDAY);
+                break;
+        case FRIDAY:
+                _segment_on(CFG_REG_FRIDAY);
+                break;
+        case SATURDAY:
+                _segment_on(CFG_REG_SATURDAY);
+                break;
+        case SUNDAY:
+                _segment_on(CFG_REG_SUNDAY);
+                break;
         }
 }
 

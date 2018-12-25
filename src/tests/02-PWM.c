@@ -87,7 +87,7 @@ int main(void)
                         }
                         break;
                 }
-                display_day(day);
+                display_day_marks(day);
 
                 if ((dots & DISPLAY_DOT_LEFT_BOTTOM) != 0) {
                         dots = DISPLAY_DOT_LEFT_TOP | DISPLAY_DOT_RIGHT_BOTTOM;
