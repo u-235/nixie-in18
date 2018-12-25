@@ -117,6 +117,8 @@ static struct {
  *      Private function prototype.
  *************************************************************/
 
+static void check_power_fail();
+
 static void reset_chip();
 
 static uint8_t pure_seconds(const uint8_t s);
@@ -177,22 +179,15 @@ static void apply_out_bits();
  */
 extern void rtc_init_m41t56()
 {
-        uint8_t sec;
-
         begin_io(IIC_READ, ADDR_SECONDS);
-        sec = iic_ll_read(0);
+        iic_ll_read(0);
         end_io();
 
         if (rtc_error() != RTC_NO_ERROR) {
                 return;
         }
 
-        /* Если биты OUT и TEST сброшены, то сбоев не было. */
-        if ((sec & ((1 < BIT_OUT) | (1 < BIT_TEST))) == 0) {
-                return;
-        }
-
-        set_error(RTC_POWER_ERROR);
+        check_power_fail();
 }
 
 extern rtc_error_t rtc_error_m41t56()
@@ -238,9 +233,11 @@ extern uint8_t rtc_check_m41t56()
         curr = pure_seconds(iic_ll_read(0));
         end_io();
 
-        if (rtc_error() != RTC_NO_ERROR) {
+        if (rtc_error() == RTC_CHIP_ERROR) {
                 return 0;
         }
+
+        check_power_fail();
 
         if (curr != old) {
                 old = curr;
@@ -291,6 +288,24 @@ extern void rtc_set_date_m41t56(const bcd_date_t * date)
 /*************************************************************
  *      Private function.
  *************************************************************/
+
+static void check_power_fail()
+{
+        uint8_t ctrl;
+        begin_io(IIC_READ, ADDR_CONTROL);
+        ctrl = iic_ll_read(0);
+        end_io();
+
+        if (rtc_error() == RTC_CHIP_ERROR) {
+                return;
+        }
+
+        /* При сбое питания RTC бит OUT установлен, а бит TEST (FT) сброшен. */
+        if ((ctrl & ((1 << BIT_OUT) | (1 << BIT_TEST)))
+                        == ((1 << BIT_OUT) | (0 << BIT_TEST))) {
+                set_error(RTC_POWER_ERROR);
+        }
+}
 
 static void reset_chip()
 {
