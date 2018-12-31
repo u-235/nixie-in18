@@ -101,7 +101,7 @@ extern timer_id_t tms_stop_timer(timer_id_t timer);
 /**
  * Получение количества вызовов функции tms_tick() из времени в миллисекундах.
  */
-#define _ticks_from_ms(p) (p*TIMER_FREQUENCY/1000)
+#define _ticks_from_ms(p) ((float)p*TIMER_FREQUENCY/1000)
 
 /*************************************************************
  *      Настройки службы таймеров.
