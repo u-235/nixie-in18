@@ -121,6 +121,14 @@
 /* #define CFG_DISPLAY_LOGARITHMIC_BALANCE */
 
 /*
+ *
+ */
+#define CFG_SHOW_DURATION_ERROR 3000U
+#define CFG_SHOW_DURATION_DATE  7000U
+#define CFG_SHOW_BLINK_DURATION 500U
+#define CFG_SHOW_INTRO_PERIOD   333U
+
+/*
  * Соответствие выводов кнопкам.
  *  Последняя буква порта, номер бита
  */
