@@ -133,8 +133,19 @@
  *  Последняя буква порта, номер бита
  */
 #define CFG_KEY_MENU    B, 4
-#define CFG_KEY_SELECT  B, 1
-#define CFG_KEY_CHANGE  B, 0
+#define CFG_KEY_SELECT  B, 2
+#define CFG_KEY_CHANGE  B, 1
+
+/* Длительность паузы для защиты от дребезга, в мс. */
+#define CFG_USER_KEY_BOUNCE             80
+/* Длительность паузы перед запуском автоповтора нажатий кнопок, в мс. */
+#define CFG_USER_KEY_REPEAT_DELAY       600
+/* Длительность периода автоповтора нажатий кнопок, в мс. */
+#define CFG_USER_KEY_REPEAT_PERIOD      240
+/* Количество автоповторов перед включением быстрого автоповтора. */
+#define CFG_USER_KEY_REPEAT_NUMBER      4
+/* Длительность периода быстрого автоповтора нажатий кнопок, в мс. */
+#define CFG_USER_KEY_REPEAT_FAST        80
 
 /*
  * Выводы для управления плеером. Вход CFG_PLAYER_IN зарезервирован на

@@ -1,17 +1,23 @@
 /**
- * \file
- * \brief
- * \details
+ * @file
+ * @brief
+ * @details
  *
- * \date создан 13.11.2018
- * \author Nick Egorrov
+ * @date создан 13.11.2018
+ * @author Nick Egorrov
  */
 
 #ifndef USER_H_
 #define USER_H_
 
 typedef enum {
-        VK_NO
+        VK_NO,
+        VK_MENU_DOWN,
+        VK_MENU_UP,
+        VK_SELECT_DOWN,
+        VK_SELECT_UP,
+        VK_CHANGE_DOWN,
+        VK_CHANGE_UP
 } key_t;
 
 #ifdef _cplusplus
@@ -19,8 +25,6 @@ extern "C" {
 #endif
 
 extern void user_init();
-
-extern void user_scan_key();
 
 extern key_t user_get_key();
 
