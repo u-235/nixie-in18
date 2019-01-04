@@ -10,6 +10,7 @@
 #ifndef SHOW_H_
 #define SHOW_H_
 
+#include "bcd/bcd_time.h"
 #include "user.h"
 
 typedef enum {
@@ -23,7 +24,7 @@ typedef enum {
 extern "C" {
 #endif
 
-extern void show_init();
+extern void show_init(const bcd_time_t *pt, const bcd_date_t *pd);
 
 extern void show_set(show_t _show);
 

@@ -21,13 +21,13 @@
 
 static show_t show = 0;
 static rtc_error_t error;
-static bcd_time_t time;
-static bcd_date_t date;
+static const bcd_time_t *time;
+static const bcd_date_t *date;
 static struct {
         char rtc_power_fail :1;
         char alarm_armed :1;
 } flags = {
-        0, 0
+                0, 0
 };
 static timer_id_t timer_update, timer_hide, timer_check, timer_back;
 
@@ -61,8 +61,10 @@ static void date_handle_key(key_t _key);
  *      Public function
  *************************************************************/
 
-extern void show_init()
+extern void show_init(const bcd_time_t *pt, const bcd_date_t *pd)
 {
+        time = pt;
+        date = pd;
         timer_hide = tms_create_timer(&hide);
         timer_update = tms_create_timer(&update);
         timer_check = tms_create_timer(&check_error);
@@ -134,6 +136,7 @@ extern void show_handle_key(const key_t _key)
  */
 extern void show_synchronize()
 {
+        tms_run_timer(timer_hide, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
         if (show != SHOW_DATE && show != SHOW_TIME) {
                 return;
         }
@@ -263,14 +266,11 @@ static void error_update()
 
 static void time_update()
 {
-        rtc_get_time(&time);
-        rtc_get_date(&date);
-        display_hours(time.hour);
-        display_minutes(time.min);
-        display_seconds(time.sec);
-        display_day(date.day, flags.alarm_armed);
+        display_hours(time->hour);
+        display_minutes(time->min);
+        display_seconds(time->sec);
+        display_day(date->day, flags.alarm_armed);
         display_dots(DISPLAY_DOT_BOTTOM);
-        tms_run_timer(timer_hide, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
 }
 
 static void time_hide()
@@ -296,11 +296,10 @@ static void time_handle_key(const key_t _key)
 
 static void date_update()
 {
-        rtc_get_date(&date);
-        display_hours(date.date);
-        display_minutes(date.month);
-        display_seconds(date.year);
-        display_day(date.day, flags.alarm_armed);
+        display_hours(date->date);
+        display_minutes(date->month);
+        display_seconds(date->year);
+        display_day(date->day, flags.alarm_armed);
         display_dots(DISPLAY_DOT_ALL);
 }
 
