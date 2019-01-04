@@ -5,6 +5,7 @@
  * \author Nick Egorrov
  */
 
+#include "alarm.h"
 #include "hal/mcu.h"
 #include "hal/display.h"
 #include "hal/rtc.h"
@@ -33,6 +34,7 @@ static void init()
         tms_init();
         show_init(&time, &date);
         user_init();
+        alarm_init();
         mcu_interrupt_unlock();
 }
 
@@ -46,6 +48,7 @@ static void loop()
                         if (rtc_check() != 0) {
                                 rtc_get_time(&time);
                                 rtc_get_date(&date);
+                                alarm_check(&time);
                                 show_synchronize();
                         }
                 }
