@@ -145,6 +145,10 @@ WWV). Хотя такой подход может показаться груб�
 #define rtc_set_time    rtc_set_time_m41t56
 #define rtc_get_date    rtc_get_date_m41t56
 #define rtc_set_date    rtc_set_date_m41t56
+#define rtc_mem_read    rtc_mem_read_m41t56
+#define rtc_mem_write   rtc_mem_write_m41t56
+#define rtc_get_caliber rtc_get_caliber_m41t56
+#define rtc_set_caliber rtc_set_caliber_m41t56
 
 /** \ingroup RTC_M41T56 @{ */
 

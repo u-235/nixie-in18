@@ -69,6 +69,35 @@ extern void rtc_get_date(bcd_date_t * date);
 
 extern void rtc_set_date(const bcd_date_t * date);
 
+/**
+ * Чтение массива данных из RTC.
+ * @param dst Указатель на буфер для приёма данных.
+ * @param adr Адрес данных в памяти RTC.
+ * @param sz Количество байт для чтения.
+ */
+extern void rtc_mem_read(int8_t *dst, uint8_t adr, uint8_t sz);
+
+/**
+ * Запись массива данных в RTC.
+ * @param src Указатель на буфер для передачи данных.
+ * @param adr Адрес данных в памяти RTC.
+ * @param sz Количество байт для записи.
+ */
+extern void rtc_mem_write(int8_t *src, uint8_t adr, uint8_t sz);
+
+/**
+ * Получение значения коррекции хода.
+ * @return Коррекция хода в ppm.
+ */
+extern int8_t rtc_get_caliber();
+
+/**
+ * Запись коррекции хода. Поскольку коррекция не равна в точности одному ppm,
+ * реально записанное значение может отличаться от заданного.
+ * @param clb Коррекция хода в ppm.
+ */
+extern void rtc_set_caliber(int8_t clb);
+
 #ifdef __cplusplus
 }
 #endif

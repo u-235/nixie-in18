@@ -76,16 +76,18 @@
 
 /** Адрес (индекс) регистра управления */
 #define ADDR_CONTROL            7
+/** Номер бита остановки в байте регистра управления. */
+#define BIT_SIGN                5
+/** Номер бита остановки в байте регистра управления. */
+#define BIT_TEST                6
+/** Номер бита остановки в байте регистра управления. */
+#define BIT_OUT                 7
 /** Маска для получения только значения калибровки без знака. */
 #define MASK_CALIBR             ((1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0))
-/** Маска для получения только секунд. */
-#define MASK_SIGNED_CALIBR      ((1 << 5) | MASK_CALIBR)
-/** Номер бита остановки в байте счетчика. */
-#define BIT_SIGN                5
-/** Номер бита остановки в байте счетчика. */
-#define BIT_TEST                6
-/** Номер бита остановки в байте счетчика. */
-#define BIT_OUT                 7
+/** Маска для получения только значения калибровки без знака. */
+#define MASK_CALIBR_SIGN        (1 << BIT_SIGN)
+/** Маска для получения значения калибровки со знаком. */
+#define MASK_SIGNED_CALIBR      (MASK_CALIBR_SIGN | MASK_CALIBR)
 
 /** Адрес (индекс) первого байта RAM RTC. */
 #define ADDR_RAM_BEGIN  8
@@ -110,7 +112,7 @@ static struct {
         uint8_t test :1;
         uint8_t out :1;
 } bits = {
-        0, 0, 0, 0, 0
+                0, 0, 0, 0, 0
 };
 
 /*************************************************************
@@ -151,14 +153,6 @@ static uint8_t complete_year(const uint8_t y);
 
 static uint8_t pure_calibr(const uint8_t c);
 
-static void set_error(rtc_error_t e);
-
-static void check_chip();
-
-static void begin_io(iic_mode_t mode, uint8_t addr);
-
-static void end_io();
-
 static uint8_t complete_control(const uint8_t caliber);
 
 static void apply_stop_bit();
@@ -166,6 +160,14 @@ static void apply_stop_bit();
 static void apply_century_bits();
 
 static void apply_out_bits();
+
+static void set_error(rtc_error_t e);
+
+static void check_chip();
+
+static void begin_io(iic_mode_t mode, uint8_t addr);
+
+static void end_io();
 
 /*************************************************************
  *      Public function
@@ -282,6 +284,82 @@ extern void rtc_set_date_m41t56(const bcd_date_t * date)
         iic_ll_write(complete_date(date->date));
         iic_ll_write(complete_month(date->month));
         iic_ll_write(complete_year(date->year));
+        end_io();
+}
+
+/**
+ * Чтение массива данных из RTC.
+ * @param dst Указатель на буфер для приёма данных.
+ * @param adr Адрес данных в памяти RTC.
+ * @param sz Количество байт для чтения.
+ */
+extern void rtc_mem_read_m41t56(int8_t *dst, uint8_t adr, uint8_t sz)
+{
+        uint8_t c = sz;
+        begin_io(IIC_WRITE, ADDR_RAM_BEGIN + adr);
+        while (c != 0) {
+                *dst++ = iic_ll_read(--c);
+        }
+        end_io();
+}
+
+/**
+ * Запись массива данных в RTC.
+ * @param src Указатель на буфер для передачи данных.
+ * @param adr Адрес данных в памяти RTC.
+ * @param sz Количество байт для записи.
+ */
+extern void rtc_mem_write_m41t56(int8_t *src, uint8_t adr, uint8_t sz)
+{
+        uint8_t c = sz;
+        begin_io(IIC_READ, ADDR_RAM_BEGIN + adr);
+        while (c != 0) {
+                c--;
+                iic_ll_write(*src++);
+        }
+        end_io();
+}
+
+/**
+ * Получение значения коррекции хода.
+ * @return Коррекция хода в ppm.
+ */
+extern int8_t rtc_get_caliber()
+{
+        int8_t tmp, ret;
+        begin_io(IIC_READ, ADDR_CONTROL);
+        tmp = iic_ll_read(0);
+        end_io();
+
+        ret = tmp & MASK_CALIBR;
+
+        if ((tmp & MASK_CALIBR_SIGN) != 0) {
+                ret = -ret;
+                ret *= 2;
+        } else {
+                ret *= 4;
+        }
+
+        return ret;
+}
+
+/**
+ * Запись коррекции хода. Поскольку коррекция не равна в точности одному ppm,
+ * реально записанное значение может отличаться от заданного.
+ * @param clb Коррекция хода в ppm.
+ */
+extern void rtc_set_caliber(int8_t clb)
+{
+        uint8_t tmp;
+        if (clb < 0) {
+                tmp = (-clb - 1) / 2;
+                tmp |= MASK_CALIBR_SIGN;
+        } else {
+                tmp = (uint8_t) (clb + 2) / 4;
+        }
+
+        begin_io(IIC_WRITE, ADDR_CONTROL);
+        iic_ll_write(complete_control(tmp));
         end_io();
 }
 
