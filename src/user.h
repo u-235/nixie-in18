@@ -20,7 +20,7 @@ typedef enum {
         VK_CHANGE_UP
 } key_t;
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -28,7 +28,7 @@ extern void user_init();
 
 extern key_t user_get_key();
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

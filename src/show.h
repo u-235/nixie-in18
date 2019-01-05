@@ -20,7 +20,7 @@ typedef enum {
         SHOW_DATE
 } show_t;
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -32,7 +32,7 @@ extern void show_handle_key(const key_t _key);
 
 extern void show_synchronize();
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

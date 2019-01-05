@@ -19,7 +19,7 @@ typedef struct _alarm{
         uint8_t sound;
 }alarm_t;
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -41,7 +41,7 @@ extern void alarm_stop();
 
 extern void alarm_check(const bcd_time_t *pt);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

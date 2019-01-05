@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -227,7 +227,7 @@ void iic_awrite_aread(uint8_t input[], uint8_t wSz, uint8_t output[], uint8_t rS
 
 /** @} */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

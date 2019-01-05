@@ -152,12 +152,12 @@ WWV). Хотя такой подход может показаться груб�
 
 /** \ingroup RTC_M41T56 @{ */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
