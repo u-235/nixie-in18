@@ -3,6 +3,9 @@
  * @ingroup bcd
  * @brief Реализация BCD арифметики.
  * @details
+ *
+ * @date создан 17.10.2015
+ * @author Nick Egorrov
  */
 
 #ifndef BCD_H_
@@ -26,11 +29,17 @@ typedef uint8_t bcd2_t;
 extern "C" {
 #endif
 
-bcd2_t bcd_from_uint8(uint8_t tc);
-uint8_t bcd_to_uint8(bcd2_t tc);
+extern bcd2_t bcd_from_uint8(uint8_t tc);
 
-bcd2_t bcd_add2(bcd2_t a, bcd2_t b);
-bcd2_t bcd_sub2(bcd2_t a, bcd2_t b);
+extern uint8_t bcd_to_uint8(bcd2_t tc);
+
+extern bcd2_t bcd2_inc(bcd2_t a);
+
+extern bcd2_t bcd2_dec(bcd2_t a);
+
+extern bcd2_t bcd_add2(bcd2_t a, bcd2_t b);
+
+extern bcd2_t bcd_sub2(bcd2_t a, bcd2_t b);
 
 #ifdef __cplusplus
 }
