@@ -296,7 +296,7 @@ extern void rtc_set_date_m41t56(const bcd_date_t * date)
 extern void rtc_mem_read_m41t56(int8_t *dst, uint8_t adr, uint8_t sz)
 {
         uint8_t c = sz;
-        begin_io(IIC_WRITE, ADDR_RAM_BEGIN + adr);
+        begin_io(IIC_READ, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
                 *dst++ = iic_ll_read(--c);
         }
@@ -312,7 +312,7 @@ extern void rtc_mem_read_m41t56(int8_t *dst, uint8_t adr, uint8_t sz)
 extern void rtc_mem_write_m41t56(int8_t *src, uint8_t adr, uint8_t sz)
 {
         uint8_t c = sz;
-        begin_io(IIC_READ, ADDR_RAM_BEGIN + adr);
+        begin_io(IIC_WRITE, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
                 c--;
                 iic_ll_write(*src++);
