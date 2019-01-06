@@ -108,6 +108,9 @@ extern void mcu_init()
         _dir_in(CFG_KEY_MENU);
         _dir_in(CFG_KEY_SELECT);
         _dir_in(CFG_KEY_CHANGE);
+        _pin_on(CFG_KEY_MENU);
+        _pin_on(CFG_KEY_SELECT);
+        _pin_on(CFG_KEY_CHANGE);
 
         mask_player();
         DDRD |= maskD;
