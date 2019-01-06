@@ -17,7 +17,11 @@ typedef enum {
         SHOW_INTRO = 1,
         SHOW_ERROR,
         SHOW_TIME,
-        SHOW_DATE
+        SHOW_DATE,
+        SHOW_SET_ALARM,
+        SHOW_SET_TIME,
+        SHOW_SET_DATE,
+        SHOW_SET_CALIBER
 } show_t;
 
 #ifdef __cplusplus
