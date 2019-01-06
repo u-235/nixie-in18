@@ -35,6 +35,8 @@ extern void alarm_on();
 
 extern void alarm_off();
 
+extern char alarm_is_jingle();
+
 extern void alarm_start();
 
 extern void alarm_stop();
