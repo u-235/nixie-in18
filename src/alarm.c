@@ -55,7 +55,7 @@ extern void alarm_get(alarm_t *pa)
 extern void alarm_set(alarm_t *pa)
 {
         alarm.publ.hour = pa->hour;
-        alarm.publ.hour = pa->min;
+        alarm.publ.min = pa->min;
         alarm.publ.sound = pa->sound;
         alarm.hit = 0;
         save();
