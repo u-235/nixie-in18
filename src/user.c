@@ -37,7 +37,8 @@ static void send_key(uint8_t keys);
 extern void user_init()
 {
         timer_scan = tms_create_timer(&scan_key);
-        tms_start_timer(timer_scan, _ticks_from_ms(SCAN_PERIOD));
+        tms_set_timer(timer_scan, _ticks_from_ms(SCAN_PERIOD));
+        tms_start_timer(timer_scan);
 }
 
 extern key_t user_get_key()
