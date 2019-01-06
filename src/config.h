@@ -133,7 +133,7 @@
  *  Последняя буква порта, номер бита
  */
 #define CFG_KEY_MENU    B, 4
-#define CFG_KEY_SELECT  B, 2
+#define CFG_KEY_SELECT  B, 0
 #define CFG_KEY_CHANGE  B, 1
 
 /* Длительность паузы для защиты от дребезга, в мс. */
