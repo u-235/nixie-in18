@@ -48,16 +48,15 @@ extern void alarm_init()
 extern void alarm_get(alarm_t *pa)
 {
         pa->hour = alarm.publ.hour;
-        pa->min = alarm.publ.hour;
+        pa->min = alarm.publ.min;
         pa->sound = alarm.publ.sound;
 }
 
 extern void alarm_set(alarm_t *pa)
 {
         alarm.publ.hour = pa->hour;
-        alarm.publ.hour = pa->min;
+        alarm.publ.min = pa->min;
         alarm.publ.sound = pa->sound;
-        alarm.hit = 0;
         save();
 }
 
@@ -69,6 +68,7 @@ extern char alarm_is_on()
 extern void alarm_on()
 {
         alarm.run = 1;
+        alarm.hit = 0;
         save();
 }
 
@@ -80,9 +80,12 @@ extern void alarm_off()
         save();
 }
 
+extern char alarm_is_jingle(){
+        return alarm.jingle;
+}
+
 extern void alarm_start()
 {
-        alarm.jingle = 1;
         mcu_output_player(alarm.publ.sound);
 }
 
@@ -117,12 +120,12 @@ extern void alarm_check(const bcd_time_t *pt)
 
 static void load()
 {
-        rtc_mem_read((int8_t*)&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_read((int8_t*) &alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
         alarm.hit = 0;
         alarm.jingle = 0;
 }
 
 static void save()
 {
-        rtc_mem_write((int8_t*)&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_write((int8_t*) &alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
 }
