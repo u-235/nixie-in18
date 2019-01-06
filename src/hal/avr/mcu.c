@@ -108,7 +108,11 @@ extern void mcu_init()
         _dir_in(CFG_KEY_MENU);
         _dir_in(CFG_KEY_SELECT);
         _dir_in(CFG_KEY_CHANGE);
+        _pin_on(CFG_KEY_MENU);
+        _pin_on(CFG_KEY_SELECT);
+        _pin_on(CFG_KEY_CHANGE);
 
+        mcu_output_player(0);
         mask_player();
         DDRD |= maskD;
 
@@ -166,22 +170,22 @@ extern void mcu_output_player(uint8_t sel)
         out_begin();
         mask_player();
 
-        if (sel & (1 << 0)) {
+        if ((sel & (1 << 0)) == 0) {
                 _virt_set(CFG_PLAYER_ADR1);
         }
-        if (sel & (1 << 1)) {
+        if ((sel & (1 << 1)) == 0) {
                 _virt_set(CFG_PLAYER_ADR2);
         }
-        if (sel & (1 << 2)) {
+        if ((sel & (1 << 2)) == 0) {
                 _virt_set(CFG_PLAYER_ADR4);
         }
-        if (sel & (1 << 3)) {
+        if ((sel & (1 << 3)) == 0) {
                 _virt_set(CFG_PLAYER_ADR8);
         }
-        if (sel & (1 << 4)) {
+        if ((sel & (1 << 4)) == 0) {
                 _virt_set(CFG_PLAYER_ADR16);
         }
-        if (sel & (1 << 5)) {
+        if ((sel & (1 << 5)) == 0) {
                 _virt_set(CFG_PLAYER_ADR32);
         }
 
