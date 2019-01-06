@@ -61,28 +61,36 @@ extern timer_id_t tms_create_timer(void (*timer_callback)());
 extern timer_id_t tms_delete_timer(timer_id_t timer);
 
 /**
- * Повторяющийся запуск таймера.
+ * Загрузка периода таймера.
  * \param timer_id Идентификатор таймера, полученный при вызове функции
  *      tms_create_timer().
  * \param ticks Количество вызовов функции tms_tick(), необходимое для
  *      срабатывания таймера. Используйте макрос #_ticks_from_ms для
  *      преобразования из миллисекунд.
+ * \return Идентификатор таймера в случае успеха или #TIMER_ERROR если был
+ *      использован недопустимый идентификатор.
+ */
+extern timer_id_t tms_set_timer(timer_id_t timer_id, timer_counter_t ticks);
+
+/**
+ * Повторяющийся запуск таймера.
+ * \param timer_id Идентификатор таймера, полученный при вызове функции
+ *      tms_create_timer().
  * \return Идентификатор запущенного таймера в случае успеха или
  *      #TIMER_ERROR если был использован недопустимый идентификатор.
+ * \see tms_set_timer()
  */
-extern timer_id_t tms_start_timer(timer_id_t timer_id, timer_counter_t ticks);
+extern timer_id_t tms_start_timer(timer_id_t timer_id);
 
 /**
  * Однократный запуск таймера.
  * \param timer_id Идентификатор таймера, полученный при вызове функции
  *      tms_create_timer().
- * \param ticks Количество вызовов функции tms_tick(), необходимое для
- *      срабатывания таймера. Используйте макрос #_ticks_from_ms для
- *      преобразования из миллисекунд.
  * \return Идентификатор запущенного таймера в случае успеха или
  *      #TIMER_ERROR если был использован недопустимый идентификатор.
+ * \see tms_set_timer()
  */
-extern timer_id_t tms_run_timer(timer_id_t timer_id, timer_counter_t ticks);
+extern timer_id_t tms_run_timer(timer_id_t timer_id);
 
 /**
  * Останов таймера. Внутренний счётчик сбрасывается и таймер

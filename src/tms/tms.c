@@ -19,6 +19,16 @@ typedef struct {
 
 static timer_t lTimer[TIMER_NUMBER];
 
+/**
+ * Запуск таймера.
+ * \param timer_id Идентификатор таймера, полученный при вызове функции
+ *      tms_create_timer().
+ * \param single 0 для повторяющегося запуска, 1 - для однократного.
+ * \return Идентификатор запущенного таймера в случае успеха или
+ *      #TIMER_ERROR если был использован недопустимый идентификатор.
+ */
+static timer_id_t tms_launch_timer(timer_id_t timer_id, char single);
+
 extern void tms_init()
 {
         timer_id_t i;
@@ -52,28 +62,23 @@ extern timer_id_t tms_delete_timer(timer_id_t timer_id)
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_start_timer(timer_id_t timer_id, timer_counter_t ticks)
+extern timer_id_t tms_set_timer(timer_id_t timer_id, timer_counter_t ticks)
 {
         if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
-                lTimer[timer_id].single = 0;
-                lTimer[timer_id].runing = 1;
                 lTimer[timer_id].top = ticks;
-                lTimer[timer_id].count = lTimer[timer_id].top;
                 return timer_id;
         }
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_run_timer(timer_id_t timer_id, timer_counter_t ticks)
+extern timer_id_t tms_start_timer(timer_id_t timer_id)
 {
-        if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
-                lTimer[timer_id].single = 1;
-                lTimer[timer_id].runing = 1;
-                lTimer[timer_id].top = ticks;
-                lTimer[timer_id].count = lTimer[timer_id].top;
-                return timer_id;
-        }
-        return TIMER_ERROR;
+        return tms_launch_timer(timer_id, 0);
+}
+
+extern timer_id_t tms_run_timer(timer_id_t timer_id)
+{
+        return tms_launch_timer(timer_id, 1);
 }
 
 extern timer_id_t tms_stop_timer(timer_id_t timer_id)
@@ -105,4 +110,15 @@ extern void tms_tick()
                 }
         }
         return;
+}
+
+static timer_id_t tms_launch_timer(timer_id_t timer_id, char single)
+{
+        if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
+                lTimer[timer_id].single = single;
+                lTimer[timer_id].runing = 1;
+                lTimer[timer_id].count = lTimer[timer_id].top;
+                return timer_id;
+        }
+        return TIMER_ERROR;
 }

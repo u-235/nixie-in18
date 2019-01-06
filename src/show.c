@@ -69,7 +69,8 @@ extern void show_init(const bcd_time_t *pt, const bcd_date_t *pd)
         timer_update = tms_create_timer(&update);
         timer_check = tms_create_timer(&check_error);
         timer_back = tms_create_timer(&back_show_time);
-        tms_start_timer(timer_check, _ticks_from_ms(ERROR_CHECK_PERIOD));
+        tms_set_timer(timer_check, _ticks_from_ms(ERROR_CHECK_PERIOD));
+        tms_start_timer(timer_check);
         show_set(SHOW_INTRO);
 }
 
@@ -95,20 +96,22 @@ extern void show_set(show_t _show)
         /* Подготовка перед показом нового режима.*/
         switch (show) {
         case SHOW_INTRO:
-                tms_start_timer(timer_update,
+                tms_set_timer(timer_update,
                                 _ticks_from_ms(CFG_SHOW_INTRO_PERIOD));
-                tms_stop_timer(timer_back);
+                tms_start_timer(timer_update);
                 break;
         case SHOW_TIME:
                 tms_stop_timer(timer_back);
                 break;
         case SHOW_ERROR:
-                tms_start_timer(timer_back,
+                tms_set_timer(timer_back,
                                 _ticks_from_ms(CFG_SHOW_DURATION_ERROR));
+                tms_start_timer(timer_back);
                 break;
         case SHOW_DATE:
-                tms_start_timer(timer_back,
+                tms_set_timer(timer_back,
                                 _ticks_from_ms(CFG_SHOW_DURATION_DATE));
+                tms_start_timer(timer_back);
                 break;
         default:
                 ;
@@ -136,10 +139,11 @@ extern void show_handle_key(const key_t _key)
  */
 extern void show_synchronize()
 {
-        tms_run_timer(timer_hide, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
         if (show != SHOW_DATE && show != SHOW_TIME) {
                 return;
         }
+        tms_set_timer(timer_hide, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
+        tms_run_timer(timer_hide);
 
         update();
 }
