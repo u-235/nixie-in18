@@ -86,6 +86,7 @@ extern char alarm_is_jingle(){
 
 extern void alarm_start()
 {
+        alarm.jingle = 1;
         mcu_output_player(alarm.publ.sound);
 }
 
