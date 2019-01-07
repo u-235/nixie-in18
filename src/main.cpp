@@ -10,7 +10,7 @@
 #include "hal/display.h"
 #include "hal/rtc.h"
 #include "tms/tms.h"
-#include "show.h"
+#include "show.hpp"
 #include "user.h"
 
 static bcd_time_t time;
@@ -32,7 +32,7 @@ static void init()
         display_init();
         rtc_init();
         tms_init();
-        show_init(&time, &date);
+        Show::init(&time, &date);
         user_init();
         alarm_init();
         mcu_interrupt_unlock();
@@ -44,12 +44,12 @@ static void loop()
                 if (mcu_get_timer_fire() != 0) {
                         tms_tick();
                 } else {
-                        show_handle_key(user_get_key());
+                        Show::handle_key(user_get_key());
                         if (rtc_check() != 0) {
                                 rtc_get_time(&time);
                                 rtc_get_date(&date);
                                 alarm_check(&time);
-                                show_synchronize();
+                                Show::synchronize();
                         }
                 }
         }

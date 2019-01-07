@@ -3,6 +3,7 @@ BUILD = nixie-in18
 
 ### Source files and search directory
 CSRC    :=  src/bcd/bcd.c src/bcd/bcd_time.c src/hal/avr/mcu.c src/hal/display.c src/hal/iic/iic.c src/hal/avr/pwmi.c src/hal/avr/spi.c
+CPPSRC  :=
 ASRC    =
 
 ifeq ($(MAKECMDGOALS), test_display)
@@ -13,7 +14,11 @@ ifeq ($(MAKECMDGOALS), test_pwm)
 CSRC += src/tests/02-PWM.c
 BUILD =test_pwm
 else
-CSRC += src/main.c src/tms/tms.c src/hal/rtc/chip_m41t56.c src/show.c src/user.c
+CSRC += src/tms/tms.c src/hal/rtc/chip_m41t56.c src/alarm.c src/user.c
+CPPSRC += src/main.cpp src/show/alarm.cpp src/show/show.cpp src/show/date.cpp
+CPPSRC += src/show/error.cpp src/show/intro.cpp src/show/set_alarm.cpp
+CPPSRC += src/show/set_time.cpp src/show/set_date.cpp src/show/set_caliber.cpp
+CPPSRC += src/show/time.cpp
 endif
 endif
 
@@ -26,11 +31,14 @@ OPTIMIZE = s
 ### C Standard level (c89, gnu89, c99 or gnu99)
 CSTD = gnu99
 
+### C++ Standard level (-std=c++98, -std=gnu++98 or -ansi)
+CPPSTD = -std=gnu++98
+
 ### Include dirs, library dirs and definitions
 LIBS	=
 LIBDIRS	=
 INCDIRS	=
-DEFS	= F_CPU=16000000UL MODE=2 __RTC_M41T56__
+DEFS	= F_CPU=16000000UL __RTC_M41T56__
 ADEFS	= $(DEFS)
 
 ### Warning contorls
@@ -48,6 +56,7 @@ DEBUG	= dwarf-2
 
 ### Programs to build porject
 CC      = avr-gcc
+CCPP    = avr-g++
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE    = avr-size
@@ -56,21 +65,34 @@ NM      = avr-nm
 
 # Define all object files
 COBJ      := $(CSRC:.c=.o)
+CPPOBJ    := $(CPPSRC:.cpp=.o)
 AOBJ      := $(ASRC:.S=.o)
 COBJ      := $(addprefix $(OBJDIR)/,$(COBJ))
+CPPOBJ    := $(addprefix $(OBJDIR)/,$(CPPOBJ))
 AOBJ      := $(addprefix $(OBJDIR)/,$(AOBJ))
 BUILD     := $(BINDIR)/$(BUILD)_$(DEVICE)
 
 
+# Flags for C & C++ files
+CCFLAGS += -g$(DEBUG)
+CCFLAGS += -mmcu=$(DEVICE)
+CCFLAGS += -fpack-struct -fshort-enums
+CCFLAGS += -O$(OPTIMIZE) -mcall-prologues -ffunction-sections -fdata-sections
+CCFLAGS += $(addprefix -W,$(WARNINGS))
+CCFLAGS += $(addprefix -I,$(INCDIRS))
+CCFLAGS += $(addprefix -D,$(DEFS))
+CCFLAGS += -Wp,-MD,-MP,-MT,$@,-MF,$@.d
+
+
 # Flags for C files
+CFLAGS = $(CCFLAGS)
 CFLAGS += -std=$(CSTD)
-CFLAGS += -g$(DEBUG)
-CFLAGS += -mmcu=$(DEVICE)
-CFLAGS += -O$(OPTIMIZE) -mcall-prologues
-CFLAGS += $(addprefix -W,$(WARNINGS))
-CFLAGS += $(addprefix -I,$(INCDIRS))
-CFLAGS += $(addprefix -D,$(DEFS))
-CFLAGS += -Wp,-MD,-MP,-MT,$@,-MF,$@.d
+
+
+# Flags for C++ files
+CPPFLAGS = $(CCFLAGS)
+CPPFLAGS += $(CPPSTD)
+CPPFLAGS += -fno-exceptions
 
 
 # Assembler flags
@@ -79,7 +101,7 @@ ALL_ASFLAGS = -mmcu=$(DEVICE) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Linker flags
-LDFLAGS += -Wl,-Map,$(BUILD).map
+LDFLAGS += -Wl,-Map,$(BUILD).map -Wl,--gc-sections -mmcu=atmega168
 
 
 test_display: all
@@ -111,6 +133,7 @@ mkdir: $(SRC_DIRS)
 	$(shell mkdir -p $(OBJDIR)/src/hal/avr)
 	$(shell mkdir -p $(OBJDIR)/src/hal/iic)
 	$(shell mkdir -p $(OBJDIR)/src/hal/rtc)
+	$(shell mkdir -p $(OBJDIR)/src/show)
 	$(shell mkdir -p $(OBJDIR)/src/tests)
 	$(shell mkdir -p $(OBJDIR)/src/tms)
 	$(shell mkdir -p $(BINDIR))
@@ -150,16 +173,22 @@ size:
 
 
 # Link: create ELF output file from object files.
-%.elf:  $(AOBJ) $(COBJ)
+%.elf:  $(AOBJ) $(COBJ) $(CPPOBJ)
 	@echo
 	@echo Linking...
-	$(CC) $(CFLAGS) $(AOBJ) $(COBJ) --output $@
+	$(CCPP) $(LDFLAGS) -o"$@" $(AOBJ) $(COBJ) $(CPPOBJ)
 
 # Compile: create object files from C source files. ARM or Thumb(-2)
 $(COBJ) : $(OBJDIR)/%.o : %.c
 	@echo
 	@echo $< :
 	$(CC) -c $(CFLAGS) $< -o $@
+
+# Compile: create object files from C++ source files. ARM or Thumb(-2)
+$(CPPOBJ) : $(OBJDIR)/%.o : %.cpp
+	@echo
+	@echo $< :
+	$(CCPP) -c $(CPPFLAGS) $< -o $@
 
 # Assemble: create object files from assembler source files. ARM or Thumb(-2)
 $(AOBJ) : $(OBJDIR)/%.o : %.S
