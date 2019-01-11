@@ -2,7 +2,7 @@
 BUILD = nixie-in18
 
 ### Source files and search directory
-CSRC    :=  src/bcd/bcd.c src/bcd/bcd_time.c src/hal/avr/mcu.c src/hal/display.c src/hal/iic/iic.c src/hal/avr/pwmi.c src/hal/avr/spi.c
+CSRC    := src/hal/avr/mcu.c src/hal/display.c src/hal/iic/iic.c src/hal/avr/pwmi.c src/hal/avr/spi.c
 CPPSRC  :=
 ASRC    =
 
