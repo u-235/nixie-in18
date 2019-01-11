@@ -1,8 +1,8 @@
 /**
- * \file main.c
+ * @file
  *
- * \date created on: 02 нояб. 2015 г.
- * \author Nick Egorrov
+ * @date created on: 02 нояб. 2015 г.
+ * @author Nick Egorrov
  */
 
 #include "alarm.h"
@@ -13,8 +13,8 @@
 #include "show.hpp"
 #include "user.h"
 
-static bcd_time_t time;
-static bcd_date_t date;
+static time_t time;
+static date_t date;
 
 static void init();
 static void loop();

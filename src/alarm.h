@@ -11,11 +11,11 @@
 #define ALARM_H_
 
 #include "stdint.h"
-#include "bcd/bcd_time.h"
+#include "time/time.h"
 
 typedef struct _alarm{
-        bcd2_t  hour;
-        bcd2_t  min;
+        uint8_t  hours;
+        uint8_t  minutes;
         uint8_t sound;
 }alarm_t;
 
@@ -41,7 +41,7 @@ extern void alarm_start();
 
 extern void alarm_stop();
 
-extern void alarm_check(const bcd_time_t *pt);
+extern void alarm_check(const time_t *pt);
 
 #ifdef __cplusplus
 }

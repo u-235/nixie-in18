@@ -47,15 +47,15 @@ extern void alarm_init()
 
 extern void alarm_get(alarm_t *pa)
 {
-        pa->hour = alarm.publ.hour;
-        pa->min = alarm.publ.min;
+        pa->hours = alarm.publ.hours;
+        pa->minutes = alarm.publ.minutes;
         pa->sound = alarm.publ.sound;
 }
 
 extern void alarm_set(alarm_t *pa)
 {
-        alarm.publ.hour = pa->hour;
-        alarm.publ.min = pa->min;
+        alarm.publ.hours = pa->hours;
+        alarm.publ.minutes = pa->minutes;
         alarm.publ.sound = pa->sound;
         save();
 }
@@ -80,7 +80,8 @@ extern void alarm_off()
         save();
 }
 
-extern char alarm_is_jingle(){
+extern char alarm_is_jingle()
+{
         return alarm.jingle;
 }
 
@@ -96,13 +97,14 @@ extern void alarm_stop()
         mcu_output_player(0);
 }
 
-extern void alarm_check(const bcd_time_t *pt)
+extern void alarm_check(const time_t *pt)
 {
         if (alarm.run == 0) {
                 return;
         }
 
-        if (alarm.publ.hour != pt->hour || alarm.publ.min != pt->min) {
+        if (alarm.publ.hours != pt->hours
+                        || alarm.publ.minutes != pt->minutes) {
                 alarm.hit = 0;
                 return;
         }

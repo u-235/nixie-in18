@@ -26,7 +26,7 @@ typedef enum {
         RTC_POWER_ERROR
 } rtc_error_t;
 
-#include "../bcd/bcd_time.h"
+#include "../time/time.h"
 
 #ifdef __RTC_DC1307__
 #       include "rtc/chip_dc1307.h"
@@ -61,13 +61,13 @@ extern void rtc_stop();
  */
 extern uint8_t rtc_check();
 
-extern void rtc_get_time(bcd_time_t * time);
+extern void rtc_get_time(time_t * time);
 
-extern void rtc_set_time(const bcd_time_t * time);
+extern void rtc_set_time(const time_t * time);
 
-extern void rtc_get_date(bcd_date_t * date);
+extern void rtc_get_date(date_t * date);
 
-extern void rtc_set_date(const bcd_date_t * date);
+extern void rtc_set_date(const date_t * date);
 
 /**
  * Чтение массива данных из RTC.
