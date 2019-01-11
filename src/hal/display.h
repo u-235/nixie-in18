@@ -1,5 +1,14 @@
-#ifndef DISPLAY_H_
-#define DISPLAY_H_
+/**
+ * @file
+ * @brief
+ * @details
+ *
+ * @date создан 02.01.2015
+ * @author Nick Egorrov
+ */
+
+#ifndef HAL_DISPLAY_H_
+#define HAL_DISPLAY_H_
 
 #include <stdint.h>
 #include "../bcd/bcd_time.h"
@@ -42,20 +51,50 @@
 /** Значок будильника. */
 #define DISPLAY_MARK_ALARM      0x01
 
+#define DISPLAY_ENABLED_SECONDS_UNITS   (1 << 0)
+#define DISPLAY_ENABLED_SECONDS_TENS    (1 << 1)
+#define DISPLAY_ENABLED_SECONDS \
+                (DISPLAY_ENABLED_SECONDS_UNITS | DISPLAY_ENABLED_SECONDS_TENS)
+#define DISPLAY_ENABLED_MINUTES_UNITS   (1 << 2)
+#define DISPLAY_ENABLED_MINUTES_TENS    (1 << 3)
+#define DISPLAY_ENABLED_MINUTES \
+                (DISPLAY_ENABLED_MINUTES_UNITS | DISPLAY_ENABLED_MINUTES_TENS)
+#define DISPLAY_ENABLED_HOURS_UNITS     (1 << 4)
+#define DISPLAY_ENABLED_HOURS_TENS      (1 << 5)
+#define DISPLAY_ENABLED_HOURS \
+                (DISPLAY_ENABLED_HOURS_UNITS | DISPLAY_ENABLED_HOURS_TENS)
+#define DISPLAY_ENABLED_TIME \
+                (DISPLAY_ENABLED_MINUTES | DISPLAY_ENABLED_HOURS)
+#define DISPLAY_ENABLED_ALL \
+                (DISPLAY_ENABLED_SECONDS | DISPLAY_ENABLED_TIME)
+
+typedef struct {
+        union {
+                uint8_t hours;
+                uint8_t day;
+        };
+        union {
+                uint8_t minutes;
+                uint8_t month;
+        };
+        union {
+                uint8_t seconds;
+                uint8_t year;
+        };
+        uint8_t enabled;
+        uint8_t marks;
+        uint8_t dots;
+} display_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void display_init();
-void display_clean();
-void display_flush();
-
-void display_dots(uint8_t d);
-void display_day_marks(uint8_t d);
-void display_day(bcd_day_t d, uint8_t a);
-void display_hours(bcd2_t h);
-void display_minutes(bcd2_t m);
-void display_seconds(bcd2_t s);
+extern void display_init();
+extern void display_clean();
+extern void display_flush();
+extern display_t *display_get();
+extern uint8_t display_make_mark(uint8_t week_day, uint8_t alarm);
 
 #define DISPLAY_BRIGHT_MAX 16
 #define DISPLAY_BRIGHT_MIN 7
@@ -63,11 +102,11 @@ void display_seconds(bcd2_t s);
 #define DISPLAY_RATE_MAX 7
 #define DISPLAY_RATE_MIN 0
 
-void display_bright(uint8_t lvl);
-void display_rate(uint8_t lvl);
+extern void display_bright(uint8_t lvl);
+extern void display_rate(uint8_t lvl);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // DISPLAY_H_
+#endif // HAL_DISPLAY_H_

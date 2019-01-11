@@ -10,6 +10,7 @@ static void flush();
 
 int main(void)
 {
+        display_t *pdisp = display_get();
         mcu_init();
         display_init();
         display_rate(2);
@@ -22,77 +23,81 @@ int main(void)
                 unsigned char c = 1;
                 // Показ дней недели и будильника начиная с понедельника.
                 for (unsigned char i = 0; i < 8; i++) {
-                        display_day(c);
+                        pdisp->marks = c;
                         flush();
                         c <<= 1;
                         _delay_ms(STEP_DELAY);
                 }
                 // Гасим дни.
-                display_day(0);
+                pdisp->marks = 0;
 
                 // Показ разделителей.
-                display_dots(DISPLAY_DOT_LEFT_BOTTOM);
+                pdisp->dots = DISPLAY_DOT_LEFT_BOTTOM;
                 flush();
                 _delay_ms(STEP_DELAY);
 
-                display_dots(DISPLAY_DOT_LEFT_TOP);
+                pdisp->dots = DISPLAY_DOT_LEFT_TOP;
                 flush();
                 _delay_ms(STEP_DELAY);
 
-                display_dots(DISPLAY_DOT_RIGHT_TOP);
+                pdisp->dots = DISPLAY_DOT_RIGHT_TOP;
                 flush();
                 _delay_ms(STEP_DELAY);
 
-                display_dots(DISPLAY_DOT_RIGHT_BOTTOM);
+                pdisp->dots = DISPLAY_DOT_RIGHT_BOTTOM;
                 flush();
                 _delay_ms(STEP_DELAY);
                 // Гасим разделители.
-                display_dots(0);
+                pdisp->dots = (0);
 
                 // Показ единиц секунд
+                pdisp->enabled = DISPLAY_ENABLED_SECONDS_UNITS;
                 for (unsigned char i = 0; i <= 9; i++) {
-                        display_seconds(i + 0xa0);
+                        pdisp->seconds = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков секунд
-                for (unsigned char i = 0; i <= 0x90; i += 0x10) {
-                        display_seconds(i + 0x0a);
+                pdisp->enabled = DISPLAY_ENABLED_SECONDS_TENS;
+                for (unsigned char i = 0; i <= 90; i += 10) {
+                        pdisp->seconds = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
-                display_seconds(0xff);
 
                 // Показ единиц минут
+                pdisp->enabled = DISPLAY_ENABLED_MINUTES_UNITS;
                 for (unsigned char i = 0; i <= 9; i++) {
-                        display_minutes(i + 0xa0);
+                        pdisp->minutes = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков минут
-                for (unsigned char i = 0; i <= 0x90; i += 0x10) {
-                        display_minutes(i + 0x0a);
+                pdisp->enabled = DISPLAY_ENABLED_MINUTES_TENS;
+                for (unsigned char i = 0; i <= 90; i += 10) {
+                        pdisp->minutes = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
-                display_minutes(0xff);
 
                 // Показ единиц часов
+                pdisp->enabled = DISPLAY_ENABLED_HOURS_UNITS;
                 for (unsigned char i = 0; i <= 9; i++) {
-                        display_hours(i + 0xa0);
+                        pdisp->hours = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
 
                 // Показ десятков часов
+                pdisp->enabled = DISPLAY_ENABLED_HOURS_TENS;
                 for (unsigned char i = 0; i <= 0x90; i += 0x10) {
-                        display_hours(i + 0x0a);
+                        pdisp->hours = i;
                         flush();
                         _delay_ms(STEP_DELAY);
                 }
-                display_hours(0xff);
+                pdisp->enabled = 0;
         }
 
         return 0;

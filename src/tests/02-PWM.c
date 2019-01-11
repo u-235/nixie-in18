@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include "../bcd/bcd.h"
 #include "../hal/avr/asm.h"
 #include "../hal/display.h"
 #include "../hal/mcu.h"
@@ -22,8 +21,9 @@ static uint8_t get_bright();
 
 int main(void)
 {
+        display_t *pdisp = display_get();
         uint8_t bright, rate;
-        bcd2_t count = 0;
+        uint8_t count = 0;
         uint8_t day = 0, day_state = 0;
         uint8_t dots = 0;
 
@@ -31,6 +31,8 @@ int main(void)
         display_init();
         adc_init();
         mcu_interrupt_enable();
+        display_clean();
+        pdisp->enabled = DISPLAY_ENABLED_ALL;
 
         while (1) {
                 bright = get_bright();
@@ -39,11 +41,14 @@ int main(void)
                 display_bright(bright);
                 display_rate(rate);
 
-                display_hours(bcd_from_uint8(bright));
-                display_minutes(bcd_from_uint8(rate));
+                pdisp->hours = bright;
+                pdisp->minutes = rate;
 
-                display_seconds(count);
-                count = bcd_add2(count, 1);
+                pdisp->seconds = count;
+                count++;
+                if (count >= 100) {
+                        count = 0;
+                }
 
                 switch (day_state) {
                 case 0:
@@ -87,14 +92,14 @@ int main(void)
                         }
                         break;
                 }
-                display_day_marks(day);
+                pdisp->marks = day;
 
                 if ((dots & DISPLAY_DOT_LEFT_BOTTOM) != 0) {
                         dots = DISPLAY_DOT_LEFT_TOP | DISPLAY_DOT_RIGHT_BOTTOM;
                 } else {
                         dots = DISPLAY_DOT_LEFT_BOTTOM | DISPLAY_DOT_RIGHT_TOP;
                 }
-                display_dots(dots);
+                pdisp->dots = dots;
 
                 display_flush();
                 _delay_ms(1000);
