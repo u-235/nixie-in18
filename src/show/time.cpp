@@ -18,17 +18,18 @@ void ShowTime::on_start()
 
 void ShowTime::on_update()
 {
-        display_hours(time->hour);
-        display_minutes(time->min);
-        display_seconds(time->sec);
-        display_day(date->day, alarm_is_on());
-        display_dots(DISPLAY_DOT_BOTTOM);
+        display->enabled = DISPLAY_ENABLED_ALL;
+        display->hours = time->hours;
+        display->minutes = time->minutes;
+        display->seconds = time->seconds;
+        display->marks = display_make_mark(date->week_day, alarm_is_on());
+        display->dots = DISPLAY_DOT_BOTTOM;
 }
 
 void ShowTime::on_hide()
 {
         if (flags.rtc_power_fail == 0) {
-                display_dots(DISPLAY_DOT_HIDE);
+                display->dots = DISPLAY_DOT_HIDE;
         } else {
                 display_clean();
         }
@@ -36,15 +37,15 @@ void ShowTime::on_hide()
 
 void ShowTime::on_key(const key_t _key)
 {
-        if(_key == VK_MENU_UP){
+        if (_key == VK_MENU_UP) {
                 mode(SHOW_SET_ALARM);
         }
 
-        if(_key == VK_SELECT_DOWN){
+        if (_key == VK_SELECT_DOWN) {
                 mode(SHOW_ALARM);
         }
 
-        if(_key == VK_CHANGE_UP){
+        if (_key == VK_CHANGE_UP) {
                 mode(SHOW_DATE);
         }
 }

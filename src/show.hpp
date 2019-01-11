@@ -10,7 +10,7 @@
 #ifndef SRC_SHOW_HPP_
 #define SRC_SHOW_HPP_
 
-#include "bcd/bcd_time.h"
+#include "time/time.h"
 #include "hal/display.h"
 #include "hal/rtc.h"
 #include "tms/tms.h"
@@ -18,7 +18,7 @@
 
 class Show {
 public:
-        static void init(const bcd_time_t *pt, const bcd_date_t *pd);
+        static void init(const time_t *pt, const date_t *pd);
 
         static void synchronize();
 
@@ -38,10 +38,11 @@ protected:
                 SHOW_SET_CALIBER
         } show_t;
 
+        static display_t *display;
         static show_t show;
         static rtc_error_t error;
-        static const bcd_time_t *time;
-        static const bcd_date_t *date;
+        static const time_t *time;
+        static const date_t *date;
         static struct _flags {
                 char rtc_power_fail :1;
         } flags;

@@ -14,20 +14,22 @@
 
 #define ERROR_CHECK_PERIOD      1200
 
+display_t *Show::display;
 Show::show_t Show::show = SHOW_VOID;
 rtc_error_t Show::error;
-const bcd_time_t *Show::time;
-const bcd_date_t *Show::date;
+const time_t *Show::time;
+const date_t *Show::date;
 struct Show::_flags Show::flags = {
                 0
 };
 timer_id_t Show::timer_update, Show::timer_hide, Show::timer_check,
                 Show::timer_back;
 
-void Show::init(const bcd_time_t *pt, const bcd_date_t *pd)
+void Show::init(const time_t *pt, const date_t *pd)
 {
         time = pt;
         date = pd;
+        display = display_get();
         timer_hide = tms_create_timer(&hide);
         timer_update = tms_create_timer(&update);
         timer_check = tms_create_timer(&check_error);

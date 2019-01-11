@@ -42,11 +42,12 @@ void ShowSetAlarm::on_stop()
 
 void ShowSetAlarm::on_update()
 {
-        display_hours(alarm.hour);
-        display_minutes(alarm.min);
-        display_seconds(0xf0 | alarm.sound);
+        display->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
+        display->hours = alarm.hours;
+        display->minutes = alarm.minutes;
+        display->seconds = alarm.sound;
         if (flag != 0) {
-                display_day_marks(DISPLAY_MARK_ALARM);
+                display->marks = DISPLAY_MARK_ALARM;
         }
         tms_run_timer(timer_hide);
 }
@@ -55,13 +56,15 @@ void ShowSetAlarm::on_hide()
 {
         switch (state) {
         case 0:
-                display_hours(0xff);
+                display->enabled = DISPLAY_ENABLED_MINUTES
+                                | DISPLAY_ENABLED_SECONDS_UNITS;
                 break;
         case 1:
-                display_minutes(0xff);
+                display->enabled = DISPLAY_ENABLED_HOURS
+                                | DISPLAY_ENABLED_SECONDS_UNITS;
                 break;
         case 2:
-                display_seconds(0xff);
+                display->enabled = DISPLAY_ENABLED_TIME;
                 break;
         }
         tms_run_timer(timer_update);
@@ -97,15 +100,15 @@ void ShowSetAlarm::on_key(const key_t _key)
 
         switch (state) {
         case 0:
-                alarm.hour = bcd2_inc(alarm.hour);
-                if (alarm.hour > 0x23) {
-                        alarm.hour = 0;
+                alarm.hours++;
+                if (alarm.hours > 23) {
+                        alarm.hours = 0;
                 }
                 break;
         case 1:
-                alarm.min = bcd2_inc(alarm.min);
-                if (alarm.min > 0x59) {
-                        alarm.min = 0;
+                alarm.minutes++;
+                if (alarm.minutes > 59) {
+                        alarm.minutes = 0;
                 }
                 break;
         case 2:

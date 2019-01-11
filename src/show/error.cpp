@@ -23,6 +23,8 @@ void ShowError::on_stop()
 
 void ShowError::on_update()
 {
-        display_hours(_bcd2_make(06));
-        display_seconds(0xa1);
+        display->enabled = DISPLAY_ENABLED_HOURS |
+                                                DISPLAY_ENABLED_SECONDS_UNITS;
+        display->hours = 6;
+        display->seconds = 1;
 }

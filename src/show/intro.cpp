@@ -27,22 +27,23 @@ void ShowIntro::on_update()
 
         switch (phase) {
         case 0:
-                display_dots(DISPLAY_DOT_ALL);
+                display->dots = DISPLAY_DOT_ALL;
                 break;
         case 1:
                 if (count < 8) {
                         uint8_t day = 1 << count;
-                        display_day_marks(day);
+                        display->marks = day;
                         count++;
                         return;
                 }
                 break;
         case 2:
                 if (count++ < 10) {
-                        bcd2_t t = ((10 - count) << 4) | (10 - count);
-                        display_hours(t);
-                        display_minutes(t);
-                        display_seconds(t);
+                        display->enabled = DISPLAY_ENABLED_ALL;
+                        uint8_t t = (10 - count) * 11;
+                        display->hours = t;
+                        display->minutes = t;
+                        display->seconds = t;
                         return;
                 }
                 break;

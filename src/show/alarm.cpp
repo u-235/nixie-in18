@@ -7,7 +7,6 @@
  * @author Nick Egorrov
  */
 
-
 #include "childs.hpp"
 #include "../alarm.h"
 #include "../config.h"
@@ -29,21 +28,19 @@ void ShowAlarm::on_stop()
 
 void ShowAlarm::on_update()
 {
-        display_hours(alarm.hour);
-        display_minutes(alarm.min);
-        display_seconds(0xf0 | alarm.sound);
+        display->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
+        display->hours = alarm.hours;
+        display->minutes = alarm.minutes;
+        display->seconds = alarm.sound;
         if (alarm_is_on() != 0) {
-                display_day_marks(DISPLAY_MARK_ALARM);
+                display->marks = DISPLAY_MARK_ALARM;
         }
 }
 
 void ShowAlarm::on_key(const key_t _key)
 {
         if (_key == VK_MENU_UP) {
-                        mode(SHOW_TIME);
+                mode(SHOW_TIME);
         }
 }
-
-
-
 

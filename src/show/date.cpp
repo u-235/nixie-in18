@@ -17,23 +17,25 @@ void ShowDate::on_start()
         tms_start_timer(timer_back);
 }
 
-void ShowDate::on_stop(){
+void ShowDate::on_stop()
+{
         tms_stop_timer(timer_back);
 }
 
 void ShowDate::on_update()
 {
-        display_hours(date->date);
-        display_minutes(date->month);
-        display_seconds(date->year);
-        display_day(date->day, alarm_is_on());
-        display_dots(DISPLAY_DOT_ALL);
+        display->enabled = DISPLAY_ENABLED_ALL;
+        display->day = date->day;
+        display->month = date->month;
+        display->year = date->year;
+        display->marks = display_make_mark(date->week_day, alarm_is_on());
+        display->dots = DISPLAY_DOT_ALL;
 }
 
 void ShowDate::on_key(const key_t _key)
 {
         if (_key == VK_MENU_UP) {
-                        mode(SHOW_TIME);
+                mode(SHOW_TIME);
         }
 }
 
