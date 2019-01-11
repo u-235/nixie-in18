@@ -52,17 +52,17 @@
  *  программист. Иными словами "1" может быть понедельником (как это принято в
  *  России), воскресеньем или любым другим днём недели.
  */
-#define ADDR_DAY        3
+#define ADDR_WEEK_DAY   3
 /** Маска для получения только дня недели. */
-#define MASK_DAY        ((1 << 2) |(1 << 1) | (1 << 0))
+#define MASK_WEEK_DAY   ((1 << 2) |(1 << 1) | (1 << 0))
 
 /**
  * \brief Адрес (индекс) счетчика дня месяца.
  * \details Счёт идёт от 1 до 31 включительно.
  */
-#define ADDR_DATE       4
+#define ADDR_DAY        4
 /** Маска для получения только дня месяца. */
-#define MASK_DATE        ((1 << 5) | (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0))
+#define MASK_DAY        ((1 << 5) | (1 << 4) | (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0))
 
 /** Адрес (индекс) счетчика месяцев. */
 #define ADDR_MONTH      5
@@ -123,6 +123,10 @@ static void check_power_fail();
 
 static void reset_chip();
 
+static uint8_t to_bcd(const uint8_t i);
+
+static uint8_t from_bcd(const uint8_t b);
+
 static uint8_t pure_seconds(const uint8_t s);
 
 static uint8_t complete_seconds(const uint8_t s);
@@ -135,13 +139,13 @@ static uint8_t pure_hours(const uint8_t h);
 
 static uint8_t complete_hours(const uint8_t h);
 
-static uint8_t pure_days(const uint8_t d);
+static uint8_t pure_week_days(const uint8_t d);
 
-static uint8_t complete_days(const uint8_t d);
+static uint8_t complete_week_days(const uint8_t d);
 
-static uint8_t pure_date(const uint8_t d);
+static uint8_t pure_day(const uint8_t d);
 
-static uint8_t complete_date(const uint8_t d);
+static uint8_t complete_day(const uint8_t d);
 
 static uint8_t pure_month(const uint8_t m);
 
@@ -249,39 +253,39 @@ extern uint8_t rtc_check_m41t56()
         return 0;
 }
 
-extern void rtc_get_time_m41t56(bcd_time_t * time)
+extern void rtc_get_time_m41t56(time_t * time)
 {
         begin_io(IIC_READ, ADDR_SECONDS);
-        time->sec = pure_seconds(iic_ll_read(1));
-        time->min = pure_minutes(iic_ll_read(1));
-        time->hour = pure_hours(iic_ll_read(0));
+        time->seconds = pure_seconds(iic_ll_read(1));
+        time->minutes = pure_minutes(iic_ll_read(1));
+        time->hours = pure_hours(iic_ll_read(0));
         end_io();
 }
 
-extern void rtc_set_time_m41t56(const bcd_time_t * time)
+extern void rtc_set_time_m41t56(const time_t * time)
 {
         begin_io(IIC_WRITE, ADDR_SECONDS);
-        iic_ll_write(complete_seconds(time->sec));
-        iic_ll_write(complete_minutes(time->min));
-        iic_ll_write(complete_hours(time->hour));
+        iic_ll_write(complete_seconds(time->seconds));
+        iic_ll_write(complete_minutes(time->minutes));
+        iic_ll_write(complete_hours(time->hours));
         end_io();
 }
 
-extern void rtc_get_date_m41t56(bcd_date_t * date)
+extern void rtc_get_date_m41t56(date_t * date)
 {
-        begin_io(IIC_READ, ADDR_DAY);
-        date->day = pure_days(iic_ll_read(1));
-        date->date = pure_date(iic_ll_read(1));
+        begin_io(IIC_READ, ADDR_WEEK_DAY);
+        date->week_day = pure_week_days(iic_ll_read(1));
+        date->day = pure_day(iic_ll_read(1));
         date->month = pure_month(iic_ll_read(1));
         date->year = pure_year(iic_ll_read(0));
         end_io();
 }
 
-extern void rtc_set_date_m41t56(const bcd_date_t * date)
+extern void rtc_set_date_m41t56(const date_t * date)
 {
-        begin_io(IIC_WRITE, ADDR_DAY);
-        iic_ll_write(complete_days(date->day));
-        iic_ll_write(complete_date(date->date));
+        begin_io(IIC_WRITE, ADDR_WEEK_DAY);
+        iic_ll_write(complete_week_days(date->week_day));
+        iic_ll_write(complete_day(date->day));
         iic_ll_write(complete_month(date->month));
         iic_ll_write(complete_year(date->year));
         end_io();
@@ -390,13 +394,13 @@ static void reset_chip()
         char i;
 
         begin_io(IIC_WRITE, ADDR_SECONDS);
-        iic_ll_write(complete_seconds(_bcd2_make(12)));
-        iic_ll_write(complete_minutes(_bcd2_make(12)));
-        iic_ll_write(complete_hours(_bcd2_make(12)));
-        iic_ll_write(complete_days(WEDNESDAY));
-        iic_ll_write(complete_date(_bcd2_make(12)));
-        iic_ll_write(complete_month(_bcd2_make(12)));
-        iic_ll_write(complete_year(_bcd2_make(18)));
+        iic_ll_write(complete_seconds(12));
+        iic_ll_write(complete_minutes(12));
+        iic_ll_write(complete_hours(12));
+        iic_ll_write(complete_week_days(WEDNESDAY));
+        iic_ll_write(complete_day(12));
+        iic_ll_write(complete_month(12));
+        iic_ll_write(complete_year(18));
         iic_ll_write(complete_control(0));
         /* Clean chip's RAM. */
         for (i = ADDR_RAM_SIZE; i > 0; i--) {
@@ -405,16 +409,26 @@ static void reset_chip()
         end_io();
 }
 
+static uint8_t to_bcd(const uint8_t i)
+{
+        return ((i / 10) * 16) | (i % 10);
+}
+
+static uint8_t from_bcd(const uint8_t b)
+{
+        return ((b / 16) * 10) + (b & 0x0f);
+}
+
 static uint8_t pure_seconds(const uint8_t s)
 {
-        return s & MASK_SECONDS;
+        return from_bcd(s & MASK_SECONDS);
 }
 
 static uint8_t complete_seconds(const uint8_t s)
 {
         uint8_t ret;
 
-        ret = pure_seconds(s);
+        ret = to_bcd(s);
         if (bits.stop == 1) {
                 ret |= (1 << BIT_STOP);
         }
@@ -423,24 +437,24 @@ static uint8_t complete_seconds(const uint8_t s)
 
 static uint8_t pure_minutes(const uint8_t m)
 {
-        return m & MASK_MINUTES;
+        return from_bcd(m & MASK_MINUTES);
 }
 
 static uint8_t complete_minutes(const uint8_t m)
 {
-        return pure_minutes(m);
+        return to_bcd(m);
 }
 
 static uint8_t pure_hours(const uint8_t h)
 {
-        return h & MASK_HOURS;
+        return from_bcd(h & MASK_HOURS);
 }
 
 static uint8_t complete_hours(const uint8_t h)
 {
         uint8_t ret;
 
-        ret = pure_hours(h);
+        ret = to_bcd(h);
 
         if (bits.century == 1) {
                 ret |= (1 << BIT_CENTURY);
@@ -453,44 +467,44 @@ static uint8_t complete_hours(const uint8_t h)
         return ret;
 }
 
-static uint8_t pure_days(const uint8_t d)
+static uint8_t pure_week_days(const uint8_t d)
 {
-        return d & MASK_DAY;
+        return d & MASK_WEEK_DAY;
 }
 
-static uint8_t complete_days(const uint8_t d)
+static uint8_t complete_week_days(const uint8_t d)
 {
-        return pure_days(d);
+        return pure_week_days(d);
 }
 
-static uint8_t pure_date(const uint8_t d)
+static uint8_t pure_day(const uint8_t d)
 {
-        return d & MASK_DATE;
+        return from_bcd(d & MASK_DAY);
 }
 
-static uint8_t complete_date(const uint8_t d)
+static uint8_t complete_day(const uint8_t d)
 {
-        return pure_date(d);
+        return to_bcd(d);
 }
 
 static uint8_t pure_month(const uint8_t m)
 {
-        return m & MASK_MONTH;
+        return from_bcd(m & MASK_MONTH);
 }
 
 static uint8_t complete_month(const uint8_t m)
 {
-        return pure_month(m);
+        return to_bcd(m);
 }
 
 static uint8_t pure_year(const uint8_t y)
 {
-        return y & MASK_YEAR;
+        return from_bcd(y & MASK_YEAR);
 }
 
 static uint8_t complete_year(const uint8_t y)
 {
-        return pure_year(y);
+        return to_bcd(y);
 }
 
 static uint8_t pure_calibr(const uint8_t c)
