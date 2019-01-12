@@ -27,6 +27,7 @@ typedef struct {
  *************************************************************/
 
 static ex_alarm_t alarm;
+static timer_id_t timer_sound;
 
 /*************************************************************
  *      Private function prototype.
@@ -42,6 +43,8 @@ static void save();
 
 extern void alarm_init()
 {
+        timer_sound = tms_create_timer(alarm_off);
+        tms_set_timer(timer_sound, _ticks_from_ms(CFG_ALARM_DURATION_SOUND));
         load();
 }
 
@@ -88,12 +91,14 @@ extern char alarm_is_jingle()
 extern void alarm_start()
 {
         alarm.jingle = 1;
+        tms_run_timer(timer_sound);
         mcu_output_player(alarm.publ.sound);
 }
 
 extern void alarm_stop()
 {
         alarm.jingle = 0;
+        tms_stop_timer(timer_sound);
         mcu_output_player(0);
 }
 
@@ -124,6 +129,12 @@ extern void alarm_check(const time_t *pt)
 static void load()
 {
         rtc_mem_read((int8_t*) &alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        if (rtc_error() != RTC_NO_ERROR) {
+                alarm.publ.hours = 7;
+                alarm.publ.minutes = 40;
+                alarm.publ.sound = 1;
+                alarm.run = 0;
+        }
         alarm.hit = 0;
         alarm.jingle = 0;
 }

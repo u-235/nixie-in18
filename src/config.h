@@ -129,6 +129,9 @@
 #define CFG_SHOW_BLINK_DURATION         500U
 #define CFG_SHOW_INTRO_PERIOD           333U
 
+/* Длительность проигрывания мелодии будильника. */
+#define CFG_ALARM_DURATION_SOUND        60000U
+
 /*
  * Соответствие выводов кнопкам.
  *  Последняя буква порта, номер бита
