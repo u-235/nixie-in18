@@ -84,6 +84,16 @@ extern void check_error()
         Show::show_error(1);
 }
 
-extern void on_rtc_failture(){
+extern void on_rtc_failture()
+{
+        time.seconds = 7;
+        time.minutes = 7;
+        time.hours = 7;
+        rtc_set_time(&time);
+        date.day = 12;
+        date.month = 12;
+        date.year = 18;
+        date_adjust(&date);
+        rtc_set_date(&date);
         Show::rtc_failture();
 }

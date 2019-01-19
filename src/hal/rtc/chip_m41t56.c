@@ -92,7 +92,7 @@
 /** Адрес (индекс) первого байта RAM RTC. */
 #define ADDR_RAM_BEGIN  8
 /** Адрес (индекс) последнего байта RAM RTC. */
-#define ADDR_RAM_END    55
+#define ADDR_RAM_END    63
 /** Количество байт RAM RTC. */
 #define ADDR_RAM_SIZE   (ADDR_RAM_END - ADDR_RAM_BEGIN + 1)
 
@@ -393,17 +393,8 @@ static void reset_chip()
 {
         char i;
 
-        begin_io(IIC_WRITE, ADDR_SECONDS);
-        iic_ll_write(complete_seconds(12));
-        iic_ll_write(complete_minutes(12));
-        iic_ll_write(complete_hours(12));
-        iic_ll_write(complete_week_days(WEDNESDAY));
-        iic_ll_write(complete_day(12));
-        iic_ll_write(complete_month(12));
-        iic_ll_write(complete_year(18));
-        iic_ll_write(complete_control(0));
-        /* Clean chip's RAM. */
-        for (i = ADDR_RAM_SIZE; i > 0; i--) {
+        begin_io(IIC_WRITE, 0);
+        for (i = ADDR_RAM_END + 1; i > 0; i--) {
                 iic_ll_write(0);
         }
         end_io();
