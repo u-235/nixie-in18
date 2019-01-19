@@ -18,13 +18,14 @@ void ShowError::on_start()
 
 void ShowError::on_stop()
 {
+        error = 0;
         tms_stop_timer(timer_back);
 }
 
 void ShowError::on_update()
 {
         display->enabled = DISPLAY_ENABLED_HOURS |
-                                                DISPLAY_ENABLED_SECONDS_UNITS;
+                                DISPLAY_ENABLED_SECONDS_UNITS;
         display->hours = 6;
-        display->seconds = 1;
+        display->seconds = error;
 }

@@ -24,6 +24,10 @@ public:
 
         static void handle_key(const key_t _key);
 
+        static void show_error(uint8_t _error);
+
+        static void rtc_failture();
+
 protected:
         typedef enum {
                 SHOW_VOID,
@@ -40,7 +44,7 @@ protected:
 
         static display_t *display;
         static show_t show;
-        static rtc_error_t error;
+        static uint8_t error;
         static const time_t *time;
         static const date_t *date;
         static struct _flags {
@@ -49,7 +53,6 @@ protected:
         static timer_id_t timer_update, timer_hide, timer_check, timer_back;
 
         static void mode(show_t _show);
-        static void check_error();
         static void back_show_time();
         static void update();
         static void hide();

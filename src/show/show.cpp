@@ -9,21 +9,17 @@
 
 #include "../alarm.h"
 #include "../config.h"
-#include "../hal/rtc.h"
 #include "childs.hpp"
-
-#define ERROR_CHECK_PERIOD      1200
 
 display_t *Show::display;
 Show::show_t Show::show = SHOW_VOID;
-rtc_error_t Show::error;
+uint8_t Show::error;
 const time_t *Show::time;
 const date_t *Show::date;
 struct Show::_flags Show::flags = {
                 0
 };
-timer_id_t Show::timer_update, Show::timer_hide, Show::timer_check,
-                Show::timer_back;
+timer_id_t Show::timer_update, Show::timer_hide, Show::timer_back;
 
 void Show::init(const time_t *pt, const date_t *pd)
 {
@@ -32,10 +28,7 @@ void Show::init(const time_t *pt, const date_t *pd)
         display = display_get();
         timer_hide = tms_create_timer(&hide);
         timer_update = tms_create_timer(&update);
-        timer_check = tms_create_timer(&check_error);
         timer_back = tms_create_timer(&back_show_time);
-        tms_set_timer(timer_check, _ticks_from_ms(ERROR_CHECK_PERIOD));
-        tms_start_timer(timer_check);
         mode(SHOW_INTRO);
 }
 
@@ -122,27 +115,21 @@ void Show::mode(show_t _show)
         update();
 }
 
-void Show::check_error()
+void Show::show_error(uint8_t _error)
 {
-        error = rtc_error();
+        error = _error;
 
-        if (error == RTC_NO_ERROR) {
-                return;
-        }
-
-        rtc_clear();
-
-        if (error == RTC_POWER_ERROR) {
-                flags.rtc_power_fail = 1;
-                return;
-        }
-
-        if (show == SHOW_INTRO) {
+        if (show == SHOW_INTRO || _error == 0) {
                 return;
         }
 
         mode(SHOW_ERROR);
         update();
+}
+
+void Show::rtc_failture()
+{
+        flags.rtc_power_fail = 1;
 }
 
 void Show::back_show_time()
