@@ -33,8 +33,7 @@ typedef enum {
 } day_t;
 
 /**
- * Структура для представления времени суток в двоично-десятичном
- * формате.
+ * Структура для представления времени суток в двоичном формате.
  */
 typedef struct {
         /** Часы, 0-23 */
@@ -46,8 +45,7 @@ typedef struct {
 } time_t;
 
 /**
- * Структура для представления календарной даты в двоично-десятичном
- * формате.
+ * Структура для представления календарной даты в двоичном формате.
  */
 typedef struct {
         /** Год, 0-99 */
@@ -64,7 +62,13 @@ typedef struct {
 extern "C" {
 #endif
 
+extern void date_adjust(date_t *date);
 
+extern uint32_t days_from_millenium(const date_t *date);
+
+extern uint32_t seconds_from_midnight(const time_t *time);
+
+extern uint32_t seconds_from_millenium(const date_t *date, const time_t *time);
 
 #ifdef __cplusplus
 }
