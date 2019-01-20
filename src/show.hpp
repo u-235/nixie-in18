@@ -18,7 +18,7 @@
 
 class Show {
 public:
-        static void init(const time_t *pt, const date_t *pd);
+        static void init(const stime *pt, const sdate *pd);
 
         static void synchronize();
 
@@ -45,8 +45,8 @@ protected:
         static display_t *display;
         static show_t show;
         static uint8_t error;
-        static const time_t *time;
-        static const date_t *date;
+        static const stime *time;
+        static const sdate *date;
         static struct _flags {
                 char rtc_power_fail :1;
         } flags;

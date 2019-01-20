@@ -42,7 +42,7 @@ typedef struct {
         uint8_t minutes;
         /** Секунды, 0-59 */
         uint8_t seconds;
-} time_t;
+} stime;
 
 /**
  * Структура для представления календарной даты в двоичном формате.
@@ -56,19 +56,21 @@ typedef struct {
         uint8_t day;
         /** День недели. ::day_t */
         uint8_t week_day;
-} date_t;
+} sdate;
+
+typedef uint32_t utime_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void date_adjust(date_t *date);
+extern void date_adjust(sdate *date);
 
-extern uint32_t days_from_millenium(const date_t *date);
+extern utime_t days_from_millenium(const sdate *date);
 
-extern uint32_t seconds_from_midnight(const time_t *time);
+extern utime_t seconds_from_midnight(const stime *time);
 
-extern uint32_t seconds_from_millenium(const date_t *date, const time_t *time);
+extern utime_t seconds_from_millenium(const sdate *date, const stime *time);
 
 #ifdef __cplusplus
 }

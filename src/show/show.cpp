@@ -14,14 +14,14 @@
 display_t *Show::display;
 Show::show_t Show::show = SHOW_VOID;
 uint8_t Show::error;
-const time_t *Show::time;
-const date_t *Show::date;
+const stime *Show::time;
+const sdate *Show::date;
 struct Show::_flags Show::flags = {
                 0
 };
 timer_id_t Show::timer_update, Show::timer_hide, Show::timer_back;
 
-void Show::init(const time_t *pt, const date_t *pd)
+void Show::init(const stime *pt, const sdate *pd)
 {
         time = pt;
         date = pd;

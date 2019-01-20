@@ -15,8 +15,8 @@
 
 #define ERROR_CHECK_PERIOD      1200
 
-static time_t time;
-static date_t date;
+static stime time;
+static sdate date;
 
 static void init();
 static void loop();

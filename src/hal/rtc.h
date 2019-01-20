@@ -61,13 +61,13 @@ extern void rtc_stop();
  */
 extern uint8_t rtc_check();
 
-extern void rtc_get_time(time_t * time);
+extern void rtc_get_time(stime * time);
 
-extern void rtc_set_time(const time_t * time);
+extern void rtc_set_time(const stime * time);
 
-extern void rtc_get_date(date_t * date);
+extern void rtc_get_date(sdate * date);
 
-extern void rtc_set_date(const date_t * date);
+extern void rtc_set_date(const sdate * date);
 
 /**
  * Чтение массива данных из RTC.

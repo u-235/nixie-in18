@@ -253,7 +253,7 @@ extern uint8_t rtc_check_m41t56()
         return 0;
 }
 
-extern void rtc_get_time_m41t56(time_t * time)
+extern void rtc_get_time_m41t56(stime * time)
 {
         begin_io(IIC_READ, ADDR_SECONDS);
         time->seconds = pure_seconds(iic_ll_read(1));
@@ -262,7 +262,7 @@ extern void rtc_get_time_m41t56(time_t * time)
         end_io();
 }
 
-extern void rtc_set_time_m41t56(const time_t * time)
+extern void rtc_set_time_m41t56(const stime * time)
 {
         begin_io(IIC_WRITE, ADDR_SECONDS);
         iic_ll_write(complete_seconds(time->seconds));
@@ -271,7 +271,7 @@ extern void rtc_set_time_m41t56(const time_t * time)
         end_io();
 }
 
-extern void rtc_get_date_m41t56(date_t * date)
+extern void rtc_get_date_m41t56(sdate * date)
 {
         begin_io(IIC_READ, ADDR_WEEK_DAY);
         date->week_day = pure_week_days(iic_ll_read(1));
@@ -281,7 +281,7 @@ extern void rtc_get_date_m41t56(date_t * date)
         end_io();
 }
 
-extern void rtc_set_date_m41t56(const date_t * date)
+extern void rtc_set_date_m41t56(const sdate * date)
 {
         begin_io(IIC_WRITE, ADDR_WEEK_DAY);
         iic_ll_write(complete_week_days(date->week_day));

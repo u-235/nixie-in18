@@ -102,7 +102,7 @@ extern void alarm_stop()
         mcu_output_player(0);
 }
 
-extern void alarm_check(const time_t *pt)
+extern void alarm_check(const stime *pt)
 {
         if (alarm.run == 0) {
                 return;

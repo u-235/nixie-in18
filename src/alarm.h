@@ -41,7 +41,7 @@ extern void alarm_start();
 
 extern void alarm_stop();
 
-extern void alarm_check(const time_t *pt);
+extern void alarm_check(const stime *pt);
 
 #ifdef __cplusplus
 }
