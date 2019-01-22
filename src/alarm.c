@@ -128,7 +128,7 @@ extern void alarm_check(const stime *pt)
 
 static void load()
 {
-        rtc_mem_read((int8_t*) &alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_read(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
         if (rtc_error() != RTC_NO_ERROR) {
                 alarm.publ.hours = 7;
                 alarm.publ.minutes = 40;
@@ -141,5 +141,5 @@ static void load()
 
 static void save()
 {
-        rtc_mem_write((int8_t*) &alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_write(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
 }

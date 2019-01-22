@@ -75,7 +75,7 @@ extern void rtc_set_date(const sdate * date);
  * @param adr Адрес данных в памяти RTC.
  * @param sz Количество байт для чтения.
  */
-extern void rtc_mem_read(int8_t *dst, uint8_t adr, uint8_t sz);
+extern void rtc_mem_read(void *dst, const uint8_t adr, const uint8_t sz);
 
 /**
  * Запись массива данных в RTC.
@@ -83,7 +83,7 @@ extern void rtc_mem_read(int8_t *dst, uint8_t adr, uint8_t sz);
  * @param adr Адрес данных в памяти RTC.
  * @param sz Количество байт для записи.
  */
-extern void rtc_mem_write(int8_t *src, uint8_t adr, uint8_t sz);
+extern void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz);
 
 /**
  * Получение значения коррекции хода.

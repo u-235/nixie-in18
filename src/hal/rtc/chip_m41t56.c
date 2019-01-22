@@ -297,12 +297,13 @@ extern void rtc_set_date_m41t56(const sdate * date)
  * @param adr Адрес данных в памяти RTC.
  * @param sz Количество байт для чтения.
  */
-extern void rtc_mem_read_m41t56(int8_t *dst, uint8_t adr, uint8_t sz)
+void rtc_mem_read_m41t56(void *dst, const uint8_t adr, const uint8_t sz)
 {
         uint8_t c = sz;
+        uint8_t *ptr = dst;
         begin_io(IIC_READ, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
-                *dst++ = iic_ll_read(--c);
+                *ptr++ = iic_ll_read(--c);
         }
         end_io();
 }
@@ -313,13 +314,14 @@ extern void rtc_mem_read_m41t56(int8_t *dst, uint8_t adr, uint8_t sz)
  * @param adr Адрес данных в памяти RTC.
  * @param sz Количество байт для записи.
  */
-extern void rtc_mem_write_m41t56(int8_t *src, uint8_t adr, uint8_t sz)
+void rtc_mem_write_m41t56(const void *src, const uint8_t adr, const uint8_t sz)
 {
         uint8_t c = sz;
+        const uint8_t *ptr = src;
         begin_io(IIC_WRITE, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
                 c--;
-                iic_ll_write(*src++);
+                iic_ll_write(*ptr++);
         }
         end_io();
 }
