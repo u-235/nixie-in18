@@ -12,20 +12,20 @@
 
 void ShowError::on_start()
 {
-        tms_set_timer(timer_back, _ticks_from_ms(CFG_SHOW_DURATION_ERROR));
-        tms_start_timer(timer_back);
+        tms_set_timer(timer_back_, _ticks_from_ms(CFG_SHOW_DURATION_ERROR));
+        tms_start_timer(timer_back_);
 }
 
 void ShowError::on_stop()
 {
-        error = 0;
-        tms_stop_timer(timer_back);
+        error_ = 0;
+        tms_stop_timer(timer_back_);
 }
 
 void ShowError::on_update()
 {
-        display->enabled = DISPLAY_ENABLED_HOURS |
+        display_->enabled = DISPLAY_ENABLED_HOURS |
                                 DISPLAY_ENABLED_SECONDS_UNITS;
-        display->hours = 6;
-        display->seconds = error;
+        display_->hours = 6;
+        display_->seconds = error_;
 }

@@ -12,13 +12,13 @@
 
 void ShowSetTime::on_start()
 {
-        tms_set_timer(timer_back, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
-        tms_start_timer(timer_back);
+        tms_set_timer(timer_back_, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
+        tms_start_timer(timer_back_);
 }
 
 void ShowSetTime::on_stop()
 {
-        tms_stop_timer(timer_back);
+        tms_stop_timer(timer_back_);
 }
 
 void ShowSetTime::on_update()

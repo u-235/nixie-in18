@@ -11,7 +11,7 @@
 #define HAL_DISPLAY_H_
 
 #include <stdint.h>
-#include "../time/time.h"
+#include "rtc.h"
 
 /** Левый верхний разделитель. */
 #define DISPLAY_DOT_LEFT_TOP            0x01

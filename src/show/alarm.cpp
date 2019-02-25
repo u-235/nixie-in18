@@ -16,24 +16,24 @@ static alarm_t alarm;
 
 void ShowAlarm::on_start()
 {
-        tms_set_timer(timer_back, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
-        tms_start_timer(timer_back);
+        tms_set_timer(timer_back_, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
+        tms_start_timer(timer_back_);
         alarm_get(&alarm);
 }
 
 void ShowAlarm::on_stop()
 {
-        tms_stop_timer(timer_back);
+        tms_stop_timer(timer_back_);
 }
 
 void ShowAlarm::on_update()
 {
-        display->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
-        display->hours = alarm.hours;
-        display->minutes = alarm.minutes;
-        display->seconds = alarm.sound;
+        display_->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
+        display_->hours = alarm.hours;
+        display_->minutes = alarm.minutes;
+        display_->seconds = alarm.sound;
         if (alarm_is_on() != 0) {
-                display->marks = DISPLAY_MARK_ALARM;
+                display_->marks = DISPLAY_MARK_ALARM;
         }
 }
 

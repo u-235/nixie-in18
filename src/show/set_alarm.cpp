@@ -18,10 +18,10 @@ static uint8_t state;
 
 void ShowSetAlarm::on_start()
 {
-        tms_set_timer(timer_back, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
-        tms_start_timer(timer_back);
-        tms_set_timer(timer_update, _ticks_from_ms(300));
-        tms_set_timer(timer_hide, _ticks_from_ms(700));
+        tms_set_timer(timer_back_, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
+        tms_start_timer(timer_back_);
+        tms_set_timer(timer_update_, _ticks_from_ms(300));
+        tms_set_timer(timer_hide_, _ticks_from_ms(700));
         alarm_get(&alarm);
         flag = alarm_is_on();
         state = 0;
@@ -29,9 +29,9 @@ void ShowSetAlarm::on_start()
 
 void ShowSetAlarm::on_stop()
 {
-        tms_stop_timer(timer_back);
-        tms_stop_timer(timer_update);
-        tms_stop_timer(timer_hide);
+        tms_stop_timer(timer_back_);
+        tms_stop_timer(timer_update_);
+        tms_stop_timer(timer_hide_);
         alarm_set(&alarm);
         if (flag != 0) {
                 alarm_on();
@@ -42,32 +42,32 @@ void ShowSetAlarm::on_stop()
 
 void ShowSetAlarm::on_update()
 {
-        display->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
-        display->hours = alarm.hours;
-        display->minutes = alarm.minutes;
-        display->seconds = alarm.sound;
+        display_->enabled = DISPLAY_ENABLED_TIME | DISPLAY_ENABLED_SECONDS_UNITS;
+        display_->hours = alarm.hours;
+        display_->minutes = alarm.minutes;
+        display_->seconds = alarm.sound;
         if (flag != 0) {
-                display->marks = DISPLAY_MARK_ALARM;
+                display_->marks = DISPLAY_MARK_ALARM;
         }
-        tms_run_timer(timer_hide);
+        tms_run_timer(timer_hide_);
 }
 
 void ShowSetAlarm::on_hide()
 {
         switch (state) {
         case 0:
-                display->enabled = DISPLAY_ENABLED_MINUTES
+                display_->enabled = DISPLAY_ENABLED_MINUTES
                                 | DISPLAY_ENABLED_SECONDS_UNITS;
                 break;
         case 1:
-                display->enabled = DISPLAY_ENABLED_HOURS
+                display_->enabled = DISPLAY_ENABLED_HOURS
                                 | DISPLAY_ENABLED_SECONDS_UNITS;
                 break;
         case 2:
-                display->enabled = DISPLAY_ENABLED_TIME;
+                display_->enabled = DISPLAY_ENABLED_TIME;
                 break;
         }
-        tms_run_timer(timer_update);
+        tms_run_timer(timer_update_);
 }
 
 void ShowSetAlarm::on_key(const key_t _key)
@@ -79,7 +79,7 @@ void ShowSetAlarm::on_key(const key_t _key)
                         mode(SHOW_SET_TIME);
                         return;
                 }
-                tms_start_timer(timer_back);
+                tms_start_timer(timer_back_);
                 update();
                 hide();
         }
@@ -90,7 +90,7 @@ void ShowSetAlarm::on_key(const key_t _key)
                 } else {
                         flag = 1;
                 }
-                tms_start_timer(timer_back);
+                tms_start_timer(timer_back_);
                 update();
         }
 
@@ -119,6 +119,6 @@ void ShowSetAlarm::on_key(const key_t _key)
                 mcu_output_player(alarm.sound);
                 break;
         }
-        tms_start_timer(timer_back);
+        tms_start_timer(timer_back_);
         update();
 }

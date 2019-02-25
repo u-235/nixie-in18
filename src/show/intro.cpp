@@ -12,13 +12,13 @@
 
 void ShowIntro::on_start()
 {
-        tms_set_timer(timer_update, _ticks_from_ms(CFG_SHOW_INTRO_PERIOD));
-        tms_start_timer(timer_update);
+        tms_set_timer(timer_update_, _ticks_from_ms(CFG_SHOW_INTRO_PERIOD));
+        tms_start_timer(timer_update_);
 }
 
 void ShowIntro::on_stop()
 {
-        tms_stop_timer(timer_update);
+        tms_stop_timer(timer_update_);
 }
 
 void ShowIntro::on_update()
@@ -27,23 +27,23 @@ void ShowIntro::on_update()
 
         switch (phase) {
         case 0:
-                display->dots = DISPLAY_DOT_ALL;
+                display_->dots = DISPLAY_DOT_ALL;
                 break;
         case 1:
                 if (count < 8) {
                         uint8_t day = 1 << count;
-                        display->marks = day;
+                        display_->marks = day;
                         count++;
                         return;
                 }
                 break;
         case 2:
                 if (count++ < 10) {
-                        display->enabled = DISPLAY_ENABLED_ALL;
+                        display_->enabled = DISPLAY_ENABLED_ALL;
                         uint8_t t = (10 - count) * 11;
-                        display->hours = t;
-                        display->minutes = t;
-                        display->seconds = t;
+                        display_->hours = t;
+                        display_->minutes = t;
+                        display_->seconds = t;
                         return;
                 }
                 break;

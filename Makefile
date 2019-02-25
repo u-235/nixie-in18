@@ -15,8 +15,8 @@ ifeq ($(MAKECMDGOALS), test_pwm)
 CSRC += src/tests/02-PWM.c
 BUILD =test_pwm
 else
-CSRC 	+= src/alarm.c src/hal/rtc/chip_m41t56.c src/time/time.c src/tms/tms.c
-CSRC 	+= src/user.c
+CSRC 	+= src/alarm.c src/hal/rtc/chip_m41t56.c src/hal/rtc/service.c
+CSRC 	+= src/tms/tms.c src/user.c
 CPPSRC 	+= src/main.cpp src/show/alarm.cpp src/show/show.cpp src/show/date.cpp
 CPPSRC 	+= src/show/error.cpp src/show/intro.cpp src/show/set_alarm.cpp
 CPPSRC 	+= src/show/set_time.cpp src/show/set_date.cpp src/show/set_caliber.cpp
@@ -137,7 +137,6 @@ mkdir: $(SRC_DIRS)
 	$(shell mkdir -p $(OBJDIR)/src/hal/rtc)
 	$(shell mkdir -p $(OBJDIR)/src/show)
 	$(shell mkdir -p $(OBJDIR)/src/tests)
-	$(shell mkdir -p $(OBJDIR)/src/time)
 	$(shell mkdir -p $(OBJDIR)/src/tms)
 	$(shell mkdir -p $(BINDIR))
 

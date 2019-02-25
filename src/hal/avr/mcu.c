@@ -19,10 +19,13 @@
 
 #include "../../config.h"
 #include "../../bit-helper.h"
+#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <string.h>
 #include "asm.h"
 #include "../mcu.h"
+#include "../rtc.h"
 #include "spi.h"
 #include "pwmi.h"
 #include "../iic.h"
@@ -35,10 +38,10 @@
  * делает прерывание только при переполнении.
  */
 #define _init_timer() \
-        {\
+        do {\
         TCCR0 = (1 << CS02) | (1 << CS00);\
         TIMSK |= 1 << TOIE0;\
-        }
+        } while (0)
 // Вектор прерывания при переполнении таймера 0
 #define TIMER_FIRE TIMER0_OVF_vect
 #define _update_timer() TCNT0=100
@@ -50,11 +53,11 @@
  */
 #elif defined __AVR_ATmega168__
 #define _init_timer() \
-        {\
+        do {\
         TCCR0A = 0;\
         TCCR0B = (1 << CS02) | (1 << CS00);\
         TIMSK0 |= 1 << TOIE0;\
-        }
+        } while (0)
 
 #define TIMER_FIRE TIMER0_OVF_vect
 #define _update_timer() TCNT0=100
@@ -89,6 +92,8 @@ static void out_end();
  */
 static void mask_player();
 
+static void eeprom_init();
+
 /*************************************************************
  *      Variable in RAM
  *************************************************************/
@@ -116,12 +121,12 @@ extern void mcu_init()
         mask_player();
         DDRD |= maskD;
 
+        eeprom_init();
         spi_init();
         pwmi_init();
         iic_init();
 
-        _init_timer()
-        ;
+        _init_timer();
 }
 
 extern unsigned char mcu_get_timer_fire()
@@ -208,6 +213,57 @@ extern void mcu_interrupt_unlock()
                         mcu_interrupt_enable();
                 }
         }
+}
+
+EEMEM static uint8_t check, actual, caliber;
+EEMEM static rtc_corrector corrector;
+
+void eeprom_init()
+{
+        rtc_corrector cr;
+        if (eeprom_read_byte(&check) != 0) {
+                memset(&cr, 0, sizeof(rtc_corrector));
+                eeprom_write_byte(&check, 0);
+                rtc_store_actuals(0);
+                rtc_store_caliber(0);
+                rtc_store_corrector(&cr);
+        }
+}
+
+uint8_t rtc_restore_actuals()
+{
+        return eeprom_read_byte(&actual);
+}
+
+void rtc_store_actuals(uint8_t ac)
+{
+        mcu_interrupt_lock();
+        eeprom_write_byte(&actual, ac);
+        mcu_interrupt_unlock();
+}
+
+uint8_t rtc_restore_caliber()
+{
+        return eeprom_read_byte(&caliber);
+}
+
+void rtc_store_caliber(uint8_t ac)
+{
+        mcu_interrupt_lock();
+        eeprom_write_byte(&caliber, ac);
+        mcu_interrupt_unlock();
+}
+
+void rtc_restore_corrector(rtc_corrector *corr)
+{
+        eeprom_read_block(corr, &corrector, sizeof(rtc_corrector));
+}
+
+void rtc_store_corrector(rtc_corrector *corr)
+{
+        mcu_interrupt_lock();
+        eeprom_write_block(corr, &corrector, sizeof(rtc_corrector));
+        mcu_interrupt_unlock();
 }
 
 /*************************************************************

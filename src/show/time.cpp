@@ -13,23 +13,23 @@
 
 void ShowTime::on_start()
 {
-        tms_stop_timer(timer_back);
+        tms_stop_timer(timer_back_);
 }
 
 void ShowTime::on_update()
 {
-        display->enabled = DISPLAY_ENABLED_ALL;
-        display->hours = time->hours;
-        display->minutes = time->minutes;
-        display->seconds = time->seconds;
-        display->marks = display_make_mark(date->week_day, alarm_is_on());
-        display->dots = DISPLAY_DOT_BOTTOM;
+        display_->enabled = DISPLAY_ENABLED_ALL;
+        display_->hours = time_ptr_->hours;
+        display_->minutes = time_ptr_->minutes;
+        display_->seconds = time_ptr_->seconds;
+        display_->marks = display_make_mark(time_ptr_->week_day, alarm_is_on());
+        display_->dots = DISPLAY_DOT_BOTTOM;
 }
 
 void ShowTime::on_hide()
 {
-        if (flags.rtc_power_fail == 0) {
-                display->dots = DISPLAY_DOT_HIDE;
+        if (_rtc_is_time_actual(time_ptr_->actual)) {
+                display_->dots = DISPLAY_DOT_HIDE;
         } else {
                 display_clean();
         }

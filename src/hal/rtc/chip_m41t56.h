@@ -1,13 +1,13 @@
 /**
- * \file
+ * @file
  *
- * \date created on: 21.01.2018
- * \author Nick Egorrov
+ * @date created on: 21.01.2018
+ * @author Nick Egorrov
  */
 
 /***************************************************************************//**
-\defgroup RTC_M41T56 M41T56
-\ingroup RTC
+@defgroup RTC_M41T56 M41T56
+@ingroup RTC_CHIPS
 
 RTC M41T56 содержит восемь регистров и 56 ячеек ОЗУ. Для доступа используется
 указатель, который увеличивается после записи или чтения в/из регистра или
@@ -126,7 +126,7 @@ WWV). Хотя такой подход может показаться груб�
 генератора при тестовой температуре.
 
 К примеру,  измеренная частота 512.01024 Гц указывает на ошибку резонатора
-+20 ppm и коррекции требует загрузки значения -10 (XX001010) в калибровочное
++20 ppm и коррекция требует загрузки значения -10 (XX001010) в калибровочное
 слово.
 
 Калибровочное слово никак не влияет на частоту вывода FT/OUT.
@@ -141,25 +141,20 @@ WWV). Хотя такой подход может показаться груб�
 #define rtc_check       rtc_check_m41t56
 #define rtc_start       rtc_start_m41t56
 #define rtc_stop        rtc_stop_m41t56
+#define rtc_sync        rtc_sync_m41t56
 #define rtc_get_time    rtc_get_time_m41t56
 #define rtc_set_time    rtc_set_time_m41t56
-#define rtc_get_date    rtc_get_date_m41t56
 #define rtc_set_date    rtc_set_date_m41t56
 #define rtc_mem_read    rtc_mem_read_m41t56
 #define rtc_mem_write   rtc_mem_write_m41t56
-#define rtc_get_caliber rtc_get_caliber_m41t56
-#define rtc_set_caliber rtc_set_caliber_m41t56
 
-/** \ingroup RTC_M41T56 @{ */
+#define rtc_get_corrector       rtc_get_corrector_m41t56
+#define rtc_set_corrector       rtc_set_corrector_m41t56
+#define rtc_get_caliber         rtc_get_caliber_m41t56
+#define rtc_set_caliber         rtc_set_caliber_m41t56
+#define rtc_limit_caliber       rtc_limit_caliber_m41t56
+#define rtc_get_deviation       rtc_get_deviation_m41t56
+#define rtc_apply_corrector     rtc_apply_corrector_m41t56
+#define rtc_reset_corrector     rtc_reset_corrector_m41t56
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-#ifdef __cplusplus
-}
-#endif
-
-/** @} */
 #endif /* HAL_RTC_CHIP_M41T56_H_ */

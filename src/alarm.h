@@ -11,7 +11,7 @@
 #define ALARM_H_
 
 #include "stdint.h"
-#include "time/time.h"
+#include "hal/rtc.h"
 
 typedef struct _alarm{
         uint8_t  hours;
@@ -23,7 +23,7 @@ typedef struct _alarm{
 extern "C" {
 #endif
 
-extern void alarm_init();
+extern void alarm_init(const rtc_tm *p_tm);
 
 extern void alarm_get(alarm_t *pa);
 
@@ -41,7 +41,7 @@ extern void alarm_start();
 
 extern void alarm_stop();
 
-extern void alarm_check(const stime *pt);
+extern void alarm_check();
 
 #ifdef __cplusplus
 }

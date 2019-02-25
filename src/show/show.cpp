@@ -11,46 +11,41 @@
 #include "../config.h"
 #include "childs.hpp"
 
-display_t *Show::display;
-Show::show_t Show::show = SHOW_VOID;
-uint8_t Show::error;
-const stime *Show::time;
-const sdate *Show::date;
-struct Show::_flags Show::flags = {
-                0
-};
-timer_id_t Show::timer_update, Show::timer_hide, Show::timer_back;
+display_t *Show::display_;
+Show::show_t Show::show_ = SHOW_VOID;
+uint8_t Show::error_;
+const rtc_tm *Show::time_ptr_;
+timer_id_t Show::timer_update_, Show::timer_hide_, Show::timer_back_;
 
-void Show::init(const stime *pt, const sdate *pd)
+void Show::init(const rtc_tm *p_tm)
 {
-        time = pt;
-        date = pd;
-        display = display_get();
-        timer_hide = tms_create_timer(&hide);
-        timer_update = tms_create_timer(&update);
-        timer_back = tms_create_timer(&back_show_time);
+        time_ptr_ = p_tm;
+        display_ = display_get();
+        timer_hide_ = tms_create_timer(&hide);
+        timer_update_ = tms_create_timer(&update);
+        timer_back_ = tms_create_timer(&back_show_time);
         mode(SHOW_INTRO);
 }
 
 void Show::synchronize()
 {
-        if (show != SHOW_DATE && show != SHOW_TIME) {
+        if (show_ != SHOW_DATE && show_ != SHOW_TIME) {
                 return;
         }
 
-        tms_set_timer(timer_hide, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
-        tms_run_timer(timer_hide);
+        tms_set_timer(timer_hide_, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
+        tms_run_timer(timer_hide_);
         update();
 }
 
 void Show::mode(show_t _show)
 {
-        show_t old = show;
-        if (show == _show) {
+        show_t old = show_;
+        if (show_ == _show) {
                 return;
         }
 
-        show = _show;
+        show_ = _show;
 
         switch (old) {
         case SHOW_ERROR:
@@ -81,7 +76,7 @@ void Show::mode(show_t _show)
                 ;
         }
 
-        switch (show) {
+        switch (show_) {
         case SHOW_ERROR:
                 ShowError::on_start();
                 break;
@@ -117,31 +112,26 @@ void Show::mode(show_t _show)
 
 void Show::show_error(uint8_t _error)
 {
-        error = _error;
+        error_ = _error;
 
-        if (show == SHOW_INTRO || _error == 0) {
+        if (show_ == SHOW_INTRO || _error == 0) {
                 return;
         }
 
-        mode(SHOW_ERROR);
+        mode(Show::SHOW_ERROR);
         update();
-}
-
-void Show::rtc_failture()
-{
-        flags.rtc_power_fail = 1;
 }
 
 void Show::back_show_time()
 {
-        mode(SHOW_TIME);
+        mode(Show::SHOW_TIME);
 }
 
 void Show::update()
 {
         display_clean();
 
-        switch (show) {
+        switch (show_) {
         case SHOW_ERROR:
                 ShowError::on_update();
                 break;
@@ -178,7 +168,7 @@ void Show::update()
 
 void Show::hide()
 {
-        switch (show) {
+        switch (show_) {
         case SHOW_TIME:
                 ShowTime::on_hide();
                 break;
@@ -212,7 +202,7 @@ void Show::handle_key(const key_t _key)
                 return;
         }
 
-        switch (show) {
+        switch (show_) {
         case SHOW_TIME:
                 ShowTime::on_key(_key);
                 break;

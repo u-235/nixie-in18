@@ -13,17 +13,11 @@
 #include "show.hpp"
 #include "user.h"
 
-#define ERROR_CHECK_PERIOD      1200
-
-static stime time;
-static sdate date;
-
 static void init();
 static void loop();
+static void idle();
 static void check_error();
 static void on_rtc_failture();
-
-static timer_id_t timer_check;
 
 int main(void)
 {
@@ -32,41 +26,45 @@ int main(void)
         return 0;
 }
 
-static void init()
+void init()
 {
+        const rtc_tm *p_tm;
+
         mcu_init();
         display_init();
         tms_init();
-        timer_check = tms_create_timer(&check_error);
-        tms_set_timer(timer_check, _ticks_from_ms(ERROR_CHECK_PERIOD));
-        tms_start_timer(timer_check);
-        Show::init(&time, &date);
         rtc_init();
+        p_tm = rtc_get_time();
+        Show::init(p_tm);
         user_init();
-        alarm_init();
-        check_error();
+        alarm_init(p_tm);
         mcu_interrupt_unlock();
 }
 
-static void loop()
+void loop()
 {
         while (1) {
                 if (mcu_get_timer_fire() != 0) {
                         tms_tick();
                 } else {
-                        Show::handle_key(user_get_key());
-                        if (rtc_check() != 0) {
-                                rtc_get_time(&time);
-                                rtc_get_date(&date);
-                                alarm_check(&time);
-                                Show::synchronize();
-                                days_from_millenium(&date);
-                        }
+                        idle();
                 }
         }
 }
 
-extern void check_error()
+void idle()
+{
+        check_error();
+        Show::handle_key(user_get_key());
+        if (rtc_check() != 0) {
+                rtc_sync();
+                alarm_check();
+                Show::synchronize();
+        }
+
+}
+
+void check_error()
 {
         rtc_error_t error = rtc_error();
 
@@ -84,16 +82,18 @@ extern void check_error()
         Show::show_error(1);
 }
 
-extern void on_rtc_failture()
+void on_rtc_failture()
 {
-        time.seconds = 7;
-        time.minutes = 7;
-        time.hours = 7;
-        rtc_set_time(&time);
-        date.day = 12;
-        date.month = 12;
-        date.year = 18;
-        date_adjust(&date);
-        rtc_set_date(&date);
-        Show::rtc_failture();
+        // TODO reset alarm
+        rtc_tm ttm;
+        ttm.seconds = 7;
+        ttm.minutes = 7;
+        ttm.hours = 7;
+        rtc_set_time(&ttm);
+        ttm.day = 12;
+        ttm.month = 12;
+        ttm.year = 18;
+        ttm.actual = 0;
+        rtc_date_adjust(&ttm);
+        rtc_set_date(&ttm);
 }

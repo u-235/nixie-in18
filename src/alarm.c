@@ -26,6 +26,7 @@ typedef struct {
  *      Variable in RAM
  *************************************************************/
 
+static const rtc_tm *tm_ptr;
 static ex_alarm_t alarm;
 static timer_id_t timer_sound;
 
@@ -41,8 +42,9 @@ static void save();
  *      Public function
  *************************************************************/
 
-extern void alarm_init()
+extern void alarm_init(const rtc_tm *p_tm)
 {
+        tm_ptr = p_tm;
         timer_sound = tms_create_timer(alarm_off);
         tms_set_timer(timer_sound, _ticks_from_ms(CFG_ALARM_DURATION_SOUND));
         load();
@@ -102,14 +104,14 @@ extern void alarm_stop()
         mcu_output_player(0);
 }
 
-extern void alarm_check(const stime *pt)
+extern void alarm_check()
 {
         if (alarm.run == 0) {
                 return;
         }
 
-        if (alarm.publ.hours != pt->hours
-                        || alarm.publ.minutes != pt->minutes) {
+        if (alarm.publ.hours != tm_ptr->hours
+                        || alarm.publ.minutes != tm_ptr->minutes) {
                 alarm.hit = 0;
                 return;
         }

@@ -10,7 +10,7 @@
 #ifndef SRC_SHOW_HPP_
 #define SRC_SHOW_HPP_
 
-#include "time/time.h"
+#include "hal/rtc.h"
 #include "hal/display.h"
 #include "hal/rtc.h"
 #include "tms/tms.h"
@@ -18,15 +18,13 @@
 
 class Show {
 public:
-        static void init(const stime *pt, const sdate *pd);
+        static void init(const rtc_tm *p_tm);
 
         static void synchronize();
 
         static void handle_key(const key_t _key);
 
         static void show_error(uint8_t _error);
-
-        static void rtc_failture();
 
 protected:
         typedef enum {
@@ -42,15 +40,11 @@ protected:
                 SHOW_SET_CALIBER
         } show_t;
 
-        static display_t *display;
-        static show_t show;
-        static uint8_t error;
-        static const stime *time;
-        static const sdate *date;
-        static struct _flags {
-                char rtc_power_fail :1;
-        } flags;
-        static timer_id_t timer_update, timer_hide, timer_check, timer_back;
+        static display_t *display_;
+        static show_t show_;
+        static uint8_t error_;
+        static const rtc_tm *time_ptr_;
+        static timer_id_t timer_update_, timer_hide_, timer_check_, timer_back_;
 
         static void mode(show_t _show);
         static void back_show_time();
