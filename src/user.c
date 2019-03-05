@@ -82,6 +82,8 @@ static void scan_key()
                         state = SCANER_MENU;
                         send_key(VK_MENU_DOWN);
                 } else if ((keys & KEY_SELECT) != 0) {
+                        delay = _from_ms(CFG_USER_KEY_REPEAT_DELAY);
+                        repeat = CFG_USER_KEY_REPEAT_NUMBER;
                         state = SCANER_SELECT;
                         send_key(VK_SELECT_DOWN);
                 } else if ((keys & KEY_CHANGE) != 0) {
@@ -101,6 +103,14 @@ static void scan_key()
                 if ((keys & KEY_SELECT) == 0) {
                         state = SCANER_WAIT;
                         send_key(VK_SELECT_UP);
+                } else if (delay == 0) {
+                        if (repeat > 0) {
+                                repeat--;
+                                delay = _from_ms(CFG_USER_KEY_REPEAT_PERIOD);
+                        } else {
+                                delay = _from_ms(CFG_USER_KEY_REPEAT_FAST);
+                        }
+                        send_key(VK_SELECT_DOWN);
                 }
                 break;
         case SCANER_CHANGE:
