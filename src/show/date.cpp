@@ -32,6 +32,12 @@ void ShowDate::on_update()
         display_->dots = DISPLAY_DOT_ALL;
 }
 
+void ShowDate::on_hide()
+{
+        if (!_rtc_is_date_actual(time_ptr_->actual))
+                display_clean();
+}
+
 void ShowDate::on_key(const key_t _key)
 {
         if (_key == VK_MENU_UP) {

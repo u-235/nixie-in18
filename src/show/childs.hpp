@@ -11,46 +11,9 @@
 #define SRC_SHOW_CHILDS_HPP_
 
 #include "../show.hpp"
+#include "../config.h"
 
-class ShowError: Show {
-public:
-        static void on_start();
-        static void on_stop();
-        static void on_update();
-};
-
-class ShowIntro: Show {
-public:
-        static void on_start();
-        static void on_stop();
-        static void on_update();
-};
-
-class ShowTime: Show {
-public:
-        static void on_start();
-        static void on_update();
-        static void on_hide();
-        static void on_key(const key_t _key);
-};
-
-class ShowDate: Show {
-public:
-        static void on_start();
-        static void on_stop();
-        static void on_update();
-        static void on_key(const key_t _key);
-};
-
-class ShowAlarm: Show {
-public:
-        static void on_start();
-        static void on_stop();
-        static void on_update();
-        static void on_key(const key_t _key);
-};
-
-class ShowSetAlarm: Show {
+class ShowViewer: public Show {
 public:
         static void on_start();
         static void on_stop();
@@ -59,7 +22,29 @@ public:
         static void on_key(const key_t _key);
 };
 
-class ShowSetTime: Show {
+class ShowError: public ShowViewer {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
+};
+
+class ShowIntro: public ShowViewer {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
+};
+
+class ShowTime: public ShowViewer {
+public:
+        static void on_start();
+        static void on_update();
+        static void on_hide();
+        static void on_key(const key_t _key);
+};
+
+class ShowDate: public ShowViewer {
 public:
         static void on_start();
         static void on_stop();
@@ -68,7 +53,28 @@ public:
         static void on_key(const key_t _key);
 };
 
-class ShowSetDate: Show {
+class ShowAlarm: public ShowViewer {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
+        static void on_key(const key_t _key);
+};
+
+class ShowSetter: public ShowViewer {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
+        static void on_hide();
+        static void on_key(const key_t _key);
+protected:
+        static void refresh();
+        static uint8_t flag_;
+        static uint8_t state_;
+};
+
+class ShowSetAlarm: public ShowSetter {
 public:
         static void on_start();
         static void on_stop();
@@ -77,12 +83,34 @@ public:
         static void on_key(const key_t _key);
 };
 
-class ShowSetCaliber: Show {
+class ShowSetTime: public ShowSetter {
 public:
         static void on_start();
         static void on_stop();
         static void on_update();
         static void on_hide();
+        static void on_sync();
+        static void on_key(const key_t _key);
+protected:
+        static rtc_tm time_;
+};
+
+class ShowSetDate: public ShowSetter {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
+        static void on_hide();
+        static void on_key(const key_t _key);
+protected:
+        static rtc_tm time_;
+};
+
+class ShowSetCaliber: public ShowSetter {
+public:
+        static void on_start();
+        static void on_stop();
+        static void on_update();
         static void on_key(const key_t _key);
 };
 

@@ -12,7 +12,7 @@
 #include "childs.hpp"
 
 display_t *Show::display_;
-Show::show_t Show::show_ = SHOW_VOID;
+uint8_t Show::show_ = SHOW_VOID;
 uint8_t Show::error_;
 const rtc_tm *Show::time_ptr_;
 timer_id_t Show::timer_update_, Show::timer_hide_, Show::timer_back_;
@@ -29,18 +29,18 @@ void Show::init(const rtc_tm *p_tm)
 
 void Show::synchronize()
 {
-        if (show_ != SHOW_DATE && show_ != SHOW_TIME) {
-                return;
-        }
-
-        tms_set_timer(timer_hide_, _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
-        tms_run_timer(timer_hide_);
-        update();
+        if (show_ == SHOW_DATE || show_ == SHOW_TIME) {
+                tms_set_timer(timer_hide_,
+                                _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
+                tms_run_timer(timer_hide_);
+                update();
+        } else if (show_ == SHOW_SET_TIME)
+                ShowSetTime::on_sync();
 }
 
-void Show::mode(show_t _show)
+void Show::mode(uint8_t _show)
 {
-        show_t old = show_;
+        uint8_t old = show_;
         if (show_ == _show) {
                 return;
         }
@@ -108,6 +108,33 @@ void Show::mode(show_t _show)
                 ;
         }
         update();
+}
+
+void Show::next_mode()
+{
+        uint8_t next;
+
+        switch (show_) {
+        case SHOW_INTRO:
+                next = SHOW_DATE;
+                break;
+        case SHOW_TIME:
+                next = SHOW_SET_ALARM;
+                break;
+        case SHOW_SET_ALARM:
+                next = SHOW_SET_TIME;
+                break;
+        case SHOW_SET_TIME:
+                next = SHOW_SET_DATE;
+                break;
+        case SHOW_SET_DATE:
+                next = SHOW_SET_CALIBER;
+                break;
+        default:
+                next = SHOW_TIME;
+        }
+
+        mode(next);
 }
 
 void Show::show_error(uint8_t _error)

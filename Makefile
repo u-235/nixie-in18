@@ -18,9 +18,9 @@ else
 CSRC 	+= src/alarm.c src/hal/rtc/chip_m41t56.c src/hal/rtc/service.c
 CSRC 	+= src/tms/tms.c src/user.c
 CPPSRC 	+= src/main.cpp src/show/alarm.cpp src/show/show.cpp src/show/date.cpp
-CPPSRC 	+= src/show/error.cpp src/show/intro.cpp src/show/set_alarm.cpp
-CPPSRC 	+= src/show/set_time.cpp src/show/set_date.cpp src/show/set_caliber.cpp
-CPPSRC 	+= src/show/time.cpp
+CPPSRC 	+= src/show/error.cpp src/show/intro.cpp src/show/set.cpp
+CPPSRC 	+= src/show/set_alarm.cpp src/show/set_time.cpp src/show/set_date.cpp
+CPPSRC 	+= src/show/set_caliber.cpp src/show/time.cpp
 endif
 endif
 

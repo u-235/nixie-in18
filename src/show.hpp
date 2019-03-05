@@ -41,12 +41,13 @@ protected:
         } show_t;
 
         static display_t *display_;
-        static show_t show_;
+        static uint8_t show_;
         static uint8_t error_;
         static const rtc_tm *time_ptr_;
         static timer_id_t timer_update_, timer_hide_, timer_check_, timer_back_;
 
-        static void mode(show_t _show);
+        static void mode(uint8_t _show);
+        static void next_mode();
         static void back_show_time();
         static void update();
         static void hide();
