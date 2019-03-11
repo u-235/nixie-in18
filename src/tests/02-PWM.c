@@ -1,21 +1,12 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include "../config.h"
+#include "../hal/adc.h"
 #include "../hal/avr/asm.h"
 #include "../hal/display.h"
 #include "../hal/mcu.h"
 
-/* Разрешаем АЦП и устанавливаем минимальную частоту преобразования */
-#define ADC_MODE        ((1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
-#define ADC_START       (1 << ADSC)
-#define ADC_FINISH      (1 << ADIF)
-
-/* Выравнивание результата преобразования влево для отбрасывания
- *  младших двух бит. Результат брать в ADCH. */
-#define ADC_CANNEL_BRIGHT       ((1 << ADLAR) | (1 << MUX0))
-#define ADC_CANNEL_RATE         ((1 << ADLAR) | (1 << MUX2) | (1 << MUX1) | (1 << MUX0))
-
-static void adc_init(void);
 static uint8_t get_rate();
 static uint8_t get_bright();
 
@@ -29,7 +20,6 @@ int main(void)
 
         mcu_init();
         display_init();
-        adc_init();
         mcu_interrupt_enable();
         display_clean();
         pdisp->enabled = DISPLAY_ENABLED_ALL;
@@ -109,14 +99,6 @@ int main(void)
 }
 
 /*
- * Инициализация АЦП.
- */
-static void adc_init(void)
-{
-
-}
-
-/*
  * Получение длительности смены показаний.
  */
 uint8_t get_rate()
@@ -125,43 +107,35 @@ uint8_t get_rate()
         /*
          * Запуск измерения и ожидание результата.
          */
-        ADMUX = ADC_CANNEL_RATE;
+        adc_set_channel(CFG_ADC_CHANNEL_RATE);
         _delay_ms(2);
-        ADCSRA = ADC_MODE | ADC_START;
-        while (!(ADCSRA & ADC_FINISH)) {
-                // nop
-        }
+        adc_start(0);
+        ret = adc_get_result();
         /*
          * К результату измерения прибавляем половину интервала
          * АЦП, приходящегося на один шаг скорости смены показаний.
          * Это нужно для гарантированного получения значения
          * DISPLAY_RATE_MAX.
          */
-        ret = ADCH + 128 / (DISPLAY_RATE_MAX - DISPLAY_RATE_MIN + 1);
-        ret = ret * (DISPLAY_RATE_MAX - DISPLAY_RATE_MIN) / 255;
+        ret += 128 / (DISPLAY_RATE_MAX - DISPLAY_RATE_MIN + 1);
+        ret = ret * (DISPLAY_RATE_MAX - DISPLAY_RATE_MIN + 1) / 256;
         ret += DISPLAY_RATE_MIN;
-        /*
-         * Сброс флага прерывания АЦП.
-         */
-        ADCSRA = ADC_MODE | ADC_FINISH;
         return ret;
 }
 
+/*
+ * Калька с функции get_rate().
+ */
 uint8_t get_bright()
 {
-        /*
-         * Калька с функции get_rate().
-         */
         uint16_t ret;
-        ADMUX = ADC_CANNEL_BRIGHT;
+
+        adc_set_channel(CFG_ADC_CHANNEL_BRIGHT);
         _delay_ms(2);
-        ADCSRA = ADC_MODE | ADC_START;
-        while (!(ADCSRA & ADC_FINISH)) {
-                // nop
-        }
-        ret = ADCH + 128 / (DISPLAY_BRIGHT_MAX - DISPLAY_BRIGHT_MIN + 1);
-        ret = ret * (DISPLAY_BRIGHT_MAX - DISPLAY_BRIGHT_MIN) / 255;
+        adc_start(0);
+        ret = adc_get_result();
+        ret += 128 / (DISPLAY_BRIGHT_MAX - DISPLAY_BRIGHT_MIN + 1);
+        ret = ret * (DISPLAY_BRIGHT_MAX - DISPLAY_BRIGHT_MIN + 1) / 256;
         ret += DISPLAY_BRIGHT_MIN;
-        ADCSRA = ADC_MODE | ADC_FINISH;
         return ret;
 }

@@ -164,4 +164,8 @@
 #define CFG_PLAYER_ADR16        D, 2
 #define CFG_PLAYER_ADR32        D, 1
 
+
+#define CFG_ADC_CHANNEL_BRIGHT  1
+#define CFG_ADC_CHANNEL_RATE    7
+
 #endif /* SRC_TMS_CONFIG_H_ */

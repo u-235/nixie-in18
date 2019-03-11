@@ -1,19 +1,21 @@
 ### Project name (also used for output file name)
-BUILD = nixie-in18
+NAME = release
+### Target device
+DEVICE  = atmega168
 
 ### Source files and search directory
 CSRC    := src/hal/display.c src/hal/iic/iic.c src/hal/avr/mcu.c
-CSRC 	+= src/hal/avr/pwmi.c src/hal/avr/spi.c
+CSRC 	+= src/hal/avr/adc.c src/hal/avr/pwmi.c src/hal/avr/spi.c
 CPPSRC  :=
 ASRC    =
 
 ifeq ($(MAKECMDGOALS), test_display)
 CSRC += src/tests/01-display.c
-BUILD =test_display
+NAME =test_display
 else
 ifeq ($(MAKECMDGOALS), test_pwm)
 CSRC += src/tests/02-PWM.c
-BUILD =test_pwm
+NAME =test_pwm
 else
 CSRC 	+= src/alarm.c src/hal/rtc/chip_m41t56.c src/hal/rtc/service.c
 CSRC 	+= src/tms/tms.c src/user.c
@@ -21,11 +23,11 @@ CPPSRC 	+= src/main.cpp src/show/alarm.cpp src/show/show.cpp src/show/date.cpp
 CPPSRC 	+= src/show/error.cpp src/show/intro.cpp src/show/set.cpp
 CPPSRC 	+= src/show/set_alarm.cpp src/show/set_time.cpp src/show/set_date.cpp
 CPPSRC 	+= src/show/set_caliber.cpp src/show/time.cpp
+ifeq ($(MAKECMDGOALS), debug)
+NAME =debug
 endif
 endif
-
-### Target device
-DEVICE  = atmega168
+endif
 
 ### Optimization level (0, 1, 2, 3, 4 or s)
 OPTIMIZE = s
@@ -44,12 +46,12 @@ DEFS	= F_CPU=16000000UL __RTC_M41T56__
 ADEFS	= $(DEFS)
 
 ### Warning contorls
-WARNINGS = #all #extra
+WARNINGS = extra #all
 
 ### Output directory
 OUTDIR = out
-OBJDIR = $(OUTDIR)/obj
-BINDIR = $(OUTDIR)/bin
+OBJDIR = $(OUTDIR)/$(NAME)
+BINDIR = $(OUTDIR)/$(NAME)
 
 ### Output file format (ihex, bin or both) and debugger type
 OUTPUT	= ihex
@@ -72,27 +74,33 @@ AOBJ      := $(ASRC:.S=.o)
 COBJ      := $(addprefix $(OBJDIR)/,$(COBJ))
 CPPOBJ    := $(addprefix $(OBJDIR)/,$(CPPOBJ))
 AOBJ      := $(addprefix $(OBJDIR)/,$(AOBJ))
-BUILD     := $(BINDIR)/$(BUILD)_$(DEVICE)
+BUILD     := $(OUTDIR)/$(NAME)_$(DEVICE)
 
 
 # Flags for C & C++ files
 CCFLAGS += -g$(DEBUG)
 CCFLAGS += -mmcu=$(DEVICE)
-CCFLAGS += -fpack-struct -fshort-enums
-CCFLAGS += -O$(OPTIMIZE) -mcall-prologues -ffunction-sections -fdata-sections
+CCFLAGS += -O$(OPTIMIZE)
 CCFLAGS += $(addprefix -W,$(WARNINGS))
 CCFLAGS += $(addprefix -I,$(INCDIRS))
 CCFLAGS += $(addprefix -D,$(DEFS))
 CCFLAGS += -Wp,-MD,-MP,-MT,$@,-MF,$@.d
+CCFLAGS += -fpack-struct -fshort-enums -ffunction-sections -fdata-sections
+CCFLAGS += -fstack-usage -Wstack-usage=4 -Wframe-larger-than=4
+CCFLAGS += -Wmissing-declarations
+ifeq ($(NAME), release)
+CCFLAGS += -mcall-prologues -flto
+endif
 
 
 # Flags for C files
-CFLAGS = $(CCFLAGS)
+CFLAGS += $(CCFLAGS)
 CFLAGS += -std=$(CSTD)
+CFLAGS += -Wstrict-prototypes
 
 
 # Flags for C++ files
-CPPFLAGS = $(CCFLAGS)
+CPPFLAGS += $(CCFLAGS)
 CPPFLAGS += $(CPPSTD)
 CPPFLAGS += -fno-exceptions
 
@@ -103,14 +111,17 @@ ALL_ASFLAGS = -mmcu=$(DEVICE) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Linker flags
-LDFLAGS += -Wl,-Map,$(BUILD).map -Wl,--gc-sections -mmcu=atmega168
-
-
-test_display: all
-test_pwm: all
+LDFLAGS += -Wl,-Map,$(BUILD).map -mmcu=$(DEVICE)
+ifeq ($(NAME), release)
+LDFLAGS += -Wl,--gc-sections -mrelax
+endif
 
 # Default target.
 all: mkdir version build size
+
+debug: mkdir version build size
+test_display: mktestdir version build size
+test_pwm: mktestdir version build size
 
 ifeq ($(OUTPUT),ihex)
 build: elf hex lst sym
@@ -130,15 +141,18 @@ endif
 endif
 endif
 
-mkdir: $(SRC_DIRS)
-	$(shell mkdir -p $(OBJDIR)/src/bcd)
-	$(shell mkdir -p $(OBJDIR)/src/hal/avr)
-	$(shell mkdir -p $(OBJDIR)/src/hal/iic)
+mkdir: mkcommondir
 	$(shell mkdir -p $(OBJDIR)/src/hal/rtc)
 	$(shell mkdir -p $(OBJDIR)/src/show)
-	$(shell mkdir -p $(OBJDIR)/src/tests)
 	$(shell mkdir -p $(OBJDIR)/src/tms)
+
+mkcommondir:
+	$(shell mkdir -p $(OBJDIR)/src/hal/avr)
+	$(shell mkdir -p $(OBJDIR)/src/hal/iic)
 	$(shell mkdir -p $(BINDIR))
+
+mktestdir: mkcommondir
+	$(shell mkdir -p $(OBJDIR)/src/tests)
 
 elf: $(BUILD).elf
 lst: $(BUILD).lst
@@ -202,9 +216,7 @@ $(AOBJ) : $(OBJDIR)/%.o : %.S
 # Target: clean project.
 clean:
 	@echo
-	rm -f -r $(OBJDIR)
-	rm -f -r $(BINDIR)
+	rm -f -r $(OUTDIR)
 
 # Include the dependency files.
 include $(wildcard $(OBJDIR)/*.d)
-

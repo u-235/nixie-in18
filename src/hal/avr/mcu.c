@@ -25,6 +25,8 @@
 #include <string.h>
 #include "asm.h"
 #include "../mcu.h"
+
+#include "../adc.h"
 #include "../rtc.h"
 #include "spi.h"
 #include "pwmi.h"
@@ -122,6 +124,7 @@ extern void mcu_init()
         DDRD |= maskD;
 
         eeprom_init();
+        adc_init();
         spi_init();
         pwmi_init();
         iic_init();
