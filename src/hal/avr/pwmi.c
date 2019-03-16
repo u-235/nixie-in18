@@ -311,7 +311,7 @@ ISR(TIMER_COMPARE)
         }
 }
 
-static uint8_t abjust_balance(uint16_t wide_bal)
+uint8_t abjust_balance(uint16_t wide_bal)
 {
         uint16_t steps = 0;
         uint8_t i;
@@ -325,7 +325,7 @@ static uint8_t abjust_balance(uint16_t wide_bal)
 }
 
 #ifdef CFG_DISPLAY_LOGARITHMIC_BALANCE
-static uint8_t calculate_duration(uint8_t bright, uint8_t balance)
+uint8_t calculate_duration(uint8_t bright, uint8_t balance)
 {
         static const PROGMEM uint8_t levels[] = {
                 0, _ticks(0.010), _ticks(0.012), _ticks(0.014), _ticks(0.016),
@@ -340,7 +340,7 @@ static uint8_t calculate_duration(uint8_t bright, uint8_t balance)
         return pgm_read_byte(&levels[bright * balance / 8]);
 }
 #else
-static uint8_t calculate_duration(uint8_t bright, uint8_t balance)
+uint8_t calculate_duration(uint8_t bright, uint8_t balance)
 {
         static const PROGMEM uint8_t levels[] = {
                 0, _ticks(0.012), _ticks(0.016), _ticks(0.021), _ticks(0.028),

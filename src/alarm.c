@@ -34,15 +34,15 @@ static timer_id_t timer_sound;
  *      Private function prototype.
  *************************************************************/
 
-static void load();
+static void load(void);
 
-static void save();
+static void save(void);
 
 /*************************************************************
  *      Public function
  *************************************************************/
 
-extern void alarm_init(const rtc_tm *p_tm)
+void alarm_init(const rtc_tm *p_tm)
 {
         tm_ptr = p_tm;
         timer_sound = tms_create_timer(alarm_off);
@@ -50,14 +50,14 @@ extern void alarm_init(const rtc_tm *p_tm)
         load();
 }
 
-extern void alarm_get(alarm_t *pa)
+void alarm_get(alarm_t *pa)
 {
         pa->hours = alarm.publ.hours;
         pa->minutes = alarm.publ.minutes;
         pa->sound = alarm.publ.sound;
 }
 
-extern void alarm_set(alarm_t *pa)
+void alarm_set(alarm_t *pa)
 {
         alarm.publ.hours = pa->hours;
         alarm.publ.minutes = pa->minutes;
@@ -65,19 +65,19 @@ extern void alarm_set(alarm_t *pa)
         save();
 }
 
-extern char alarm_is_on()
+char alarm_is_on()
 {
         return alarm.run;
 }
 
-extern void alarm_on()
+void alarm_on()
 {
         alarm.run = 1;
         alarm.hit = 0;
         save();
 }
 
-extern void alarm_off()
+void alarm_off()
 {
         alarm.run = 0;
         alarm.hit = 0;
@@ -85,26 +85,26 @@ extern void alarm_off()
         save();
 }
 
-extern char alarm_is_jingle()
+char alarm_is_jingle()
 {
         return alarm.jingle;
 }
 
-extern void alarm_start()
+void alarm_start()
 {
         alarm.jingle = 1;
         tms_run_timer(timer_sound);
         mcu_output_player(alarm.publ.sound);
 }
 
-extern void alarm_stop()
+void alarm_stop()
 {
         alarm.jingle = 0;
         tms_stop_timer(timer_sound);
         mcu_output_player(0);
 }
 
-extern void alarm_check()
+void alarm_check()
 {
         if (alarm.run == 0) {
                 return;
@@ -128,7 +128,7 @@ extern void alarm_check()
  *      Private function.
  *************************************************************/
 
-static void load()
+void load()
 {
         rtc_mem_read(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
         if (rtc_error() != RTC_NO_ERROR) {
@@ -141,7 +141,7 @@ static void load()
         alarm.jingle = 0;
 }
 
-static void save()
+void save()
 {
         rtc_mem_write(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
 }

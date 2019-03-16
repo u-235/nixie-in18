@@ -24,9 +24,9 @@ typedef enum {
 extern "C" {
 #endif
 
-extern void user_init();
+extern void user_init(void);
 
-extern key_t user_get_key();
+extern key_t user_get_key(void);
 
 #ifdef __cplusplus
 }

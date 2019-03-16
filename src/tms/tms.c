@@ -14,7 +14,7 @@ typedef struct {
         char single :1;
         timer_counter_t top;
         timer_counter_t count;
-        void (*timer_callback)();
+        void (*timer_callback)(void);
 } timer_t;
 
 static timer_t lTimer[TIMER_NUMBER];
@@ -29,7 +29,7 @@ static timer_t lTimer[TIMER_NUMBER];
  */
 static timer_id_t tms_launch_timer(timer_id_t timer_id, char single);
 
-extern void tms_init()
+void tms_init()
 {
         timer_id_t i;
 
@@ -39,7 +39,7 @@ extern void tms_init()
         }
 }
 
-extern timer_id_t tms_create_timer(void (*timer_callback)())
+timer_id_t tms_create_timer(void (*timer_callback)(void))
 {
         timer_id_t i;
 
@@ -52,7 +52,7 @@ extern timer_id_t tms_create_timer(void (*timer_callback)())
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_delete_timer(timer_id_t timer_id)
+timer_id_t tms_delete_timer(timer_id_t timer_id)
 {
         if (timer_id < TIMER_NUMBER) {
                 lTimer[timer_id].booked = 0;
@@ -62,7 +62,7 @@ extern timer_id_t tms_delete_timer(timer_id_t timer_id)
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_set_timer(timer_id_t timer_id, timer_counter_t ticks)
+timer_id_t tms_set_timer(timer_id_t timer_id, timer_counter_t ticks)
 {
         if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
                 lTimer[timer_id].top = ticks;
@@ -71,17 +71,17 @@ extern timer_id_t tms_set_timer(timer_id_t timer_id, timer_counter_t ticks)
         return TIMER_ERROR;
 }
 
-extern timer_id_t tms_start_timer(timer_id_t timer_id)
+timer_id_t tms_start_timer(timer_id_t timer_id)
 {
         return tms_launch_timer(timer_id, 0);
 }
 
-extern timer_id_t tms_run_timer(timer_id_t timer_id)
+timer_id_t tms_run_timer(timer_id_t timer_id)
 {
         return tms_launch_timer(timer_id, 1);
 }
 
-extern timer_id_t tms_stop_timer(timer_id_t timer_id)
+timer_id_t tms_stop_timer(timer_id_t timer_id)
 {
         if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
                 lTimer[timer_id].runing = 0;
@@ -90,7 +90,7 @@ extern timer_id_t tms_stop_timer(timer_id_t timer_id)
         return TIMER_ERROR;
 }
 
-extern void tms_tick()
+void tms_tick()
 {
         timer_id_t i;
 
@@ -112,7 +112,7 @@ extern void tms_tick()
         return;
 }
 
-static timer_id_t tms_launch_timer(timer_id_t timer_id, char single)
+timer_id_t tms_launch_timer(timer_id_t timer_id, char single)
 {
         if ((timer_id < TIMER_NUMBER) && (lTimer[timer_id].booked != 0)) {
                 lTimer[timer_id].single = single;

@@ -34,9 +34,9 @@ static union {
  *      Chip-specific function prototypes.
  *************************************************************/
 
-static void chip_init();
+static void chip_init(void);
 
-static void chip_reset();
+static void chip_reset(void);
 
 static uint8_t pure_seconds(const uint8_t s);
 
@@ -68,13 +68,13 @@ static uint8_t complete_year(const uint8_t y);
 
 static void parse_control(const uint8_t c);
 
-static uint8_t complete_control();
+static uint8_t complete_control(void);
 
-static void apply_stop_bit();
+static void apply_stop_bit(void);
 
-static void apply_century_bits();
+static void apply_century_bits(void);
 
-static void apply_control_bits();
+static void apply_control_bits(void);
 
 static void corrector_update(rtc_tm const *_time);
 
@@ -82,7 +82,7 @@ static void corrector_update(rtc_tm const *_time);
  *      Private function prototypes.
  *************************************************************/
 
-static void reset();
+static void reset(void);
 
 static uint8_t to_bcd(const uint8_t i);
 
@@ -90,11 +90,11 @@ static uint8_t from_bcd(const uint8_t b);
 
 static void set_error(rtc_error_t e);
 
-static void check();
+static void check(void);
 
 static void begin_io(iic_mode_t mode, uint8_t addr);
 
-static void end_io();
+static void end_io(void);
 
 /*************************************************************
  *      Public function
@@ -245,6 +245,8 @@ void rtc_set_date(const rtc_tm * _time)
 
 #if RAM_SIZE > 0
 
+static void clean_ram(void);
+
 /*
  * Чтение массива данных из RTC.
  * @param dst Указатель на буфер для приёма данных.
@@ -280,7 +282,7 @@ void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz)
         end_io();
 }
 
-static void clean_ram()
+void clean_ram()
 {
         char i;
 

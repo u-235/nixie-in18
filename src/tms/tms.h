@@ -31,7 +31,7 @@ typedef unsigned int timer_counter_t;
 /**
  * Инициализация сервиса.
  */
-extern void tms_init();
+extern void tms_init(void);
 
 /**
  * Обновление внутреннего состояния сервиса. Счётчики таймеров
@@ -39,7 +39,7 @@ extern void tms_init();
  * timer_callback, указанной при создании таймера.
  * \see tms_create_timer() tms_start_timer()
  */
-extern void tms_tick();
+extern void tms_tick(void);
 
 /**
  * Создание таймера. По окончаниии использования таймера нужно
@@ -49,7 +49,7 @@ extern void tms_tick();
  * \return Идентификатор таймера в случае успеха или #TIMER_ERROR
  *      если израсходована вся память для организации таймеров.
  */
-extern timer_id_t tms_create_timer(void (*timer_callback)());
+extern timer_id_t tms_create_timer(void (*timer_callback)(void));
 
 /**
  * Освобождение таймера.

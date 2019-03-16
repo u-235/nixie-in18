@@ -90,10 +90,10 @@ typedef struct {
 extern "C" {
 #endif
 
-extern void display_init();
-extern void display_clean();
-extern void display_flush();
-extern display_t *display_get();
+extern void display_init(void);
+extern void display_clean(void);
+extern void display_flush(void);
+extern display_t *display_get(void);
 extern uint8_t display_make_mark(uint8_t week_day, uint8_t alarm);
 
 #define DISPLAY_BRIGHT_MAX 16

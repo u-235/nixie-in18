@@ -7,8 +7,8 @@
 #include "../hal/display.h"
 #include "../hal/mcu.h"
 
-static uint8_t get_rate();
-static uint8_t get_bright();
+static uint8_t get_rate(void);
+static uint8_t get_bright(void);
 
 int main(void)
 {

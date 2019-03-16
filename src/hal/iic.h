@@ -73,7 +73,7 @@ typedef enum {
  * \brief Инициализация модуля.
  * \details
  */
-extern void iic_init();
+extern void iic_init(void);
 
 /**
  * \brief Устанавливает адрес устройства.
@@ -88,20 +88,20 @@ extern void iic_set_address(uint8_t adr);
  * \details
  * \return адрес устройства.
  */
-extern uint8_t iic_get_address();
+extern uint8_t iic_get_address(void);
 
 /**
  * \brief Получение кода ошибки модуля.
  * \details
  * \return код ошибки.
  */
-extern iic_error_t iic_error();
+extern iic_error_t iic_error(void);
 
 /**
  * \brief Сброс ошибки модуля.
  * \details
  */
-extern void iic_clear();
+extern void iic_clear(void);
 
 /** @} */
 
@@ -122,7 +122,7 @@ extern void iic_ll_start(iic_mode_t mode);
 /**
  * Завершение обмена и генерация состояния стоп.
  */
-extern void iic_ll_stop();
+extern void iic_ll_stop(void);
 
 /**
  * \brief Чтение байта.
@@ -171,7 +171,7 @@ extern void iic_write(uint8_t data);
  * Адрес устройства можно изменить функцией iic_set_address(uint8_t adr).
  * \return Байт данных из устройства.
  */
-extern uint8_t iic_read();
+extern uint8_t iic_read(void);
 
 /**
  * \brief Запись команды и чтение байта.

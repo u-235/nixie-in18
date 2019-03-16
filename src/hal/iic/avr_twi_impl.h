@@ -82,9 +82,15 @@
 #endif
 
 /*
+ * \brief Ожидание завершения операции.
+ * \details
+ */
+static void twi_wait(const uint8_t mask);
+
+/*
  * Сброс ошибки на уровне аппаратной части МК.
  */
-static void reset()
+void reset()
 {
         TWCR = 0; /* выключение модуля TWI */
         TWBR = TWI_BIT_RATE;
@@ -93,26 +99,10 @@ static void reset()
 }
 
 /*
- * \brief Ожидание завершения операции.
- * \details
- */
-static void twi_wait(const uint8_t mask)
-{
-        uint8_t c;
-        for (c = 0; (TWCR & mask) == 0; c++) {
-                if (c > IIC_TIMEOUT) {
-                        error |= IIC_ERROR_WAIT;
-                        break;
-                }
-                _delay_us(950);
-        }
-}
-
-/*
  * Выставляет на шину состояние старт/рестарт и адрес устройства.
  * \param mode Режим обмена шины.
  */
-extern void iic_ll_start(iic_mode_t mode)
+void iic_ll_start(iic_mode_t mode)
 {
         uint8_t addr;
 
@@ -142,7 +132,7 @@ extern void iic_ll_start(iic_mode_t mode)
         return;
 }
 
-extern void iic_ll_stop()
+void iic_ll_stop()
 {
         if (error != IIC_NO_ERROR) {
                 return;
@@ -160,7 +150,7 @@ extern void iic_ll_stop()
  * \param last ноль если требуется считать байт и завершить обмен по шине и не
  *      нулевое значение если требуется считать серию байт.
  */
-extern uint8_t iic_ll_read(uint8_t last)
+uint8_t iic_ll_read(uint8_t last)
 {
         if (error != IIC_NO_ERROR) {
                 return 0;
@@ -185,7 +175,7 @@ extern uint8_t iic_ll_read(uint8_t last)
 /*
  * Выставляет на шину байт данных.
  */
-extern void iic_ll_write(uint8_t d)
+void iic_ll_write(uint8_t d)
 {
         if (error != IIC_NO_ERROR) {
                 return;
@@ -198,6 +188,22 @@ extern void iic_ll_write(uint8_t d)
                 error |= IIC_ERROR_WRITE;
         }
         return;
+}
+
+/*
+ * \brief Ожидание завершения операции.
+ * \details
+ */
+void twi_wait(const uint8_t mask)
+{
+        uint8_t c;
+        for (c = 0; (TWCR & mask) == 0; c++) {
+                if (c > IIC_TIMEOUT) {
+                        error |= IIC_ERROR_WAIT;
+                        break;
+                }
+                _delay_us(950);
+        }
 }
 
 #endif /* HAL_IIC_AVR_TWI_IMPL_H_ */

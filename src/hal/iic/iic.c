@@ -9,23 +9,25 @@
 
 #include "../iic.h"
 
+static void reset(void);
+
 static iic_error_t error;  // Статус устройства.
 static uint8_t address;  // device address
 
 #define INSIDE_SRC_HAL_IIC_C_
 #include "avr_twi_impl.h"
 
-extern void iic_init()
+void iic_init()
 {
         iic_clear();
 }
 
-extern void iic_set_address(uint8_t adr)
+void iic_set_address(uint8_t adr)
 {
         address = adr & 0xfe;
 }
 
-extern uint8_t iic_get_address()
+uint8_t iic_get_address()
 {
         return address;
 }
@@ -33,7 +35,7 @@ extern uint8_t iic_get_address()
 /*
  * Возвращает код ошибки.
  */
-extern iic_error_t iic_error()
+iic_error_t iic_error()
 {
         return error;
 }
@@ -41,7 +43,7 @@ extern iic_error_t iic_error()
 /*
  *
  */
-extern void iic_clear()
+void iic_clear()
 {
         reset();
         error = IIC_NO_ERROR;
@@ -55,7 +57,7 @@ extern void iic_clear()
  * #IIC_NO_ERROR. В ином случае нужно вызвать iic_clear().
  * \param data Байт для записи в устройство.
  */
-extern void iic_write(uint8_t data)
+void iic_write(uint8_t data)
 {
         iic_ll_start(IIC_WRITE);
         iic_ll_write(data);
@@ -70,7 +72,7 @@ extern void iic_write(uint8_t data)
  * #IIC_NO_ERROR. В ином случае нужно вызвать iic_clear().
  * \return Байт данных из устройства.
  */
-extern uint8_t iic_read()
+uint8_t iic_read()
 {
         uint8_t res;
         iic_ll_start(IIC_READ);
@@ -109,7 +111,7 @@ void iic_cmd_write(uint8_t cmd, uint8_t d)
         iic_ll_stop();
 }
 
-extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
+void iic_ll_aread(uint8_t output[], uint8_t rSz)
 {
         if (output != 0 && rSz != 0) {
                 iic_ll_start(IIC_READ);
@@ -119,7 +121,7 @@ extern void iic_ll_aread(uint8_t output[], uint8_t rSz)
         }
 }
 
-extern void iic_ll_awrite(uint8_t input[], uint8_t wSz)
+void iic_ll_awrite(uint8_t input[], uint8_t wSz)
 {
         if (input != 0 && wSz != 0) {
                 iic_ll_start(IIC_READ);

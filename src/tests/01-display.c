@@ -6,7 +6,7 @@
 
 #define STEP_DELAY 1000
 
-static void flush();
+static void flush(void);
 
 int main(void)
 {

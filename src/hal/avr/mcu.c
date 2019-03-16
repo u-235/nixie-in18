@@ -84,17 +84,17 @@
 /*
  * Подготовка вывода с использованием виртуального порта.
  */
-static void out_begin();
+static void out_begin(void);
 /*
  * Завершение вывода с использованием виртуального порта.
  */
-static void out_end();
+static void out_end(void);
 /*
  * Запись маски виртуального порта.
  */
-static void mask_player();
+static void mask_player(void);
 
-static void eeprom_init();
+static void eeprom_init(void);
 
 /*************************************************************
  *      Variable in RAM
@@ -110,7 +110,7 @@ _virt_prepare(D);
  *      Public function
  *************************************************************/
 
-extern void mcu_init()
+void mcu_init()
 {
         _dir_in(CFG_KEY_MENU);
         _dir_in(CFG_KEY_SELECT);
@@ -132,7 +132,7 @@ extern void mcu_init()
         _init_timer();
 }
 
-extern unsigned char mcu_get_timer_fire()
+unsigned char mcu_get_timer_fire()
 {
         unsigned char result;
 
@@ -150,7 +150,7 @@ extern unsigned char mcu_get_timer_fire()
  * @brief Получение кода нажатых кнопок.
  * @return Любая комбинация #KEY_MENU, #KEY_SELECT и #KEY_CHANGE.
  */
-extern uint8_t mcu_input_keys()
+uint8_t mcu_input_keys()
 {
         uint8_t keys = 0;
 
@@ -173,7 +173,7 @@ extern uint8_t mcu_input_keys()
  * Выставление номера песни на выводы управления плеером.
  * @param sel Номер песни. 0 - песня не проигрывается.
  */
-extern void mcu_output_player(uint8_t sel)
+void mcu_output_player(uint8_t sel)
 {
         out_begin();
         mask_player();
@@ -202,13 +202,13 @@ extern void mcu_output_player(uint8_t sel)
 
 static unsigned char lock_counter = 0;
 
-extern void mcu_interrupt_lock()
+void mcu_interrupt_lock()
 {
         mcu_interrupt_disable();
         lock_counter++;
 }
 
-extern void mcu_interrupt_unlock()
+void mcu_interrupt_unlock()
 {
         if (lock_counter != 0) {
                 lock_counter--;
@@ -286,7 +286,7 @@ ISR(TIMER_FIRE)
  *      Private function.
  *************************************************************/
 
-static void out_begin()
+void out_begin()
 {
         mcu_interrupt_lock();
         /*_virt_clean(B); порт B */
@@ -294,7 +294,7 @@ static void out_begin()
         _virt_clean(D); /* порт D */
 }
 
-static void out_end()
+void out_end()
 {
         /*_virt_apply(B); порт B */
         /*_virt_apply(C); порт C */
@@ -302,7 +302,7 @@ static void out_end()
         mcu_interrupt_unlock();
 }
 
-static void mask_player()
+void mask_player()
 {
         _virt_mask(CFG_PLAYER_ADR1);
         _virt_mask(CFG_PLAYER_ADR2);

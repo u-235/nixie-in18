@@ -13,7 +13,7 @@
 #include "hal/adc.h"
 #include "tms/tms.h"
 
-static void timer_callback();
+static void timer_callback(void);
 static void adc_callback(uint8_t ch, uint8_t res);
 static void to_bright(uint8_t conv);
 static void to_rate(uint8_t conv);

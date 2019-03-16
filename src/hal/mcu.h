@@ -66,7 +66,7 @@ extern "C" {
  * внешних устройств, таких как RTC или дисплей, должна производиться
  * отдельно.
  */
-extern void mcu_init();
+extern void mcu_init(void);
 
 /**
  * @brief Блокировка всех прерываний.
@@ -74,7 +74,7 @@ extern void mcu_init();
  * блокировки на единицу. Для разрешения прерываний каждый вызов этой
  * функции должен быть сбалансирован вызововм mcu_interrupt_unlock()
  */
-extern void mcu_interrupt_lock();
+extern void mcu_interrupt_lock(void);
 
 /**
  * @brief Разблокировка всех прерываний.
@@ -83,7 +83,7 @@ extern void mcu_interrupt_lock();
  * образом, для разрешения прерываний эта функция должна быть вызвана
  * столько же раз, что и mcu_interrupt_lock()
  */
-extern void mcu_interrupt_unlock();
+extern void mcu_interrupt_unlock(void);
 
 /**
  * @brief Показывает, были ли срабатывания системного таймера.
@@ -95,13 +95,13 @@ extern void mcu_interrupt_unlock();
  * @return Количество срабатываний системного таймера с момента
  * предыущего вызова функции.
  */
-extern unsigned char mcu_get_timer_fire();
+extern unsigned char mcu_get_timer_fire(void);
 
 /**
  * Получение кода нажатых кнопок.
  * @return Любая комбинация #KEY_MENU, #KEY_SELECT и #KEY_CHANGE.
  */
-extern uint8_t mcu_input_keys();
+extern uint8_t mcu_input_keys(void);
 
 /**
  * Выставление номера песни на выводы управления плеером.

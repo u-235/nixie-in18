@@ -21,7 +21,7 @@ static rtc_corrector corr;
  * Получение значения коррекции хода.
  * @return Коррекция хода в ppm.
  */
-int8_t chip_get_caliber();
+static int8_t chip_get_caliber(void);
 
 /*
  * Запись коррекции хода. Поскольку коррекция не равна в точности одному ppm,
@@ -29,7 +29,7 @@ int8_t chip_get_caliber();
  * то загружаемое значение должно быть меньше нуля.
  * @param clb Коррекция хода в ppm.
  */
-void chip_set_caliber(int8_t clb);
+static void chip_set_caliber(int8_t clb);
 
 /*************************************************************
  *      Public function

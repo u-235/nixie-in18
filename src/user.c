@@ -26,7 +26,7 @@ static key_t key = VK_NO;
  *      Private function prototype.
  *************************************************************/
 
-static void scan_key();
+static void scan_key(void);
 
 static void send_key(uint8_t keys);
 
@@ -34,14 +34,14 @@ static void send_key(uint8_t keys);
  *      Public function
  *************************************************************/
 
-extern void user_init()
+void user_init()
 {
         timer_scan = tms_create_timer(&scan_key);
         tms_set_timer(timer_scan, _ticks_from_ms(SCAN_PERIOD));
         tms_start_timer(timer_scan);
 }
 
-extern key_t user_get_key()
+key_t user_get_key()
 {
         key_t retval = key;
         key = VK_NO;
@@ -60,7 +60,7 @@ typedef enum {
         SCANER_CHANGE_FAST
 } scan_state_t;
 
-static void scan_key()
+void scan_key()
 {
         static scan_state_t state = SCANER_WAIT;
         static uint8_t bounce = 0, delay = 0, repeat;
@@ -137,7 +137,7 @@ static void scan_key()
  *      Private function.
  *************************************************************/
 
-static void send_key(uint8_t keys)
+void send_key(uint8_t keys)
 {
         key = keys;
 }

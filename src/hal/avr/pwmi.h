@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void pwmi_init();
+void pwmi_init(void);
 void pwmi_load(uint8_t data[]);
 
 #ifdef __cplusplus

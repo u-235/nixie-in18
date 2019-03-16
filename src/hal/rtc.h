@@ -94,28 +94,28 @@ extern "C" {
 /**
  * Инициализация RTC.
  */
-extern void rtc_init();
+extern void rtc_init(void);
 
 /**
  * Получение ошибки RTC.
  * @return ошибка RTC.
  */
-extern rtc_error_t rtc_error();
+extern rtc_error_t rtc_error(void);
 
 /**
  * Сброс ошибки RTC, если это возможно.
  */
-extern void rtc_clear();
+extern void rtc_clear(void);
 
 /**
  * Запуск счёта времени.
  */
-extern void rtc_start();
+extern void rtc_start(void);
 
 /**
  * Останов счёта времени.
  */
-extern void rtc_stop();
+extern void rtc_stop(void);
 
 /**
  * @brief Проверка обновления RTC.
@@ -124,7 +124,7 @@ extern void rtc_stop();
  * вызвать rtc_sync() для синхронизации внутренней структуры rtc_tm.
  * @return Ноль если обновления не было.
  */
-extern uint8_t rtc_check();
+extern uint8_t rtc_check(void);
 
 /**
  * @brief Синхронизация с микросхемой RTC.
@@ -133,7 +133,7 @@ extern uint8_t rtc_check();
  * сигнализирует о недостоверных данных этой структуры. Синхронизацию удобно
  * делать после обнаружения обновления времени RTC функцией rtc_check().
  */
-extern void rtc_sync();
+extern void rtc_sync(void);
 
 /**
  * @brief Получение указателя на структуру rtc_tm.
@@ -141,7 +141,7 @@ extern void rtc_sync();
  * текущего времени. Это время обновляется функцией rtc_sync().
  * @return Указатель на внутреннюю структуру rtc_tm.
  */
-extern const rtc_tm * rtc_get_time();
+extern const rtc_tm * rtc_get_time(void);
 
 /**
  * @brief Установка времени.
@@ -227,7 +227,7 @@ typedef struct {
         rtc_time_t diff;
 } rtc_corrector;
 
-extern const rtc_corrector *rtc_get_corrector();
+extern const rtc_corrector *rtc_get_corrector(void);
 
 extern void rtc_set_corrector(const rtc_corrector *corr);
 
@@ -235,7 +235,7 @@ extern void rtc_set_corrector(const rtc_corrector *corr);
  * Получение значения коррекции хода.
  * @return Коррекция хода в ppm.
  */
-extern int8_t rtc_get_caliber();
+extern int8_t rtc_get_caliber(void);
 
 /**
  * Запись коррекции хода. Поскольку коррекция не равна в точности одному ppm,
@@ -261,19 +261,19 @@ extern int8_t rtc_limit_caliber(const int8_t clb);
  * возвращаемое значение меньше нуля.
  * @return Вычисленное отклонение хода в ppm.
  */
-extern int8_t rtc_get_deviation();
+extern int8_t rtc_get_deviation(void);
 
 /**
  * Применение вычисленного отклонения хода RTC. Значение, полученное
  * rtc_diff() вычитается из текущего значения коррекции и
  * записывается в RTC.
  */
-extern void rtc_apply_corrector();
+extern void rtc_apply_corrector(void);
 
 /**
  * Сброс вычисленного отклонения хода RTC.
  */
-extern void rtc_reset_corrector();
+extern void rtc_reset_corrector(void);
 
 /** @} */
 
@@ -319,11 +319,11 @@ extern void rtc_store_actuals(uint8_t ac);
  * @return Восстановленное значение.
  * @see rtc_store_actuals()
  */
-extern uint8_t rtc_restore_actuals();
+extern uint8_t rtc_restore_actuals(void);
 
 extern void rtc_store_caliber(uint8_t cl);
 
-extern uint8_t rtc_restore_caliber();
+extern uint8_t rtc_restore_caliber(void);
 
 extern void rtc_store_corrector(rtc_corrector *corr);
 
