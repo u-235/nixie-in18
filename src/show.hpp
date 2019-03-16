@@ -43,14 +43,17 @@ protected:
         static display_t *display_;
         static uint8_t show_;
         static uint8_t error_;
+        static bool enable_auto_bright_;
+        static bool enable_auto_rate_;
         static const rtc_tm *time_ptr_;
-        static timer_id_t timer_update_, timer_hide_, timer_check_, timer_back_;
-
+        static timer_id_t timer_update_, timer_hide_, timer_back_, timer_sensor_;
         static void mode(uint8_t _show);
         static void next_mode();
-        static void back_show_time();
         static void update();
         static void hide();
+private:
+        static void back_show_time();
+        static void check_sensor();
 };
 
 #endif /* SRC_SHOW_HPP_ */

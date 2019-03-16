@@ -15,6 +15,8 @@ uint8_t ShowSetter::state_;
 
 void ShowSetter::on_start()
 {
+        enable_auto_rate_ = false;
+        display_rate(DISPLAY_RATE_MAX);
         tms_set_timer(timer_back_, _ticks_from_ms(CFG_SHOW_DURATION_SETTINGS));
         tms_start_timer(timer_back_);
         tms_set_timer(timer_update_, _ticks_from_ms(300));
@@ -25,6 +27,7 @@ void ShowSetter::on_start()
 
 void ShowSetter::on_stop()
 {
+        enable_auto_rate_ = true;
         tms_stop_timer(timer_back_);
         tms_stop_timer(timer_update_);
         tms_stop_timer(timer_hide_);
@@ -46,10 +49,10 @@ void ShowSetter::on_hide()
                 tmp &= ~DISPLAY_ENABLED_HOURS;
                 break;
         case 1:
-                tmp  &= ~DISPLAY_ENABLED_MINUTES;
+                tmp &= ~DISPLAY_ENABLED_MINUTES;
                 break;
         case 2:
-                tmp  &= ~DISPLAY_ENABLED_SECONDS;
+                tmp &= ~DISPLAY_ENABLED_SECONDS;
                 break;
         }
         display_->enabled = tmp;
@@ -69,7 +72,8 @@ void ShowSetter::on_key(const key_t _key)
         hide();
 }
 
-void ShowSetter::refresh(){
+void ShowSetter::refresh()
+{
         tms_start_timer(timer_back_);
         update();
 }

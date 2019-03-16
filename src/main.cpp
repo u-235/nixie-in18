@@ -11,6 +11,7 @@
 #include "hal/rtc.h"
 #include "tms/tms.h"
 #include "show.hpp"
+#include "sensor.h"
 #include "user.h"
 
 static void init();
@@ -31,14 +32,15 @@ void init()
         const rtc_tm *p_tm;
 
         mcu_init();
-        display_init();
         tms_init();
+        mcu_interrupt_unlock();
+        sensor_init();
+        display_init();
         rtc_init();
         p_tm = rtc_get_time();
         Show::init(p_tm);
         user_init();
         alarm_init(p_tm);
-        mcu_interrupt_unlock();
 }
 
 void loop()

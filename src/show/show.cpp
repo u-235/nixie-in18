@@ -9,13 +9,17 @@
 
 #include "../alarm.h"
 #include "../config.h"
+#include "../sensor.h"
 #include "childs.hpp"
 
 display_t *Show::display_;
 uint8_t Show::show_ = SHOW_VOID;
 uint8_t Show::error_;
+bool Show::enable_auto_bright_ = false;
+bool Show::enable_auto_rate_ = false;
 const rtc_tm *Show::time_ptr_;
-timer_id_t Show::timer_update_, Show::timer_hide_, Show::timer_back_;
+timer_id_t Show::timer_update_, Show::timer_hide_, Show::timer_back_,
+                Show::timer_sensor_;
 
 void Show::init(const rtc_tm *p_tm)
 {
@@ -24,6 +28,9 @@ void Show::init(const rtc_tm *p_tm)
         timer_hide_ = tms_create_timer(&hide);
         timer_update_ = tms_create_timer(&update);
         timer_back_ = tms_create_timer(&back_show_time);
+        timer_sensor_ = tms_create_timer(&check_sensor);
+        tms_set_timer(timer_sensor_, _ticks_from_ms(CFG_SENSOR_REQUEST));
+        tms_start_timer(timer_sensor_);
         mode(SHOW_INTRO);
 }
 
@@ -254,4 +261,12 @@ void Show::handle_key(const key_t _key)
         default:
                 ;
         };
+}
+
+void Show::check_sensor()
+{
+        if (enable_auto_bright_)
+                display_bright(sensor_get_bright());
+        if (enable_auto_rate_)
+                display_rate(sensor_get_rate());
 }

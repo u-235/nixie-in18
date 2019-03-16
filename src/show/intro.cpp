@@ -14,10 +14,15 @@ void ShowIntro::on_start()
 {
         tms_set_timer(timer_update_, _ticks_from_ms(CFG_SHOW_INTRO_PERIOD));
         tms_start_timer(timer_update_);
+        enable_auto_bright_ = false;
+        enable_auto_rate_ = false;
+        display_bright(DISPLAY_BRIGHT_MAX - (DISPLAY_BRIGHT_MAX - DISPLAY_BRIGHT_MIN) / 3);
 }
 
 void ShowIntro::on_stop()
 {
+        enable_auto_bright_ = true;
+        enable_auto_rate_ = true;
         tms_stop_timer(timer_update_);
 }
 

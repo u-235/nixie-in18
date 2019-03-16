@@ -18,7 +18,7 @@ CSRC += src/tests/02-PWM.c
 NAME =test_pwm
 else
 CSRC 	+= src/alarm.c src/hal/rtc/chip_m41t56.c src/hal/rtc/service.c
-CSRC 	+= src/tms/tms.c src/user.c
+CSRC 	+= src/sensor.c src/tms/tms.c src/user.c
 CPPSRC 	+= src/main.cpp src/show/alarm.cpp src/show/show.cpp src/show/date.cpp
 CPPSRC 	+= src/show/error.cpp src/show/intro.cpp src/show/set.cpp
 CPPSRC 	+= src/show/set_alarm.cpp src/show/set_time.cpp src/show/set_date.cpp
