@@ -73,5 +73,5 @@ void ShowSetCaliber::on_key(const key_t _key)
 
 uint8_t abs8(int8_t s)
 {
-        return s < 0 ? (uint8_t) -s : s;
+        return s < 0 ? static_cast<uint8_t>(-s) : s;
 }

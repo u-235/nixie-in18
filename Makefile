@@ -96,13 +96,13 @@ endif
 # Flags for C files
 CFLAGS += $(CCFLAGS)
 CFLAGS += -std=$(CSTD)
-CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wstrict-prototypes -Wmissing-prototypes
 
 
 # Flags for C++ files
 CPPFLAGS += $(CCFLAGS)
 CPPFLAGS += $(CPPSTD)
-CPPFLAGS += -fno-exceptions
+CPPFLAGS += -fno-exceptions -Wold-style-cast -Wnon-virtual-dtor
 
 
 # Assembler flags
