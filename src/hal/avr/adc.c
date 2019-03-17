@@ -10,10 +10,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "../../bit-helper.h"
 #include "../adc.h"
-
-#define _is_bit_set(word, bitnum)       ((word & (1 << bitnum)) != 0)
-#define _is_bit_clean(word, bitnum)     ((word & (1 << bitnum)) == 0)
 
 /* Разрешаем АЦП и устанавливаем минимальную частоту преобразования */
 #define ADC_ON          ((1 << ADEN) | (1 << ADIE))

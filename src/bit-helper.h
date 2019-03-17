@@ -11,10 +11,20 @@
 #ifndef SRC_BIT_HELPER_H_
 #define SRC_BIT_HELPER_H_
 
-#define _mask_set(dst, mask) dst|=(mask)
-#define _mask_clear(dst, mask) dst&=~(mask)
-#define _bit_set(dst, bit) _mask_set(dst, (1<<bit))
-#define _bit_clear(dst, bit) _mask_clear(dst, (1<<bit))
+#define _bits_set(dst, mask)\
+        do {\
+                dst |= (mask);\
+        } while (0)
+#define _bits_clear(dst, mask)\
+        do {\
+                dst &= ~(mask);\
+        } while (0)
+
+#define _bit_set(dst, bit) _bits_set(dst, (1<<bit))
+#define _bit_clear(dst, bit) _bits_clear(dst, (1<<bit))
+
+#define _is_bit_set(word, bitnum)       ((word & (1 << bitnum)) != 0)
+#define _is_bit_clean(word, bitnum)     ((word & (1 << bitnum)) == 0)
 
 /**
  * @brief Настройка ножки МК на вывод.
@@ -82,7 +92,7 @@
 #define __pin_on(port, pin) _bit_set(PORT##port, pin)
 #define __pin_off(port, pin) _bit_clear(PORT##port, pin)
 
-#define __is_pin_clean(port, pin) ((PIN##port & (1<<pin)) == 0)
-#define __is_pin_set(port, pin) ((PIN##port & (1<<pin)) != 0)
+#define __is_pin_clean(port, pin) _is_bit_clean(PIN##port, pin)
+#define __is_pin_set(port, pin) _is_bit_set(PIN##port, pin)
 
 #endif /* SRC_BIT_HELPER_H_ */

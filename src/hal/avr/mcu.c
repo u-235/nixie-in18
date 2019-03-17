@@ -39,10 +39,10 @@
  * с частотой 100Гц надо считать до 156 или от 100 до 256, поскольку таймер 0
  * делает прерывание только при переполнении.
  */
-#define _init_timer() \
+#define _init_timer(vd)\
         do {\
-        TCCR0 = (1 << CS02) | (1 << CS00);\
-        TIMSK |= 1 << TOIE0;\
+                TCCR0 = (1 << CS02) | (1 << CS00);\
+                TIMSK |= 1 << TOIE0;\
         } while (0)
 // Вектор прерывания при переполнении таймера 0
 #define TIMER_FIRE TIMER0_OVF_vect
@@ -54,11 +54,11 @@
  * используется тот же режим прерывания при переполнении счётчика.
  */
 #elif defined __AVR_ATmega168__
-#define _init_timer() \
+#define _init_timer(vd)\
         do {\
-        TCCR0A = 0;\
-        TCCR0B = (1 << CS02) | (1 << CS00);\
-        TIMSK0 |= 1 << TOIE0;\
+                TCCR0A = 0;\
+                TCCR0B = (1 << CS02) | (1 << CS00);\
+                TIMSK0 |= 1 << TOIE0;\
         } while (0)
 
 #define TIMER_FIRE TIMER0_OVF_vect
@@ -75,8 +75,15 @@
 #define _virt_set(bit) _complex_on(virt, bit)
 #define _complex_on(pre, su, pin) _bit_set(pre##su, pin)
 #define _virt_prepare(l) static uint8_t mask##l = 0, virt##l
-#define _virt_clean(l) mask##l = 0; virt##l =0
-#define _virt_apply(l) PORT##l = (PORT##l & ~mask##l) | virt##l
+#define _virt_clean(l)\
+        do {\
+                mask##l = 0;\
+                virt##l =0;\
+        } while (0)
+#define _virt_apply(l)\
+        do {\
+                PORT##l = (PORT##l & ~mask##l) | virt##l;\
+        } while (0)
 
 /*************************************************************
  *      Private function prototype.

@@ -36,19 +36,23 @@
 // При тактовой частоте в 8 МГц, делителе = 256 и
 // PWM_CYCLE_DURATION = 260 получаем частоту ШИМ около 120 Гц.
 #define TIMER_PRESLALER 256U
-#define _init_timer()\
-        TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21);\
-        TIMSK |= 1 << OCIE2;
+#define _init_timer(vd)\
+        do {\
+                TCCR2 = (1 << WGM21) | (1 << CS22) | (1 << CS21);\
+                TIMSK |= 1 << OCIE2;\
+        } while (0)
 // Вектор прерывания при совпадении в таймере 2
 #define TIMER_COMPARE TIMER2_COMP_vect
 #define TIMER_COUNTER OCR2
 // Дальше вариант для Atmega168
 #elif defined __AVR_ATmega168__
 #define TIMER_PRESLALER 256U
-#define _init_timer()\
-        TCCR2A = (1 << WGM21);\
-        TCCR2B = (1 << CS22) | (1 << CS21);\
-        TIMSK2 |= 1 << OCIE2A;
+#define _init_timer(vd)\
+        do {\
+                TCCR2A = (1 << WGM21);\
+                TCCR2B = (1 << CS22) | (1 << CS21);\
+                TIMSK2 |= 1 << OCIE2A;\
+        } while (0)
 
 #define TIMER_COMPARE TIMER2_COMPA_vect
 #define TIMER_COUNTER OCR2A
@@ -166,8 +170,7 @@ void pwmi_init()
 
         step = STEP_CALK;
         TIMER_COUNTER = 64;
-        _init_timer()
-        ;
+        _init_timer();
 }
 
 /**
@@ -193,9 +196,8 @@ void display_bright(uint8_t lvl)
 void display_rate(uint8_t lvl)
 {
         static const PROGMEM uint16_t steps[] = {
-                _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58), _steps(
-                                0.48), _steps(0.40), _steps(0.34), BALANCE_MAX
-
+                _steps(1.0), _steps(0.83), _steps(0.69), _steps(0.58),
+                _steps(0.48), _steps(0.40), _steps(0.34), BALANCE_MAX
         };
 
         if (lvl > DISPLAY_RATE_MAX) {
