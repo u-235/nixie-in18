@@ -42,7 +42,7 @@ CPPSTD = -std=gnu++98
 LIBS	=
 LIBDIRS	=
 INCDIRS	=
-DEFS	= F_CPU=16000000UL __RTC_M41T56__
+DEFS	= F_CPU=16000000UL
 ADEFS	= $(DEFS)
 
 ### Warning contorls

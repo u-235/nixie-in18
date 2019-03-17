@@ -16,6 +16,8 @@
 
 #include <stdint.h>
 
+#include "../config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,9 +34,9 @@ extern "C" {
 /**
  *  Default IIC clock frequency in hertz
  */
-#ifndef F_IIC
-#define F_IIC 10000
-#warning Use default F_IIC
+#ifndef CFG_IIC_FREQUENSY
+#define CFG_IIC_FREQUENSY 10000
+#warning Use default CFG_IIC_FREQUENSY
 #endif
 
 /**

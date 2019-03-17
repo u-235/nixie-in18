@@ -23,7 +23,7 @@
  * частоту в герцах в макросе F_IIC или задать настройки непосредственно в
  * макросах TWI_PRESCALER и TWI_BIT_RATE.
  */
-#if !defined F_IIC && ( !defined TWI_PRESCALER || !defined TWI_BIT_RATE)
+#if !defined CFG_IIC_FREQUENSY && ( !defined TWI_PRESCALER || !defined TWI_BIT_RATE)
 #       error Unknown IIC clock frequency
 #endif
 
@@ -32,31 +32,31 @@
  */
 #ifndef TWI_PRESCALER
 #       ifndef TWI_BIT_RATE
-#               if (F_CPU/F_IIC/526) < 1
+#               if (F_CPU / CFG_IIC_FREQUENSY / 526) < 1
 #                       define TWI_PRESCALER 0x00
-#               elif (F_CPU/F_IIC/526) <= 4
+#               elif (F_CPU / CFG_IIC_FREQUENSY / 526) <= 4
 #                       define TWI_PRESCALER 0x01
-#               elif (F_CPU/F_IIC/526) <= 16
+#               elif (F_CPU / CFG_IIC_FREQUENSY / 526) <= 16
 #                       define TWI_PRESCALER 0x02
-#               elif (F_CPU/F_IIC/526) <= 64
+#               elif (F_CPU / CFG_IIC_FREQUENSY / 526) <= 64
 #                       define TWI_PRESCALER 0x03
 #               else
-#                       error too low F_IIC
+#                       error too low CFG_IIC_FREQUENSY
 #               endif
 #       else
 #               if TWI_BIT_RATE < 0 || TWI_BIT_RATE > 255
 #                       error Invalid TWI_BIT_RATE
 #               endif
-#               if (F_CPU/F_IIC/(16 + 2*TWI_BIT_RATE)) < 1
+#               if (F_CPU / CFG_IIC_FREQUENSY / (16 + 2 * TWI_BIT_RATE)) < 1
 #                       define TWI_PRESCALER 0x00
-#               elif (F_CPU/F_IIC/(16 + 2*TWI_BIT_RATE)) <= 4
+#               elif (F_CPU / CFG_IIC_FREQUENSY / (16 + 2 * TWI_BIT_RATE)) <= 4
 #                       define TWI_PRESCALER 0x01
-#               elif (F_CPU/F_IIC/(16 + 2*TWI_BIT_RATE)) <= 16
+#               elif (F_CPU / CFG_IIC_FREQUENSY / (16 + 2 * TWI_BIT_RATE)) <= 16
 #                       define TWI_PRESCALER 0x02
-#               elif (F_CPU/F_IIC/(16 + 2*TWI_BIT_RATE)) <= 64
+#               elif (F_CPU / CFG_IIC_FREQUENSY / (16 + 2 * TWI_BIT_RATE)) <= 64
 #                       define TWI_PRESCALER 0x03
 #               else
-#                       error too low F_IIC or too low TWI_BIT_RATE
+#                       error too low CFG_IIC_FREQUENSY or too low TWI_BIT_RATE
 #               endif
 #       endif
 #endif
@@ -67,13 +67,13 @@
 
 #ifndef TWI_BIT_RATE
 #       if TWI_PRESCALER == 0x00
-#               define TWI_BIT_RATE (F_CPU/F_IIC-16)/2
+#               define TWI_BIT_RATE (F_CPU / CFG_IIC_FREQUENSY - 16) / 2
 #       elif TWI_PRESCALER == 0x01
-#               define TWI_BIT_RATE (F_CPU/F_IIC/4-16)/2
+#               define TWI_BIT_RATE (F_CPU / CFG_IIC_FREQUENSY / 4 - 16) / 2
 #       elif TWI_PRESCALER == 0x02
-#               define TWI_BIT_RATE (F_CPU/F_IIC/16-16)/2
+#               define TWI_BIT_RATE (F_CPU / CFG_IIC_FREQUENSY / 16 - 16) / 2
 #       elif TWI_PRESCALER == 0x03
-#               define TWI_BIT_RATE (F_CPU/F_IIC/64-16)/2
+#               define TWI_BIT_RATE (F_CPU / CFG_IIC_FREQUENSY / 64 - 16) / 2
 #       endif
 
 #       if TWI_BIT_RATE > 255

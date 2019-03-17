@@ -11,6 +11,8 @@
 #error Dont include this file
 #endif
 
+#include "../rtc.h"
+
 static rtc_corrector corr;
 
 /*************************************************************

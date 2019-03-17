@@ -5,8 +5,8 @@
  * \author Nick Egorrov
  */
 
-#include "../rtc.h"
-#include "../iic.h"
+#undef CFG_RTC_CHIP
+#define CFG_RTC_CHIP    _RTC_M41T56
 
 /* Адрес микросхемы на шине IIC. */
 #define RTC_ADDRESS             0xd0

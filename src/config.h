@@ -164,10 +164,12 @@
 #define CFG_PLAYER_ADR16        D, 2
 #define CFG_PLAYER_ADR32        D, 1
 
-
 #define CFG_ADC_CHANNEL_BRIGHT          1
 #define CFG_ADC_CHANNEL_RATE            7
 #define CFG_ADC_CONVERTING_PERIOD       200
 #define CFG_SENSOR_REQUEST              333
+
+#define CFG_RTC_CHIP            _RTC_M41T56
+#define CFG_IIC_FREQUENSY       10000
 
 #endif /* SRC_TMS_CONFIG_H_ */

@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include <time.h>
 
+#include "../config.h"
+
 /**
  * @brief Представление времени суток и календарной даты.
  * @details В отличие от структуры tm из <time.h>, поля этой структуры имеют тип
@@ -79,12 +81,18 @@ typedef enum {
         RTC_POWER_ERROR
 } rtc_error_t;
 
-#ifdef __RTC_DC1307__
+
+#define _RTC_DC1307 1
+#define _RTC_M41T56 2
+
+#ifndef CFG_RTC_CHIP
+#       error "rtc chip not defined"
+#elif CFG_RTC_CHIP == _RTC_DC1307
 #       include "rtc/chip_dc1307.h"
-#elif defined __RTC_M41T56__
+#elif CFG_RTC_CHIP == _RTC_M41T56
 #       include "rtc/chip_m41t56.h"
 #else
-#       warning "rtc chip not defined"
+#       error "unknown rtc chip"
 #endif
 
 #ifdef __cplusplus

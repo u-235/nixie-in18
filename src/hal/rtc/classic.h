@@ -13,6 +13,9 @@
 
 #include <string.h>
 
+#include "../rtc.h"
+#include "../iic.h"
+
 static rtc_tm local_time;
 static rtc_error_t error;
 
