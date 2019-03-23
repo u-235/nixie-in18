@@ -68,7 +68,7 @@ typedef int32_t rtc_time_t;
 /**
  * Перечисление ошибок RTC.
  */
-typedef enum {
+enum rtc_errors{
         /** Нет ошибок. */
         RTC_NO_ERROR,
         /** Неизвестная ошибка. */
@@ -79,7 +79,7 @@ typedef enum {
         RTC_CHIP_ERROR,
         /** Сбой питания микросхемы RTC */
         RTC_POWER_ERROR
-} rtc_error_t;
+};
 
 
 #define _RTC_DC1307 1
@@ -108,7 +108,7 @@ extern void rtc_init(void);
  * Получение ошибки RTC.
  * @return ошибка RTC.
  */
-extern rtc_error_t rtc_error(void);
+extern uint8_t rtc_error(void);
 
 /**
  * Сброс ошибки RTC, если это возможно.

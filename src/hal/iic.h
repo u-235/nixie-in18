@@ -47,7 +47,7 @@ extern "C" {
 /**
  * \brief Ошибки модуля.
  */
-typedef enum {
+enum iic_errors{
         /** Нет ошибок. */
         IIC_NO_ERROR,
         /** Неизвестная ошибка. */
@@ -64,12 +64,12 @@ typedef enum {
         IIC_ERROR_STOP,
         /** Устройство не отвечает */
         IIC_ERROR_WAIT = 0x80
-} iic_error_t;
+};
 
-typedef enum {
+enum iic_modes{
         IIC_WRITE=0,
         IIC_READ
-}iic_mode_t;
+};
 
 /**
  * \brief Инициализация модуля.
@@ -97,7 +97,7 @@ extern uint8_t iic_get_address(void);
  * \details
  * \return код ошибки.
  */
-extern iic_error_t iic_error(void);
+extern uint8_t iic_error(void);
 
 /**
  * \brief Сброс ошибки модуля.
@@ -119,7 +119,7 @@ extern void iic_clear(void);
  *      быть задан функцией iic_set_address().
  * \param mode Режим обмена шины.
  */
-extern void iic_ll_start(iic_mode_t mode);
+extern void iic_ll_start(uint8_t mode);
 
 /**
  * Завершение обмена и генерация состояния стоп.

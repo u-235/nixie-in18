@@ -225,7 +225,7 @@ void Show::hide()
         display_flush();
 }
 
-void Show::handle_key(const key_t _key)
+void Show::handle_key(const uint8_t _key)
 {
         if (_key == VK_NO) {
                 return;

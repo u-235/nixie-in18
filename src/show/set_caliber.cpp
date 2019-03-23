@@ -45,7 +45,7 @@ void ShowSetCaliber::on_update()
         display_->dots = dots;
 }
 
-void ShowSetCaliber::on_key(const key_t _key)
+void ShowSetCaliber::on_key(const uint8_t _key)
 {
         ShowSetter::on_key(_key);
 

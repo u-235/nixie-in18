@@ -52,7 +52,7 @@ void ShowSetTime::on_sync()
         time_.hours = time_ptr_->hours;
 }
 
-void ShowSetTime::on_key(const key_t _key)
+void ShowSetTime::on_key(const uint8_t _key)
 {
         ShowSetter::on_key(_key);
 

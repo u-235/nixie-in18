@@ -58,7 +58,7 @@ void ShowSetter::on_hide()
         display_->enabled = tmp;
 }
 
-void ShowSetter::on_key(const key_t _key)
+void ShowSetter::on_key(const uint8_t _key)
 {
         if (_key != VK_MENU_UP)
                 return;

@@ -102,7 +102,7 @@ void reset()
  * Выставляет на шину состояние старт/рестарт и адрес устройства.
  * \param mode Режим обмена шины.
  */
-void iic_ll_start(iic_mode_t mode)
+void iic_ll_start(uint8_t mode)
 {
         uint8_t addr;
 

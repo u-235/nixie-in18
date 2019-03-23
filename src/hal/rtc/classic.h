@@ -17,7 +17,7 @@
 #include "../iic.h"
 
 static rtc_tm local_time;
-static rtc_error_t error;
+static uint8_t error;
 
 /*
  * Копия управляющих битов микросхемы.
@@ -91,11 +91,11 @@ static uint8_t to_bcd(const uint8_t i);
 
 static uint8_t from_bcd(const uint8_t b);
 
-static void set_error(rtc_error_t e);
+static void set_error(uint8_t e);
 
 static void check(void);
 
-static void begin_io(iic_mode_t mode, uint8_t addr);
+static void begin_io(uint8_t mode, uint8_t addr);
 
 static void end_io(void);
 
@@ -119,14 +119,14 @@ void rtc_init()
         chip_init();
 }
 
-rtc_error_t rtc_error()
+uint8_t rtc_error()
 {
         return error;
 }
 
 void rtc_clear()
 {
-        rtc_error_t err = rtc_error();
+        uint8_t err = rtc_error();
         set_error(RTC_NO_ERROR);
 
         switch (err) {
@@ -337,7 +337,7 @@ uint8_t from_bcd(const uint8_t b)
         return ((b / 16) * 10) + (b & 0x0f);
 }
 
-void set_error(rtc_error_t e)
+void set_error(uint8_t e)
 {
         error = e;
 }
@@ -366,7 +366,7 @@ void check()
  * @param mode Тип обмена: запись (#IIC_WRITE) или чтение (#IIC_READ).
  * @param addr адрес регистра или ячейки памяти микросхемы.
  */
-void begin_io(iic_mode_t mode, uint8_t addr)
+void begin_io(uint8_t mode, uint8_t addr)
 {
         iic_set_address(RTC_ADDRESS);
         iic_ll_start(IIC_WRITE);

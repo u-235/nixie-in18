@@ -19,7 +19,7 @@ public:
         static void on_stop();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 class ShowError: public ShowViewer {
@@ -41,7 +41,7 @@ public:
         static void on_start();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 class ShowDate: public ShowViewer {
@@ -50,7 +50,7 @@ public:
         static void on_stop();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 class ShowAlarm: public ShowViewer {
@@ -58,7 +58,7 @@ public:
         static void on_start();
         static void on_stop();
         static void on_update();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 class ShowSetter: public ShowViewer {
@@ -67,7 +67,7 @@ public:
         static void on_stop();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 protected:
         static void refresh();
         static uint8_t flag_;
@@ -80,7 +80,7 @@ public:
         static void on_stop();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 class ShowSetTime: public ShowSetter {
@@ -90,7 +90,7 @@ public:
         static void on_update();
         static void on_hide();
         static void on_sync();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 protected:
         static rtc_tm time_;
 };
@@ -101,7 +101,7 @@ public:
         static void on_stop();
         static void on_update();
         static void on_hide();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 protected:
         static rtc_tm time_;
 };
@@ -111,7 +111,7 @@ public:
         static void on_start();
         static void on_stop();
         static void on_update();
-        static void on_key(const key_t _key);
+        static void on_key(const uint8_t _key);
 };
 
 #endif /* SRC_SHOW_CHILDS_HPP_ */

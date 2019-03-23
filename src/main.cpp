@@ -68,7 +68,7 @@ void idle()
 
 void check_error()
 {
-        rtc_error_t error = rtc_error();
+        uint8_t error = rtc_error();
 
         if (error == RTC_NO_ERROR) {
                 return;

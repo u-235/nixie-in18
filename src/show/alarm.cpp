@@ -37,7 +37,7 @@ void ShowAlarm::on_update()
         }
 }
 
-void ShowAlarm::on_key(const key_t _key)
+void ShowAlarm::on_key(const uint8_t _key)
 {
         if (_key == VK_MENU_UP) {
                 mode(SHOW_TIME);

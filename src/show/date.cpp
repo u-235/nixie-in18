@@ -38,7 +38,7 @@ void ShowDate::on_hide()
                 display_clean();
 }
 
-void ShowDate::on_key(const key_t _key)
+void ShowDate::on_key(const uint8_t _key)
 {
         if (_key == VK_MENU_UP) {
                 mode(SHOW_TIME);

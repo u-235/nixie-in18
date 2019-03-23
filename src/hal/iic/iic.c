@@ -11,7 +11,7 @@
 
 static void reset(void);
 
-static iic_error_t error;  // Статус устройства.
+static uint8_t error;  // Статус устройства.
 static uint8_t address;  // device address
 
 #define INSIDE_SRC_HAL_IIC_C_
@@ -35,7 +35,7 @@ uint8_t iic_get_address()
 /*
  * Возвращает код ошибки.
  */
-iic_error_t iic_error()
+uint8_t iic_error()
 {
         return error;
 }

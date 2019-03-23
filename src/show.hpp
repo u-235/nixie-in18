@@ -22,12 +22,12 @@ public:
 
         static void synchronize();
 
-        static void handle_key(const key_t _key);
+        static void handle_key(const uint8_t _key);
 
         static void show_error(uint8_t _error);
 
 protected:
-        typedef enum {
+        enum {
                 SHOW_VOID,
                 SHOW_INTRO,
                 SHOW_ERROR,
@@ -38,7 +38,7 @@ protected:
                 SHOW_SET_TIME,
                 SHOW_SET_DATE,
                 SHOW_SET_CALIBER
-        } show_t;
+        };
 
         static display_t *display_;
         static uint8_t show_;

@@ -20,7 +20,7 @@
  *************************************************************/
 
 static timer_id_t timer_scan;
-static key_t key = VK_NO;
+static uint8_t key = VK_NO;
 
 /*************************************************************
  *      Private function prototype.
@@ -41,9 +41,9 @@ void user_init()
         tms_start_timer(timer_scan);
 }
 
-key_t user_get_key()
+uint8_t user_get_key()
 {
-        key_t retval = key;
+        uint8_t retval = key;
         key = VK_NO;
         return retval;
 }

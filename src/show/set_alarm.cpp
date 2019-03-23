@@ -51,7 +51,7 @@ void ShowSetAlarm::on_hide()
         ShowSetter::on_hide();
 }
 
-void ShowSetAlarm::on_key(const key_t _key)
+void ShowSetAlarm::on_key(const uint8_t _key)
 {
         ShowSetter::on_key(_key);
 

@@ -56,7 +56,7 @@ void ShowSetDate::on_hide()
         display_->enabled = tmp;
 }
 
-void ShowSetDate::on_key(const key_t _key)
+void ShowSetDate::on_key(const uint8_t _key)
 {
         ShowSetter::on_key( _key);
 

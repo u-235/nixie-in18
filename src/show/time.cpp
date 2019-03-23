@@ -35,7 +35,7 @@ void ShowTime::on_hide()
         }
 }
 
-void ShowTime::on_key(const key_t _key)
+void ShowTime::on_key(const uint8_t _key)
 {
         if (_key == VK_MENU_UP) {
                 mode(SHOW_SET_ALARM);
