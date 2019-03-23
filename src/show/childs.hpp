@@ -42,6 +42,8 @@ public:
         static void on_update();
         static void on_hide();
         static void on_key(const uint8_t _key);
+protected:
+        static void fill();
 };
 
 class ShowDate: public ShowViewer {
@@ -51,6 +53,8 @@ public:
         static void on_update();
         static void on_hide();
         static void on_key(const uint8_t _key);
+protected:
+        static void fill();
 };
 
 class ShowAlarm: public ShowViewer {

@@ -126,7 +126,6 @@
 #define CFG_SHOW_DURATION_ERROR         3000U
 #define CFG_SHOW_DURATION_DATE          7000U
 #define CFG_SHOW_DURATION_SETTINGS      7000U
-#define CFG_SHOW_BLINK_DURATION         500U
 #define CFG_SHOW_INTRO_PERIOD           333U
 
 /* Длительность проигрывания мелодии будильника. */

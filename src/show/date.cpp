@@ -24,17 +24,14 @@ void ShowDate::on_stop()
 
 void ShowDate::on_update()
 {
-        display_->enabled = DISPLAY_ENABLED_ALL;
-        display_->day = time_ptr_->day;
-        display_->month = time_ptr_->month;
-        display_->year = time_ptr_->year;
-        display_->marks = display_make_mark(time_ptr_->week_day, alarm_is_on());
-        display_->dots = DISPLAY_DOT_ALL;
+        fill();
 }
 
 void ShowDate::on_hide()
 {
-        if (!_rtc_is_date_actual(time_ptr_->actual))
+        if (_rtc_is_date_actual(time_ptr_->actual))
+                fill();
+        else
                 display_clean();
 }
 
@@ -45,3 +42,12 @@ void ShowDate::on_key(const uint8_t _key)
         }
 }
 
+void ShowDate::fill()
+{
+        display_->enabled = DISPLAY_ENABLED_ALL;
+        display_->day = time_ptr_->day;
+        display_->month = time_ptr_->month;
+        display_->year = time_ptr_->year;
+        display_->marks = display_make_mark(time_ptr_->week_day, alarm_is_on());
+        display_->dots = DISPLAY_DOT_ALL;
+}

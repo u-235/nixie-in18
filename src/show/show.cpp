@@ -36,11 +36,14 @@ void Show::init(const struct rtc_tm *p_tm)
 
 void Show::synchronize()
 {
+        static bool blink = true;
+
         if (show_ == SHOW_DATE || show_ == SHOW_TIME) {
-                tms_set_timer(timer_hide_,
-                                _ticks_from_ms(CFG_SHOW_BLINK_DURATION));
-                tms_run_timer(timer_hide_);
-                update();
+                if (blink)
+                        hide();
+                else
+                        update();
+                blink = !blink;
         } else if (show_ == SHOW_SET_TIME)
                 ShowSetTime::on_sync();
 }
