@@ -5,6 +5,8 @@
  *
  * @date создан 11.03.2019
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef SENSOR_H_

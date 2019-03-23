@@ -10,6 +10,8 @@
  *
  * \date создан 31.12.2014
  * \author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include <avr/io.h>

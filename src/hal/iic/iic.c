@@ -5,6 +5,8 @@
  *
  * \date created on: 21.01.2018
  * \author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "../iic.h"

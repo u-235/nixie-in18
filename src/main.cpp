@@ -3,6 +3,8 @@
  *
  * @date created on: 02 нояб. 2015 г.
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "alarm.h"

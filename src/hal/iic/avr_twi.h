@@ -2,6 +2,12 @@
  * \file
  * \brief Реализация IIC в AVR
  * \details
+ *
+ * @date created on:
+ * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
+ *
  * \section twi Модуль TWI.
  * Модуль TWI предназначен для связи микроконтроллера с внешними устройствами
  * через шину I2C.

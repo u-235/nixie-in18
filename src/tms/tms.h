@@ -6,6 +6,8 @@
  *
  * \date created 16.04.2016
  * \author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef TMS_H_

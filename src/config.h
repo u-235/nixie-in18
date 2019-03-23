@@ -5,6 +5,8 @@
  *
  * @date создан 18.11.2018
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef SRC_TMS_CONFIG_H_

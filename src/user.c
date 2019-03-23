@@ -5,6 +5,8 @@
  *
  * @date создан 13.11.2018
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "config.h"

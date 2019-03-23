@@ -5,6 +5,8 @@
  *
  * @date создан 02.01.2015
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef HAL_DISPLAY_H_

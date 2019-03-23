@@ -1,3 +1,12 @@
+/**
+ * @file
+ *
+ * @date создан 03 янв. 2015 г.
+ * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 #ifndef HAL_AVR_PWMI_H_
 #define HAL_AVR_PWMI_H_
 

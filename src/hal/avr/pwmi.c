@@ -20,6 +20,11 @@
  *
  *  Важно знать, что длительность цикла неизменна и что цикл содержит любую
  *  комбинацию из первых четырёх фаз и всегда содержит последнюю фазу.
+ *
+ * @date создан 03 янв. 2015 г.
+ * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include <avr/io.h>

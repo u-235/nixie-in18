@@ -5,6 +5,8 @@
  *
  * @date создан 24.02.2019
  * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef _RTC_INSIDE

@@ -4,7 +4,9 @@
  * \details
  *
  * \date created on: 26.01.2018
- * \author: nick
+ * @author Nick Egorrov
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #ifndef HAL_IIC_AVR_TWI_IMPL_H_

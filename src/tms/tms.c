@@ -4,6 +4,8 @@
  *
  *  Created on: 16.04.2016
  *      Author: Николай
+ * @copyright Copyright 2019 Nick Egorrov
+ * @copyright http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "tms.h"
