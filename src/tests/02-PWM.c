@@ -1,11 +1,13 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include "../config.h"
 #include "../hal/adc.h"
 #include "../hal/avr/asm.h"
 #include "../hal/display.h"
 #include "../hal/mcu.h"
+
+#define CFG_ADC_CHANNEL_BRIGHT          1
+#define CFG_ADC_CHANNEL_RATE            7
 
 static uint8_t get_rate(void);
 static uint8_t get_bright(void);

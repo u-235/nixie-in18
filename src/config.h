@@ -164,7 +164,7 @@
 #define CFG_PLAYER_ADR16        D, 2
 #define CFG_PLAYER_ADR32        D, 1
 
-#define CFG_ADC_CHANNEL_BRIGHT          1
+#define CFG_ADC_CHANNEL_BRIGHT          2
 #define CFG_ADC_CHANNEL_RATE            7
 #define CFG_ADC_CONVERTING_PERIOD       200
 #define CFG_SENSOR_REQUEST              333
