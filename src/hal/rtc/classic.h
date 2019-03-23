@@ -259,7 +259,7 @@ static void clean_ram(void);
 void rtc_mem_read(void *dst, const uint8_t adr, const uint8_t sz)
 {
         uint8_t c = sz;
-        uint8_t *ptr = dst;
+        uint8_t *ptr = (uint8_t *) dst;
         begin_io(IIC_READ, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
                 *ptr++ = iic_ll_read(--c);
@@ -276,7 +276,7 @@ void rtc_mem_read(void *dst, const uint8_t adr, const uint8_t sz)
 void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz)
 {
         uint8_t c = sz;
-        const uint8_t *ptr = src;
+        const uint8_t *ptr = (const uint8_t *) src;
         begin_io(IIC_WRITE, ADDR_RAM_BEGIN + adr);
         while (c != 0) {
                 c--;
