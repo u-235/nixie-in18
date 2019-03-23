@@ -29,7 +29,7 @@ int main(void)
 
 void init()
 {
-        const rtc_tm *p_tm;
+        const struct rtc_tm *p_tm;
 
         mcu_init();
         tms_init();
@@ -87,7 +87,7 @@ void check_error()
 void on_rtc_failture()
 {
         // TODO reset alarm
-        rtc_tm ttm;
+        struct rtc_tm ttm;
         ttm.seconds = 7;
         ttm.minutes = 7;
         ttm.hours = 7;

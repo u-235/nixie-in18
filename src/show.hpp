@@ -18,7 +18,7 @@
 
 class Show {
 public:
-        static void init(const rtc_tm *p_tm);
+        static void init(const struct rtc_tm *p_tm);
 
         static void synchronize();
 
@@ -40,12 +40,12 @@ protected:
                 SHOW_SET_CALIBER
         };
 
-        static display_t *display_;
+        static struct display *display_;
         static uint8_t show_;
         static uint8_t error_;
         static bool enable_auto_bright_;
         static bool enable_auto_rate_;
-        static const rtc_tm *time_ptr_;
+        static const struct rtc_tm *time_ptr_;
         static timer_id_t timer_update_, timer_hide_, timer_back_, timer_sensor_;
         static void mode(uint8_t _show);
         static void next_mode();

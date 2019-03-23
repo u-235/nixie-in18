@@ -68,7 +68,7 @@
 #define DISPLAY_ENABLED_ALL \
                 (DISPLAY_ENABLED_SECONDS | DISPLAY_ENABLED_TIME)
 
-typedef struct {
+struct display {
         union {
                 uint8_t hours;
                 uint8_t day;
@@ -84,7 +84,7 @@ typedef struct {
         uint8_t enabled;
         uint8_t marks;
         uint8_t dots;
-} display_t;
+};
 
 #ifdef __cplusplus
 extern "C" {
@@ -93,7 +93,7 @@ extern "C" {
 extern void display_init(void);
 extern void display_clean(void);
 extern void display_flush(void);
-extern display_t *display_get(void);
+extern struct display *display_get(void);
 extern uint8_t display_make_mark(uint8_t week_day, uint8_t alarm);
 
 #define DISPLAY_BRIGHT_MAX 16

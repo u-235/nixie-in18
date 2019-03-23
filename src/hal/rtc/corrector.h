@@ -144,7 +144,7 @@ void rtc_reset_corrector()
  * значениями времени и даты.
  * @param _time Указатель на структуру с новым временем.
  */
-void corrector_update(rtc_tm const *_time)
+void corrector_update(struct rtc_tm const *_time)
 {
         if (!_rtc_is_actual(_time->actual))
                 return;

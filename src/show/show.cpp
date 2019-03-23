@@ -12,16 +12,16 @@
 #include "../sensor.h"
 #include "childs.hpp"
 
-display_t *Show::display_;
+struct display *Show::display_;
 uint8_t Show::show_ = SHOW_VOID;
 uint8_t Show::error_;
 bool Show::enable_auto_bright_ = false;
 bool Show::enable_auto_rate_ = false;
-const rtc_tm *Show::time_ptr_;
+const struct rtc_tm *Show::time_ptr_;
 timer_id_t Show::timer_update_, Show::timer_hide_, Show::timer_back_,
                 Show::timer_sensor_;
 
-void Show::init(const rtc_tm *p_tm)
+void Show::init(const struct rtc_tm *p_tm)
 {
         time_ptr_ = p_tm;
         display_ = display_get();

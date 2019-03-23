@@ -9,12 +9,12 @@
 #include <string.h>
 #include "../rtc.h"
 
-void rtc_copy(rtc_tm *dst, rtc_tm const *src)
+void rtc_copy(struct rtc_tm *dst, struct rtc_tm const *src)
 {
-        memcpy(dst, src, sizeof(rtc_tm));
+        memcpy(dst, src, sizeof(struct rtc_tm));
 }
 
-void rtc_to_tm(struct tm *dst, rtc_tm const *src)
+void rtc_to_tm(struct tm *dst, struct rtc_tm const *src)
 {
         dst->tm_sec = src->seconds;
         dst->tm_min = src->minutes;
@@ -26,7 +26,7 @@ void rtc_to_tm(struct tm *dst, rtc_tm const *src)
         dst->tm_yday = rtc_day_in_year(src);
 }
 
-void rtc_date_adjust(rtc_tm *_date)
+void rtc_date_adjust(struct rtc_tm *_date)
 {
         uint8_t y, m, d, lim;
 
@@ -85,7 +85,7 @@ void rtc_date_adjust(rtc_tm *_date)
         _date->week_day = (d + ((uint16_t) (31 * m) / 12) + y + y / 4) % 7;
 }
 
-uint_fast16_t rtc_day_in_year(const rtc_tm *_date)
+uint_fast16_t rtc_day_in_year(const struct rtc_tm *_date)
 {
         uint_fast16_t retval;
         uint8_t y, m;
@@ -106,7 +106,7 @@ uint_fast16_t rtc_day_in_year(const rtc_tm *_date)
         return retval;
 }
 
-rtc_utime_t rtc_day_in_millenium(const rtc_tm *_date)
+rtc_utime_t rtc_day_in_millenium(const struct rtc_tm *_date)
 {
         rtc_utime_t result;
         uint8_t y;
@@ -118,7 +118,7 @@ rtc_utime_t rtc_day_in_millenium(const rtc_tm *_date)
         return result;
 }
 
-rtc_utime_t rtc_seconds_from_midnight(const rtc_tm *_time)
+rtc_utime_t rtc_seconds_from_midnight(const struct rtc_tm *_time)
 {
         rtc_utime_t retval;
 
@@ -129,7 +129,7 @@ rtc_utime_t rtc_seconds_from_midnight(const rtc_tm *_time)
         return retval;
 }
 
-rtc_utime_t rtc_seconds_from_millenium(const rtc_tm *_time)
+rtc_utime_t rtc_seconds_from_millenium(const struct rtc_tm *_time)
 {
         rtc_utime_t retval;
 

@@ -28,7 +28,7 @@
  * структуры. Это связано с тем, что микросхема RTC может содержать неправильное
  * время из-за сбоев питания или может быть недоступна из-за неисправностей.
  */
-typedef struct {
+struct rtc_tm {
         /** Секунды, 0-59 */
         uint8_t seconds;
         /** Минуты, 0-59 */
@@ -45,7 +45,7 @@ typedef struct {
         uint8_t year;
         /** Флаги актуальности данных. */
         uint8_t actual;
-} rtc_tm;
+};
 
 #define RTC_BIT_ACTUAL_SECONDS  (1 << 0)
 #define RTC_BIT_ACTUAL_MINUTES  (1 << 1)
@@ -149,7 +149,7 @@ extern void rtc_sync(void);
  * текущего времени. Это время обновляется функцией rtc_sync().
  * @return Указатель на внутреннюю структуру rtc_tm.
  */
-extern const rtc_tm * rtc_get_time(void);
+extern const struct rtc_tm * rtc_get_time(void);
 
 /**
  * @brief Установка времени.
@@ -160,7 +160,7 @@ extern const rtc_tm * rtc_get_time(void);
  * внутренней структуры.
  * @param _time Указатель на структуру с новым временем.
  */
-extern void rtc_set_time(const rtc_tm * _time);
+extern void rtc_set_time(const struct rtc_tm * _time);
 
 /**
  * @brief Установка даты.
@@ -171,7 +171,7 @@ extern void rtc_set_time(const rtc_tm * _time);
  * внутренней структуры.
  * @param _time Указатель на структуру с новой датой.
  */
-extern void rtc_set_date(const rtc_tm * _time);
+extern void rtc_set_date(const struct rtc_tm * _time);
 
 /**
  * Чтение массива данных из RTC.
@@ -202,24 +202,24 @@ extern void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz);
  * @param dst Указатель на заполняемую структуру.
  * @param src Указатель на исходную структуру.
  */
-extern void rtc_copy(rtc_tm *dst, rtc_tm const *src);
+extern void rtc_copy(struct rtc_tm *dst, struct rtc_tm const *src);
 
 /**
  * Конвертирует структуру rtc_tm в стандартную tm.
  * @param dst Указатель на заполняемую структуру.
  * @param src Указатель на исходную структуру.
  */
-extern void rtc_to_tm(struct tm *dst, rtc_tm const *src);
+extern void rtc_to_tm(struct tm *dst, struct rtc_tm const *src);
 
-extern void rtc_date_adjust(rtc_tm *date);
+extern void rtc_date_adjust(struct rtc_tm *date);
 
-extern uint_fast16_t rtc_day_in_year(const rtc_tm *date);
+extern uint_fast16_t rtc_day_in_year(const struct rtc_tm *date);
 
-extern rtc_utime_t rtc_day_in_millenium(const rtc_tm *date);
+extern rtc_utime_t rtc_day_in_millenium(const struct rtc_tm *date);
 
-extern rtc_utime_t rtc_seconds_from_midnight(const rtc_tm *time);
+extern rtc_utime_t rtc_seconds_from_midnight(const struct rtc_tm *time);
 
-extern rtc_utime_t rtc_seconds_from_millenium(const rtc_tm *time);
+extern rtc_utime_t rtc_seconds_from_millenium(const struct rtc_tm *time);
 
 /** @} */
 

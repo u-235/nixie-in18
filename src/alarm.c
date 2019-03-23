@@ -15,19 +15,17 @@
 
 #define RTC_ADR_ALARM   0
 
-typedef struct {
-        alarm_t publ;
-        char run :1;
-        char hit :1;
-        char jingle :1;
-} ex_alarm_t;
-
 /*************************************************************
  *      Variable in RAM
  *************************************************************/
 
-static const rtc_tm *tm_ptr;
-static ex_alarm_t alarm;
+static const struct rtc_tm *tm_ptr;
+static struct {
+        struct alarm_t publ;
+        char run :1;
+        char hit :1;
+        char jingle :1;
+} alarm;
 static timer_id_t timer_sound;
 
 /*************************************************************
@@ -42,7 +40,7 @@ static void save(void);
  *      Public function
  *************************************************************/
 
-void alarm_init(const rtc_tm *p_tm)
+void alarm_init(const struct rtc_tm *p_tm)
 {
         tm_ptr = p_tm;
         timer_sound = tms_create_timer(alarm_off);
@@ -50,14 +48,14 @@ void alarm_init(const rtc_tm *p_tm)
         load();
 }
 
-void alarm_get(alarm_t *pa)
+void alarm_get(struct alarm_t *pa)
 {
         pa->hours = alarm.publ.hours;
         pa->minutes = alarm.publ.minutes;
         pa->sound = alarm.publ.sound;
 }
 
-void alarm_set(alarm_t *pa)
+void alarm_set(struct alarm_t *pa)
 {
         alarm.publ.hours = pa->hours;
         alarm.publ.minutes = pa->minutes;
@@ -130,7 +128,7 @@ void alarm_check()
 
 void load()
 {
-        rtc_mem_read(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_read(&alarm, RTC_ADR_ALARM, sizeof(alarm));
         if (rtc_error() != RTC_NO_ERROR) {
                 alarm.publ.hours = 7;
                 alarm.publ.minutes = 40;
@@ -143,5 +141,5 @@ void load()
 
 void save()
 {
-        rtc_mem_write(&alarm, RTC_ADR_ALARM, sizeof(ex_alarm_t));
+        rtc_mem_write(&alarm, RTC_ADR_ALARM, sizeof(alarm));
 }

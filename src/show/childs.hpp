@@ -92,7 +92,7 @@ public:
         static void on_sync();
         static void on_key(const uint8_t _key);
 protected:
-        static rtc_tm time_;
+        static struct rtc_tm time_;
 };
 
 class ShowSetDate: public ShowSetter {
@@ -103,7 +103,7 @@ public:
         static void on_hide();
         static void on_key(const uint8_t _key);
 protected:
-        static rtc_tm time_;
+        static struct rtc_tm time_;
 };
 
 class ShowSetCaliber: public ShowSetter {

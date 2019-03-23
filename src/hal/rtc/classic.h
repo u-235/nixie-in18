@@ -16,7 +16,7 @@
 #include "../rtc.h"
 #include "../iic.h"
 
-static rtc_tm local_time;
+static struct rtc_tm local_time;
 static uint8_t error;
 
 /*
@@ -79,7 +79,7 @@ static void apply_century_bits(void);
 
 static void apply_control_bits(void);
 
-static void corrector_update(rtc_tm const *_time);
+static void corrector_update(struct rtc_tm const *_time);
 
 /*************************************************************
  *      Private function prototypes.
@@ -174,7 +174,7 @@ uint8_t rtc_check()
         return 0;
 }
 
-const rtc_tm * rtc_get_time()
+const struct rtc_tm * rtc_get_time()
 {
         return &local_time;
 }
@@ -193,7 +193,7 @@ void rtc_sync()
         end_io();
 }
 
-void rtc_set_time(const rtc_tm * _time)
+void rtc_set_time(const struct rtc_tm * _time)
 {
         begin_io(IIC_WRITE, ADDR_SECONDS);
         iic_ll_write(complete_seconds(_time->seconds));
@@ -216,7 +216,7 @@ void rtc_set_time(const rtc_tm * _time)
         rtc_store_actuals(local_time.actual);
 }
 
-void rtc_set_date(const rtc_tm * _time)
+void rtc_set_date(const struct rtc_tm * _time)
 {
         begin_io(IIC_WRITE, ADDR_WEEK_DAY);
         iic_ll_write(complete_week_days(_time->week_day + 1));
@@ -316,7 +316,7 @@ void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz)
 
 void reset()
 {
-        memset(&local_time, 0, sizeof(rtc_tm));
+        memset(&local_time, 0, sizeof(struct rtc_tm));
         bits.all = 0;
         rtc_set_time(&local_time);
         rtc_set_date(&local_time);

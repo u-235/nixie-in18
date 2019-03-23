@@ -13,21 +13,21 @@
 #include "stdint.h"
 #include "hal/rtc.h"
 
-typedef struct _alarm {
+struct alarm_t {
         uint8_t hours;
         uint8_t minutes;
         uint8_t sound;
-} alarm_t;
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void alarm_init(const rtc_tm *p_tm);
+extern void alarm_init(const struct rtc_tm *p_tm);
 
-extern void alarm_get(alarm_t *pa);
+extern void alarm_get(struct alarm_t *pa);
 
-extern void alarm_set(alarm_t *pa);
+extern void alarm_set(struct alarm_t *pa);
 
 extern char alarm_is_on(void);
 

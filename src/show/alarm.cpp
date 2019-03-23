@@ -12,7 +12,7 @@
 #include "../config.h"
 #include "../hal/mcu.h"
 
-static alarm_t alarm;
+static struct alarm_t alarm;
 
 void ShowAlarm::on_start()
 {

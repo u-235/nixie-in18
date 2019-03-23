@@ -15,7 +15,7 @@
 #include "avr/pwmi.h"
 
 static uint8_t dev_data[SPI_ARRAY_SIZE];
-static display_t logical;
+static struct display logical;
 
 #define _segment_on(seg)        _array_bit_set(seg)
 #define _array_bit_set(r, b)    _bit_set(dev_data[r], b)
@@ -36,7 +36,7 @@ void display_init()
  */
 void display_clean()
 {
-        memset( &logical, 0, sizeof(display_t));
+        memset( &logical, 0, sizeof(struct display));
 }
 
 /**
@@ -313,7 +313,7 @@ void display_flush()
 /**
  * Получение управляющей структуры.
  */
-display_t *display_get(){
+struct display *display_get(){
         return &logical;
 }
 

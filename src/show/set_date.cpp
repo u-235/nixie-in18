@@ -10,7 +10,7 @@
 #include "childs.hpp"
 #include "../config.h"
 
-rtc_tm ShowSetDate::time_;
+struct rtc_tm ShowSetDate::time_;
 
 void ShowSetDate::on_start()
 {

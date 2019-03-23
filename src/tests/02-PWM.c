@@ -12,7 +12,7 @@ static uint8_t get_bright(void);
 
 int main(void)
 {
-        display_t *pdisp = display_get();
+        struct display *pdisp = display_get();
         uint8_t bright, rate;
         uint8_t count = 0;
         uint8_t day = 0, day_state = 0;

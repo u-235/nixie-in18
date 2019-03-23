@@ -10,7 +10,7 @@ static void flush(void);
 
 int main(void)
 {
-        display_t *pdisp = display_get();
+        struct display *pdisp = display_get();
         mcu_init();
         display_init();
         display_rate(2);
