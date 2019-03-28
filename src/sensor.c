@@ -87,7 +87,7 @@ void to_bright(uint8_t conv)
                 if (pgm_read_byte(&bright_table[i]) >= conv)
                         break;
         }
-        bright = i + DISPLAY_BRIGHT_MIN;
+        bright = DISPLAY_BRIGHT_MAX - i;
 }
 
 #define RATE_STEP (256 / (DISPLAY_RATE_MAX - DISPLAY_RATE_MIN + 1))
