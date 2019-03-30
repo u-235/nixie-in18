@@ -1,6 +1,6 @@
 ### Project name (also used for output file name)
 NAME = release
-### Target device
+### Target device (atmega8 atmega168)
 DEVICE  = atmega168
 
 ### Source files and search directory
@@ -86,10 +86,12 @@ CCFLAGS += $(addprefix -I,$(INCDIRS))
 CCFLAGS += $(addprefix -D,$(DEFS))
 CCFLAGS += -Wp,-MD,-MP,-MT,$@,-MF,$@.d
 CCFLAGS += -fpack-struct -fshort-enums -ffunction-sections -fdata-sections
-CCFLAGS += -fstack-usage -Wstack-usage=4 -Wframe-larger-than=4
 CCFLAGS += -Wmissing-declarations
 ifeq ($(NAME), release)
 CCFLAGS += -mcall-prologues -flto
+endif
+ifeq ($(NAME), debug)
+CCFLAGS += -fstack-usage -Wstack-usage=4 -Wframe-larger-than=4
 endif
 
 
@@ -125,21 +127,21 @@ test_pwm: mktestdir version build size
 
 ifeq ($(OUTPUT),ihex)
 build: elf hex lst sym
-hex: $(BUILD).hex
 else
 ifeq ($(OUTPUT),binary)
 build: elf bin lst sym
-bin: $(BUILD).bin
 else
 ifeq ($(OUTPUT),both)
 build: elf hex bin lst sym
-hex: $(BUILD).hex
-bin: $(BUILD).bin
 else
 $(error "Invalid format: $(OUTPUT)")
 endif
 endif
 endif
+
+hex: $(BUILD)_flash.hex $(BUILD)_eeprom.hex
+
+bin: $(BUILD)_flash.bin $(BUILD)_eeprom.bin
 
 mkdir: mkcommondir
 	$(shell mkdir -p $(OBJDIR)/src/hal/rtc)
@@ -164,13 +166,21 @@ version :
 	@$(CC) --version
 
 # Create final output file (.hex or .bin) from ELF output file.
-%.hex: %.elf
+%_flash.hex: %.elf
 	@echo
-	$(OBJCOPY) -O ihex $< $@
+	$(OBJCOPY) -R .eeprom -R .fuse -R .lock -R .signature -O ihex $< $@
 
-%.bin: %.elf
+%_eeprom.hex: %.elf
 	@echo
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex $< $@
+
+%_flash.bin: %.elf
+	@echo
+	$(OBJCOPY) -R .eeprom -R .fuse -R .lock -R .signature -O binary $< $@
+
+%_eeprom.bin: %.elf
+	@echo
+	$(OBJCOPY) -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O binary $< $@
 
 # Create extended listing file from ELF output file.
 %.lst: %.elf
@@ -192,7 +202,7 @@ size:
 %.elf:  $(AOBJ) $(COBJ) $(CPPOBJ)
 	@echo
 	@echo Linking...
-	$(CCPP) $(LDFLAGS) -o"$@" $(AOBJ) $(COBJ) $(CPPOBJ)
+	$(CCPP) $(LDFLAGS) -o "$@" $(AOBJ) $(COBJ) $(CPPOBJ)
 
 # Compile: create object files from C source files. ARM or Thumb(-2)
 $(COBJ) : $(OBJDIR)/%.o : %.c
