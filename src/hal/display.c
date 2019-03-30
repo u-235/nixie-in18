@@ -319,6 +319,12 @@ struct display *display_get(){
         return &logical;
 }
 
+/**
+ * @brief Преобразование дня недели и будильника в набор флагов.
+ * @param week_day День недели от 0 до 6. 0 - воскресение, 1 - понедельник.
+ * @param alarm Не ноль, если нужно включить знак будильника.
+ * @return Значение, пригодное для записи в display::marks
+ */
 uint8_t display_make_mark(uint8_t week_day, uint8_t alarm)
 {
         uint8_t retval = 0;
@@ -328,25 +334,25 @@ uint8_t display_make_mark(uint8_t week_day, uint8_t alarm)
         }
 
         switch (week_day) {
-        case MONDAY:
+        case 1:
                 retval |= DISPLAY_MARK_MONDAY;
                 break;
-        case TUESDAY:
+        case 2:
                 retval |= DISPLAY_MARK_TEUSDAY;
                 break;
-        case WEDNESDAY:
+        case 3:
                 retval |= DISPLAY_MARK_WEDNESDAY;
                 break;
-        case THURSDAY:
+        case 4:
                 retval |= DISPLAY_MARK_THURSDAY;
                 break;
-        case FRIDAY:
+        case 5:
                 retval |= DISPLAY_MARK_FRIDAY;
                 break;
-        case SATURDAY:
+        case 6:
                 retval |= DISPLAY_MARK_SATURDAY;
                 break;
-        case SUNDAY:
+        case 0:
                 retval |= DISPLAY_MARK_SUNDAY;
                 break;
         }

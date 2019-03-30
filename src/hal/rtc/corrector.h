@@ -116,7 +116,7 @@ void rtc_apply_corrector()
         chip_set_caliber(chip_get_caliber() - rtc_get_deviation());
 
         period = corr.last - corr.start;
-        current = rtc_seconds_from_millenium(&local_time);
+        current = rtc_get_seconds(&local_time);
         if (period != 0) {
                 corr.diff = corr.diff * (corr.last - current) / (period);
         } else {
@@ -152,9 +152,9 @@ void corrector_update(struct rtc_tm const *_time)
                 return;
 
         rtc_restore_corrector(&corr);
-        corr.last = rtc_seconds_from_millenium(_time);
+        corr.last = rtc_get_seconds(_time);
         if (_rtc_is_actual(local_time.actual)) {
-                corr.diff += rtc_seconds_from_millenium(&local_time)
+                corr.diff += rtc_get_seconds(&local_time)
                                 - corr.last;
         }
         rtc_store_corrector(&corr);

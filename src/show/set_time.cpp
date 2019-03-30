@@ -67,31 +67,18 @@ void ShowSetTime::on_key(const uint8_t _key)
                 switch (state_) {
                 case 0:
                         time_.hours++;
-                        if (time_.hours >= 24) {
-                                time_.hours = 0;
-                        }
                         break;
                 case 1:
                         time_.minutes++;
-                        if (time_.minutes >= 60) {
-                                time_.minutes = 0;
-                        }
                         break;
                 case 2:
                         return;
                 }
+                rtc_validate_time(&time_, 0);
                 flag_ = 1;
         } else if (_key == VK_CHANGE_UP && state_ == 2) {
-                if (time_.seconds >= 30) {
-                        time_.minutes++;
-                        if (time_.minutes >= 60) {
-                                time_.minutes = 0;
-                                time_.hours++;
-                        }
-                        if (time_.hours >= 24) {
-                                time_.hours = 0;
-                        }
-                }
+                time_.seconds += 30;
+                rtc_validate_time(&time_, -1);
                 time_.seconds = 0;
                 rtc_set_time(&time_);
         } else return;

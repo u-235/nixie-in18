@@ -98,6 +98,6 @@ void on_rtc_failture()
         ttm.month = 12;
         ttm.year = 18;
         ttm.actual = 0;
-        rtc_date_adjust(&ttm);
+        rtc_validate_date(&ttm, 0);
         rtc_set_date(&ttm);
 }

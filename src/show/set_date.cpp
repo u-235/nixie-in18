@@ -80,7 +80,7 @@ void ShowSetDate::on_key(const uint8_t _key)
                 break;
         }
 
-        rtc_date_adjust(&time_);
+        rtc_validate_date(&time_, 0);
         refresh();
 }
 

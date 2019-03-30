@@ -13,7 +13,6 @@
 #define HAL_RTC_H_
 
 #include <stdint.h>
-#include <time.h>
 
 #include "../config.h"
 
@@ -70,7 +69,7 @@ typedef int32_t rtc_time_t;
 /**
  * Перечисление ошибок RTC.
  */
-enum rtc_errors{
+enum rtc_errors {
         /** Нет ошибок. */
         RTC_NO_ERROR,
         /** Неизвестная ошибка. */
@@ -82,7 +81,6 @@ enum rtc_errors{
         /** Сбой питания микросхемы RTC */
         RTC_POWER_ERROR
 };
-
 
 #define _RTC_DC1307 1
 #define _RTC_M41T56 2
@@ -162,7 +160,7 @@ extern const struct rtc_tm * rtc_get_time(void);
  * внутренней структуры.
  * @param _time Указатель на структуру с новым временем.
  */
-extern void rtc_set_time(const struct rtc_tm * _time);
+extern void rtc_set_time(const struct rtc_tm *_time);
 
 /**
  * @brief Установка даты.
@@ -173,7 +171,7 @@ extern void rtc_set_time(const struct rtc_tm * _time);
  * внутренней структуры.
  * @param _time Указатель на структуру с новой датой.
  */
-extern void rtc_set_date(const struct rtc_tm * _time);
+extern void rtc_set_date(const struct rtc_tm *_time);
 
 /**
  * Чтение массива данных из RTC.
@@ -206,22 +204,109 @@ extern void rtc_mem_write(const void *src, const uint8_t adr, const uint8_t sz);
  */
 extern void rtc_copy(struct rtc_tm *dst, struct rtc_tm const *src);
 
+#ifdef CFG_RTC_USE_CTIME_H
+#include <time.h>
+
 /**
  * Конвертирует структуру rtc_tm в стандартную tm.
+ * @note Эта функция доступна только если определён макрос CFG_RTC_USE_CTIME_H
+ *      в файле <config.h>
  * @param dst Указатель на заполняемую структуру.
  * @param src Указатель на исходную структуру.
  */
-extern void rtc_to_tm(struct tm *dst, struct rtc_tm const *src);
+extern void rtc_get_tm(struct tm *dst, struct rtc_tm const *src);
 
-extern void rtc_date_adjust(struct rtc_tm *date);
+/**
+ * Конвертирует стандартную структуру tm в rtc_tm.
+ * @note Эта функция доступна только если определён макрос CFG_RTC_USE_CTIME_H
+ *      в файле <config.h>
+ * @param dst Указатель на заполняемую структуру.
+ * @param src Указатель на исходную структуру.
+ */
+extern void rtc_set_tm(struct rtc_tm *dst, struct tm const *src);
 
-extern uint_fast16_t rtc_day_in_year(const struct rtc_tm *date);
+#endif /* CFG_RTC_USE_CTIME_H */
 
-extern rtc_utime_t rtc_day_in_millenium(const struct rtc_tm *date);
+/**
+ * @brief Normalization of time.
+ * @details The fields @c _time->seconds, @c _time->minutes and @c _time->hours
+ *      are reset when the maximum value is exceeded.
+ *
+ *      If the @c _how parameter is not equal to zero, then carry allowed. In
+ *      this case when zeroing seconds, the minutes are increased by 1; when
+ *      zeroing minutes, the hours are increased by 1 and finally when zeroing
+ *      the hours, the function returns a positive value.
+ *
+ * @param [in, out] _time Pointer to structure for normalization of time.
+ * @param [in]      _how  Zero if don't make carry on when overflowing.
+ *
+ * @return If the @c _how parameter is zero, it always returns zero.
+ * @return If the @c _how parameter is non-zero, then if the @c _time->hours
+ *      field overflows, a positive value is returned; if there is no overflow,
+ *      then a negative value is returned.
+ */
+extern int8_t rtc_validate_time(struct rtc_tm *_time, int8_t _how);
 
-extern rtc_utime_t rtc_seconds_from_midnight(const struct rtc_tm *time);
+/**
+ * @brief Normalization of date.
+ * @details The  @c _date->days,  @c _date->month and  @c _date->year fields are
+ *      reset when the maximum value is exceeded.
+ *
+ *      If the  @c _how parameter is greater than zero, then before all checks
+ *      the day of the month is increased by 1.
+ *
+ *      If the @c _how parameter is not equal to zero, then carry allowed. In
+ *      this case when the days are reset, the months are increased by 1; when
+ *      months are reset, the years are increased by 1 and when the years are
+ *      reset, the function returns a  positive value.
+ *
+ *      After checks, the _date-> week_day field is set according to the
+ *      normalized date.
+ *
+ * @param [in, out] _date Pointer to structure for normalization of date.
+ * @param [in]      _how  Zero if don't make carry on when overflowing.
+ *
+ * @return If the @c _how parameter is zero, it always returns zero.
+ * @return If the @c _how parameter is non-zero, then if the @c _date->year
+ *      field overflows, a positive value is returned; if there is no overflow,
+ *      then a negative value is returned.
+ */
+extern int8_t rtc_validate_date(struct rtc_tm *_date, int8_t _how);
 
-extern rtc_utime_t rtc_seconds_from_millenium(const struct rtc_tm *time);
+/**
+ * @brief Normalization of date and time.
+ * @details All fields except @c _date->week_days and @c _date-> actuals are
+ *      reset when the maximum value is exceeded.
+ *
+ *      If the @c _how parameter is not equal to zero, then carry allowed. In
+ *      this case when zeroing seconds, the minutes are increased by 1; when
+ *      zeroing minutes, the hours are increased by 1; when zeroing hours, the
+ *      days are increased by 1; when resetting the days, months are increased
+ *      by 1; when months are reset, the years are increased by 1 and when years
+ *      are reset, the function returns a positive value.
+ *
+ *      After checks, the _date-> week_day field is set according to the
+ *      normalized date.
+ *
+ * @param [in, out] _date Pointer to structure for normalization.
+ * @param [in]      _how  Zero if don't make carry on when overflowing.
+ *
+ * @return If the @c _how parameter is zero, it always returns zero.
+ * @return If the @c _how parameter is non-zero, then if the @c _date->year
+ *      field overflows, a positive value is returned; if there is no overflow,
+ *      then a negative value is returned.
+ */
+extern int8_t rtc_validate(struct rtc_tm *_date, int8_t _how);
+
+extern uint_fast16_t rtc_get_day_of_year(const struct rtc_tm *date);
+
+extern rtc_utime_t rtc_get_days(const struct rtc_tm *date);
+
+extern rtc_utime_t rtc_get_seconds_from_midnight(const struct rtc_tm *time);
+
+extern rtc_utime_t rtc_get_seconds(const struct rtc_tm *time);
+
+extern void rtc_set_seconds(struct rtc_tm *_dst, rtc_utime_t _sec);
 
 /** @} */
 
