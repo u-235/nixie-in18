@@ -1,25 +1,20 @@
+[русский](./README_RU.md)
+
 ## nixie-in18
 
-Программа для реализации часов с использованием индикаторов ИН-18.
+A program for clock using IN-18 indicators.
 
-В отличие от многих схем, в этой применена статическая индикация.
-Микроконтроллер Atmega управляет индикаторами по SPI посредством
-[ИМС 74hc595](http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf).
-Кроме ИН-18 часы имеют восемь лампочек для показа дня недели и будильника
-и четыре лампочки для разделитей.
+Unlike many schemes, this uses a static display. The Atmega microcontroller
+controls the indicators via the [74hc595 IC](http://www.nxp.com/documents/data_sheet/74HC_HCT595.pdf)
+connected to the SPI. In addition to the IN-18, the clock has eight lights
+to show the day of the week and an alarm clock, and four lights to separate
+digits.
 
-Микроконтроллер работает от внутреннего генератора на частоте 8 МГц. Это
-вызвано наличием программного ШИМ для регулировки яркости индикаторов. Частота
-ШИМ выбрана около 100 Гц для снижения заметности мерцания. Так же механизм
-программного ШИМ позволяет сделать эффект плавной смены показаний индикации.
+The microcontroller clocks from quartz at a frequency of 16 MHz. This is caused
+by the presence of software PWM to adjust the brightness of the indicators.
+The PWM frequency is selected at about 100 Hz to reduce the visibility
+of flicker. The same mechanism of the program PWM allows you to make the effect
+of a smooth change of indication indications.
 
-В качестве сигнала будильника используется немного изменённый
-[плеер Чана](http://elm-chan.org/works/sd20p/report.html).
-
-### Текущие задачи
- - ~~задействовать RTC для индикации времени~~.
- - ~~подключить кнопки~~.
- - ~~управление плеером~~.
- - регулировка яркости в зависимости от освещенности.
- - ~~будильники~~.
- - управление коррекцией хода RTC.
+A slightly modified [Chan player](http://elm-chan.org/works/sd20p/report.html)
+is used as an alarm signal.
